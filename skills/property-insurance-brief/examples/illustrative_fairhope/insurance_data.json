@@ -1,0 +1,408 @@
+{
+  "_note": "ILLUSTRATIVE EXAMPLE. Property is fictional; every premium figure is a labeled estimate anchored to the sources named in its source_note. A real run replaces all values from research + the buyer interview. Read this file in full before building any new data file.",
+  "property": {
+    "address": "123 Example Lane",
+    "city": "Fairhope",
+    "state": "AL",
+    "zip": "36532",
+    "year_built": "1998",
+    "sqft": "2,400",
+    "construction": "Brick veneer",
+    "roof": "Architectural shingle, 2019 (permit-verified)",
+    "distance_to_coast": "4.1 mi to Mobile Bay",
+    "fema_zone": "X",
+    "bfe_note": "Zone X, no BFE assigned. Lidar freeboard est. +12 ft above nearest flood source."
+  },
+  "market_profile": "coastal",
+  "title": {
+    "eyebrow": "HOMEOWNERS INSURANCE BRIEF",
+    "tagline": "A coverage decision brief and quote-request package for a coastal Alabama buyer.",
+    "status_tag": "COMPANION TO PROPERTY INTEL REPORT",
+    "prepared_label": "PREPARED JULY 2026"
+  },
+  "primer": {
+    "title": "Why Coastal Quotes Vary So Much",
+    "subtitle": "Same house, same coverage: premiums can differ by more than 100% across carriers (ALDOI).",
+    "cards": [
+      {
+        "icon": "FaWind",
+        "label": "WIND VS NON-WIND",
+        "color": "crimson",
+        "body": "Coastal policies split into wind/hurricane and all-other-perils. Wind is the majority of the premium here and carries its own percentage deductible."
+      },
+      {
+        "icon": "FaShieldAlt",
+        "label": "THREE MARKETS, ONE HOUSE",
+        "color": "amber",
+        "body": "Coastal risks get placed three ways: admitted carriers, surplus lines (e.g. Lloyd's), or the AIUA wind pool. Surplus lines adds 6% AL tax, 25% minimum earned premium, and no guaranty fund."
+      },
+      {
+        "icon": "FaHome",
+        "label": "MITIGATION IS THE LEVER",
+        "color": "green",
+        "body": "FORTIFIED certification and roof age move coastal premiums more than any coverage choice. ALDOI data shows 50%+ wind-mitigation reductions in Baldwin County cities."
+      },
+      {
+        "icon": "FaDollarSign",
+        "label": "DEFAULTS ARE EXPENSIVE",
+        "color": "teal",
+        "body": "Agents quote conservative defaults when you specify nothing. This brief exists so every quote comes back on YOUR spec."
+      }
+    ],
+    "source_note": "Sources: ALDOI premium comparison; Alabama Coastal Insurance Shopper's Guide (Smart Home America)."
+  },
+  "coverage_spec": {
+    "title": "Your Coverage Spec at a Glance",
+    "subtitle": "Built from your interview answers. This is what every agent quotes against.",
+    "stats": [
+      {
+        "big": "$385,000",
+        "label": "DWELLING (COV A)",
+        "sub": "Replacement cost basis, est.",
+        "color": "marine"
+      },
+      {
+        "big": "2%",
+        "label": "WIND DEDUCTIBLE",
+        "sub": "= $7,700 out of pocket",
+        "color": "crimson"
+      },
+      {
+        "big": "$2,500",
+        "label": "AOP DEDUCTIBLE",
+        "sub": "All other perils",
+        "color": "coral"
+      },
+      {
+        "big": "50%",
+        "label": "PERSONAL PROPERTY",
+        "sub": "Of Cov A, replacement cost",
+        "color": "teal"
+      },
+      {
+        "big": "$300K",
+        "label": "LIABILITY",
+        "sub": "Umbrella deferred",
+        "color": "green"
+      },
+      {
+        "big": "YES",
+        "label": "FLOOD (SEPARATE)",
+        "sub": "NFIP quote requested",
+        "color": "amber"
+      }
+    ],
+    "source_note": "Dwelling basis is an estimate until a carrier replacement-cost estimator runs."
+  },
+  "coverage_lines": {
+    "title": "Every Line, Explained",
+    "subtitle": "What each coverage does and the level you chose.",
+    "rows": [
+      {
+        "line": "Dwelling (Cov A)",
+        "chosen": "$385,000 est. replacement cost",
+        "what": "Rebuild cost of the structure. Not the purchase price; land doesn't burn."
+      },
+      {
+        "line": "Other structures (Cov B)",
+        "chosen": "10% of Cov A (default)",
+        "what": "Detached garage, fence, shed."
+      },
+      {
+        "line": "Personal property (Cov C)",
+        "chosen": "50% of Cov A, replacement cost endorsement",
+        "what": "Your stuff. Replacement cost pays new-for-old; ACV deducts depreciation."
+      },
+      {
+        "line": "Loss of use (Cov D)",
+        "chosen": "20% of Cov A (default)",
+        "what": "Rent and living costs if the house is uninhabitable after a covered loss."
+      },
+      {
+        "line": "Liability (Cov E)",
+        "chosen": "$300,000",
+        "what": "Lawsuits for injury or damage you cause. Cheapest protection per dollar on the policy."
+      },
+      {
+        "line": "Medical payments (Cov F)",
+        "chosen": "$5,000",
+        "what": "Small no-fault medical bills for guests."
+      },
+      {
+        "line": "Water backup",
+        "chosen": "Add: $10,000",
+        "what": "Sewer and sump backup. Excluded by default on most policies."
+      },
+      {
+        "line": "Ordinance or law",
+        "chosen": "Add: 25% of Cov A",
+        "what": "Cost of rebuilding to CURRENT code. Matters on any pre-2006 coastal home."
+      }
+    ],
+    "source_note": ""
+  },
+  "wind_deductible": {
+    "title": "The Wind Deductible, In Dollars",
+    "subtitle": "Percentage deductibles hide the real number. Here it is against your $385K dwelling coverage.",
+    "options": [
+      {
+        "pct": "1%",
+        "dollars": "$3,850",
+        "chosen": false,
+        "color": "green",
+        "note": "Lowest storm-day exposure, highest premium."
+      },
+      {
+        "pct": "2%",
+        "dollars": "$7,700",
+        "chosen": true,
+        "color": "coral",
+        "note": "Your pick. Manageable from reserves; meaningful premium relief vs 1%."
+      },
+      {
+        "pct": "5%",
+        "dollars": "$19,250",
+        "chosen": false,
+        "color": "crimson",
+        "note": "Cheapest premium. One named-storm claim costs more than years of savings."
+      }
+    ],
+    "framing": "The question is not which is cheapest. It's how large a check you can write the week after a hurricane. Your interview answer: up to about $8K without hardship.",
+    "detail_note": "Named-storm vs hurricane vs wind/hail deductible triggers differ by carrier. The spec sheet forces each quote to state its trigger.",
+    "source_note": ""
+  },
+  "flood": {
+    "title": "Flood Is Always a Separate Policy",
+    "subtitle": "No homeowners policy covers rising water. Here is this property's picture.",
+    "facts": [
+      {
+        "big": "Zone X",
+        "label": "FEMA FLOOD ZONE",
+        "sub": "Outside SFHA; not lender-required",
+        "color": "green"
+      },
+      {
+        "big": "+12 ft",
+        "label": "LIDAR FREEBOARD",
+        "sub": "Est. elevation above nearest flood source",
+        "color": "teal"
+      },
+      {
+        "big": "$500-900/yr",
+        "label": "NFIP BALLPARK",
+        "sub": "Zone X preferred-risk, est.; quote to confirm",
+        "color": "amber"
+      }
+    ],
+    "body": "Zone X means flood coverage is optional and cheap, which is exactly when it is worth quoting. Storm surge and rain-driven flooding do not respect zone lines, and preferred-risk pricing exists because the actuarial risk is low, not zero.",
+    "recommendation": "Request an NFIP quote alongside every homeowners quote. Compare one private flood quote if any carrier offers it.",
+    "source_note": "Zone and freeboard from property-intel-report research (FEMA MSC, USGS lidar). NFIP ballpark est. pending Risk Rating 2.0 quote."
+  },
+  "levers": {
+    "title": "What Actually Moves the Premium",
+    "subtitle": "Ranked by impact for this property. Direction is sourced; magnitudes are ranges, not promises.",
+    "items": [
+      {
+        "rank": "1",
+        "lever": "FORTIFIED certification",
+        "status": "Not certified. 2019 roof may qualify for FORTIFIED Roof retrofit.",
+        "impact": "Largest single wind-premium discount in AL; credits are state-mandated. Strengthen Alabama Homes grants may offset retrofit cost.",
+        "color": "green"
+      },
+      {
+        "rank": "2",
+        "lever": "Wind deductible choice",
+        "status": "2% selected.",
+        "impact": "Each step 1% to 2% to 5% trades premium for storm-day cash exposure. Quoted three ways on the spec sheet.",
+        "color": "coral"
+      },
+      {
+        "rank": "3",
+        "lever": "Roof age and material",
+        "status": "2019 architectural shingle, permit-verified.",
+        "impact": "Under 10 years old is the good side of most carriers' cliff. Verify each quote used 2019, not year built.",
+        "color": "teal"
+      },
+      {
+        "rank": "4",
+        "lever": "Bundling and payment",
+        "status": "Auto policy available to bundle.",
+        "impact": "Multi-policy and paid-in-full discounts are routine asks. Zero coverage cost.",
+        "color": "amber"
+      },
+      {
+        "rank": "5",
+        "lever": "Insurance score and claims history",
+        "status": "No claims, no lapses (per interview).",
+        "impact": "One of the largest pricing factors in AL. Nothing to fix; just make sure quotes reflect it.",
+        "color": "marine"
+      }
+    ],
+    "source_note": "Sources: ALDOI wind-mitigation comparisons; Strengthen Alabama Homes; IBHS FORTIFIED."
+  },
+  "premium_range": {
+    "title": "A Rough Range, Honestly Labeled",
+    "subtitle": "Context for quote-shopping, not a quote. Coastal spreads are wide by nature.",
+    "range_low": "$3,200",
+    "range_high": "$6,500",
+    "range_label": "EST. ANNUAL PREMIUM, HOMEOWNERS ONLY, EXCL. FLOOD",
+    "basis_lines": [
+      {
+        "label": "ALDOI ComparePremiums, $300K Cov A HO-3 profile, coastal territory",
+        "value": "anchor"
+      },
+      {
+        "label": "State average, $300K dwelling (Insurify, 2026)",
+        "value": "$3,287/yr"
+      },
+      {
+        "label": "Coastal Baldwin uplift vs state average",
+        "value": "direction: up"
+      },
+      {
+        "label": "Wind mitigation, if FORTIFIED pursued",
+        "value": "shifts range down materially"
+      }
+    ],
+    "caveat": "Real quotes on this spec may land inside OR outside this range. That is the point of getting three of them on identical assumptions.",
+    "source_note": "Sources: ALDOI ComparePremiums (real HO-3 premiums by company); Insurify AL rate data. All figures est. and illustrative in this example."
+  },
+  "spec_sheet": {
+    "headline": "Quote Request & Comparison Worksheet",
+    "instruction": "Give one copy to each of three agents. Every quote must price THIS spec. Differences go in the deviations row, not silently into the price.",
+    "property_block": [
+      {
+        "label": "Address",
+        "value": "123 Example Lane, Fairhope, AL 36532"
+      },
+      {
+        "label": "Year built / sqft",
+        "value": "1998 / 2,400 sqft"
+      },
+      {
+        "label": "Construction",
+        "value": "Brick veneer"
+      },
+      {
+        "label": "Roof",
+        "value": "Architectural shingle, 2019 (permit-verified)"
+      },
+      {
+        "label": "Distance to coast",
+        "value": "4.1 mi to Mobile Bay"
+      },
+      {
+        "label": "FEMA flood zone",
+        "value": "X (flood quoted separately)"
+      },
+      {
+        "label": "Occupancy",
+        "value": "Primary residence"
+      },
+      {
+        "label": "Claims / lapses",
+        "value": "None / none"
+      }
+    ],
+    "coverage_block": [
+      {
+        "label": "Dwelling (Cov A)",
+        "value": "$385,000 est. RC; run your estimator, show the number"
+      },
+      {
+        "label": "Wind/hurricane ded.",
+        "value": "2%; ALSO quote 1% and 5%"
+      },
+      {
+        "label": "AOP deductible",
+        "value": "$2,500"
+      },
+      {
+        "label": "Personal property",
+        "value": "50% Cov A, replacement cost"
+      },
+      {
+        "label": "Liability / MedPay",
+        "value": "$300,000 / $5,000"
+      },
+      {
+        "label": "Water backup",
+        "value": "$10,000"
+      },
+      {
+        "label": "Ordinance or law",
+        "value": "25% Cov A"
+      },
+      {
+        "label": "Roof settlement",
+        "value": "Replacement cost; state if ACV or schedule applies"
+      },
+      {
+        "label": "FORTIFIED credit",
+        "value": "State the credit if roof qualifies"
+      }
+    ],
+    "quote_columns": {
+      "column_headers": [
+        "QUOTE 1",
+        "QUOTE 2",
+        "QUOTE 3"
+      ],
+      "rows": [
+        "Carrier & channel (admitted / surplus)",
+        "Total cost ($ premium + all fees + taxes)",
+        "Wind deductible ($ and trigger)",
+        "AOP deductible ($)",
+        "Roof settlement (RCV or age-ACV form?)",
+        "Min. earned premium %",
+        "FORTIFIED credit applied?",
+        "Notable exclusions",
+        "Deviations from spec"
+      ]
+    },
+    "footer": "Estimates in this packet are labeled and sourced. Quotes entered above are the real numbers. Prepared with the buyer's coverage brief, July 2026."
+  },
+  "agent_script": {
+    "title": "Work the Script",
+    "subtitle": "Questions that separate a good policy from a cheap-looking one.",
+    "questions": [
+      "Is the wind deductible triggered by 'named storm,' 'hurricane,' or 'wind/hail'? Show me the definition page.",
+      "Is roof settlement replacement cost, ACV, or a payment schedule by age?",
+      "Does this policy carry a cosmetic damage exclusion for roofs or siding?",
+      "What FORTIFIED credit applies if I certify the roof, in dollars on THIS quote?",
+      "Is this admitted or surplus lines? If surplus: what is the minimum earned premium, are fees fully earned, and is there guaranty-fund backing?",
+      "What is the total walk-out cost: premium plus every fee plus surplus lines tax? Quotes compare on that number, not the property premium.",
+      "What does the same policy cost with 1% and 5% wind deductibles?",
+      "Which discounts are already in this number: bundle, paid-in-full, alarm, claims-free?"
+    ],
+    "red_flags_label": "RED FLAGS IN A QUOTE",
+    "red_flags": [
+      "Dwelling coverage well below the replacement-cost estimate. Underinsurance disguised as savings.",
+      "RCV roof on the summary page but an age-triggered ACV or cosmetic-exclusion roof form buried in the endorsements list. Read the forms schedule.",
+      "ACV roof settlement on a shingle roof. The discount comes out of your first claim.",
+      "No wind deductible dollar figure shown, only a percentage.",
+      "Flood 'included' claims. Homeowners policies exclude flood; something else is being sold.",
+      "A quote delivered without a single question asked about the property."
+    ],
+    "footer_note": "A quote you can't compare is a quote you can't trust."
+  },
+  "sources": {
+    "title": "Show Your Work",
+    "list": [
+      "ALDOI ComparePremiums: real HO-3 premiums by company and territory",
+      "Alabama Coastal Insurance Shopper's Guide: Smart Home America / ALDOI",
+      "Surplus Line Association of Alabama / ALDOI \u2014 surplus lines tax, minimum earned premium, guaranty-fund status",
+      "Strengthen Alabama Homes: FORTIFIED grant program",
+      "IBHS FORTIFIED Home standard",
+      "FEMA Map Service Center: flood zone determination",
+      "property-intel-report research file for this address (when run)"
+    ],
+    "caveats": [
+      "All premium figures are estimates for orientation, not quotes. Only a carrier can quote.",
+      "This brief is educational decision support, not insurance advice; the buyer selects coverage.",
+      "Replacement cost estimate is provisional until a carrier estimator runs.",
+      "Rates, credits, and carrier appetite change frequently; figures dated as of preparation.",
+      "Surplus lines quotes carry AL tax, fully earned fees, and minimum earned premium; always compare total walk-out cost, not property premium."
+    ]
+  }
+}

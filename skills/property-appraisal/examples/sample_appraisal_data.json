@@ -1,0 +1,308 @@
+{
+  "_note": "SYNTHETIC worked example. Fictional addresses. Shows field structure, tone, and level of detail only.",
+  "property": {
+    "address": "1234 Sample Creek Dr",
+    "city_state_zip": "Daphne, AL 36526",
+    "list_price": 425000,
+    "beds": 4,
+    "baths": 2.5,
+    "sqft": 2350,
+    "lot_acres": 0.42,
+    "year_built": 1998,
+    "parcel_id": "05-46-03-00-000-000.000",
+    "report_date": "July 8, 2026"
+  },
+  "value_conclusion": {
+    "point_value": 411000,
+    "range_low": 382000,
+    "range_high": 440000,
+    "confidence": "Medium",
+    "confidence_reason": "4 comps, 3 of them Tier 1, one is 9 months old; buyer walked the property. 1 condition input assumed (HVAC age unknown).",
+    "vs_list_verdict": "Priced above value",
+    "vs_list_detail": "List is $14K (3.3%) above the indicated point value. The gap is roughly the cost of the roof the seller hasn't replaced."
+  },
+  "subject_profile": {
+    "walked": true,
+    "public_facts": [
+      {
+        "label": "Square feet",
+        "value": "2,350 (county record)"
+      },
+      {
+        "label": "Year built",
+        "value": "1998"
+      },
+      {
+        "label": "Lot",
+        "value": "0.42 ac, level, no easements found"
+      },
+      {
+        "label": "Garage",
+        "value": "2-car attached"
+      },
+      {
+        "label": "Last sale",
+        "value": "$310,000 \u2014 Mar 2019"
+      },
+      {
+        "label": "Flood zone",
+        "value": "Zone X (FEMA panel, est.)"
+      },
+      {
+        "label": "Listing history",
+        "value": "Listed May 2026 at $439K, cut to $425K Jun 2026"
+      }
+    ],
+    "interview_inputs": [
+      {
+        "label": "Roof",
+        "value": "Original-looking 2012 shingle, ~14 yrs",
+        "impact": "negative"
+      },
+      {
+        "label": "HVAC",
+        "value": "Age unknown \u2014 neutral 8 yrs assumed",
+        "impact": "assumed"
+      },
+      {
+        "label": "Kitchen",
+        "value": "Full remodel 2023, ~$45K reported",
+        "impact": "positive"
+      },
+      {
+        "label": "Baths",
+        "value": "Original, dated but functional",
+        "impact": "negative"
+      },
+      {
+        "label": "Flooring",
+        "value": "New LVP throughout main level (2023)",
+        "impact": "positive"
+      },
+      {
+        "label": "Defects",
+        "value": "Minor drainage pooling at back fence",
+        "impact": "negative"
+      },
+      {
+        "label": "Location",
+        "value": "Quiet cul-de-sac, no negatives",
+        "impact": "neutral"
+      }
+    ]
+  },
+  "comps": [
+    {
+      "address": "789 Example Oaks Ct",
+      "sold_date": "Apr 2026",
+      "sold_price": 415000,
+      "sqft": 2280,
+      "ppsf": 182,
+      "distance_mi": 0.4,
+      "source": "Redfin sold page (MLS-fed)",
+      "source_tier": 1,
+      "key_diffs": "Similar age \u00b7 smaller lot \u00b7 original kitchen",
+      "net_adjustment": 12000,
+      "adjusted_value": 427000,
+      "weight": 0.3
+    },
+    {
+      "address": "456 Placeholder Ln",
+      "sold_date": "Feb 2026",
+      "sold_price": 398000,
+      "sqft": 2410,
+      "ppsf": 165,
+      "distance_mi": 0.7,
+      "source": "Movoto sold page (MLS-fed)",
+      "source_tier": 1,
+      "key_diffs": "Slightly larger \u00b7 dated throughout \u00b7 1-car garage",
+      "net_adjustment": 14000,
+      "adjusted_value": 412000,
+      "weight": 0.3
+    },
+    {
+      "address": "321 Specimen Way",
+      "sold_date": "May 2026",
+      "sold_price": 442000,
+      "sqft": 2500,
+      "ppsf": 177,
+      "distance_mi": 1.1,
+      "source": "Realtor.com sold page (MLS-fed)",
+      "source_tier": 1,
+      "key_diffs": "Larger \u00b7 renovated baths \u00b7 pool",
+      "net_adjustment": -32000,
+      "adjusted_value": 410000,
+      "weight": 0.25
+    },
+    {
+      "address": "654 Demonstration Dr",
+      "sold_date": "Oct 2025",
+      "sold_price": 385000,
+      "sqft": 2200,
+      "ppsf": 175,
+      "distance_mi": 0.9,
+      "source": "Price via search snippet; page unfetchable",
+      "source_tier": 2,
+      "key_diffs": "9 months old \u00b7 smaller \u00b7 similar condition",
+      "net_adjustment": 19000,
+      "adjusted_value": 404000,
+      "weight": 0.15
+    }
+  ],
+  "adjustment_schedule": [
+    {
+      "item": "Market/time",
+      "rate": "+0.3%/mo",
+      "basis": "Baldwin Co. median $/sqft up 3.8% YoY (Redfin Data Center)",
+      "applied_to": "All comps by months since sale"
+    },
+    {
+      "item": "GLA (sqft)",
+      "rate": "$72/sqft",
+      "basis": "40% of market $180/sqft",
+      "applied_to": "Comps 1, 2, 3, 4"
+    },
+    {
+      "item": "Site/lot",
+      "rate": "2%/acre beyond 0.25",
+      "basis": "Methodology default; no local paired sales found",
+      "applied_to": "Comp 1"
+    },
+    {
+      "item": "Garage",
+      "rate": "2%/bay",
+      "basis": "Methodology default",
+      "applied_to": "Comp 2"
+    },
+    {
+      "item": "Pool",
+      "rate": "-4%",
+      "basis": "Gulf Coast in-ground midpoint",
+      "applied_to": "Comp 3"
+    },
+    {
+      "item": "Condition (comp-visible)",
+      "rate": "\u00b15-8%",
+      "basis": "Listing remarks and photos",
+      "applied_to": "Comps 1, 2, 3"
+    }
+  ],
+  "condition_adjustments": [
+    {
+      "item": "Roof (14 yrs)",
+      "finding": "2012 shingle, ~3 yrs remaining life",
+      "amount": -13000,
+      "tag": "verified",
+      "note": "$16K replacement midpoint x 14/17 expected life = -$13.2K"
+    },
+    {
+      "item": "Kitchen remodel 2023",
+      "finding": "Reported $45K spend, quality visible on walkthrough",
+      "amount": 14000,
+      "tag": "reported-unverified",
+      "note": "60% contribution, taken at half weight pending receipts"
+    },
+    {
+      "item": "Flooring (2023 LVP)",
+      "finding": "New quality LVP, main level",
+      "amount": 6000,
+      "tag": "verified"
+    },
+    {
+      "item": "Baths (original)",
+      "finding": "Two dated full baths",
+      "amount": -8000,
+      "tag": "verified",
+      "note": "~1% of value per bath"
+    },
+    {
+      "item": "Drainage pooling",
+      "finding": "Back fence line, minor",
+      "amount": -3000,
+      "tag": "verified",
+      "note": "Grading/French drain est."
+    },
+    {
+      "item": "HVAC",
+      "finding": "Age unknown",
+      "amount": 0,
+      "tag": "assumed",
+      "note": "Neutral 8-yr assumption"
+    }
+  ],
+  "condition_total": -4000,
+  "reconciliation": {
+    "base_indicated_value": 415000,
+    "narrative": "Comps 1 and 2 carry 60% of the weight: both Tier 1, under 5 months old, under 0.7 miles, with net adjustments inside 4%. Comp 4 is a search-snippet price and 9 months old, so it gets 15%. The point value sits inside the AVM band ($403K-$421K), which is consistent with a property whose new kitchen offsets its aging roof.",
+    "avm_checks": [
+      {
+        "source": "Zestimate",
+        "value": 421300
+      },
+      {
+        "source": "Redfin Estimate",
+        "value": 402800
+      }
+    ],
+    "sensitivity": {
+      "low_case": 388000,
+      "low_note": "HVAC resolves at 15+ yrs, kitchen contribution unproven, Comp 4 dropped",
+      "high_case": 425000,
+      "high_note": "Kitchen spend documented at full contribution, time adjustment at top of range"
+    }
+  },
+  "value_vs_price": {
+    "list_price": 425000,
+    "point_value": 411000,
+    "delta": -14000,
+    "delta_pct": -3.3,
+    "verdict_headline": "Priced above value",
+    "anchor_points": [
+      {
+        "label": "Walk-away ceiling",
+        "value": 382000,
+        "note": "Range low. Below this you have real margin even if assumptions break bad."
+      },
+      {
+        "label": "Fair value",
+        "value": 411000,
+        "note": "The indicated point value. A clean deal at this number."
+      },
+      {
+        "label": "Seller's premium",
+        "value": 425000,
+        "note": "List price. Paying this means paying $14K above indicated value."
+      }
+    ],
+    "bottom_line": "Open at $398K with the comp grid attached; the seller's June price cut says they already know $425K isn't holding."
+  },
+  "sources": [
+    {
+      "category": "Sold comps",
+      "detail": "Redfin, Movoto, Realtor.com sold pages (MLS-fed), pulled Jul 8 2026; one price via search snippet (Tier 2)"
+    },
+    {
+      "category": "Subject record",
+      "detail": "County assessor via search; portal property pages"
+    },
+    {
+      "category": "Market trend",
+      "detail": "Redfin Data Center, Baldwin County, Jun 2026 release"
+    },
+    {
+      "category": "AVM cross-check",
+      "detail": "Zestimate and Redfin Estimate, context only, never blended into comp math"
+    },
+    {
+      "category": "Condition inputs",
+      "detail": "Buyer walkthrough interview, Jul 8 2026"
+    }
+  ],
+  "caveats": [
+    "This is a valuation estimate for buyer decision support, not a USPAP licensed appraisal.",
+    "Baldwin County parcel and tax figures are search-sourced estimates; verify at the Revenue Commission.",
+    "Kitchen remodel spend is seller-reported and unverified; taken at half contribution until receipts are seen.",
+    "HVAC age is assumed neutral; a 15+ year system would move value down roughly $8-10K.",
+    "One comp price came from a search snippet (Tier 2) and could not be page-verified."
+  ]
+}

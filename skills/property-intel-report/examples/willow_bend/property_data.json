@@ -1,0 +1,737 @@
+{
+  "property": {
+    "address": "1090 Willow Bend Road",
+    "city": "Fairhope",
+    "state": "AL",
+    "zip": "36532",
+    "mls": "",
+    "parcel": "SYNTHETIC-EXAMPLE"
+  },
+  "title": {
+    "eyebrow": "PROPERTY INTELLIGENCE REPORT",
+    "tagline": "A buyer's diligence brief on a 1986 fixer-upper, 2.4 acres near a tidal creek. The case for, the case against, the all-in monthly cost, and a script for the negotiation. SYNTHETIC EXAMPLE \u2014 address, parcel, and MLS are fabricated; every number recomputes from its own inputs.",
+    "status_tag": "STATUS: PENDING \u00b7 BACKUP OFFER PLAY",
+    "prepared_label": "PREPARED MAY 2026"
+  },
+  "exec_summary": {
+    "headline": "The Good. The Bad. The Ugly.",
+    "good": [
+      "2.4 acres, no HOA, no deed restrictions visible \u2014 rare in Fairhope's price band.",
+      "Roof, septic, and HVAC all replaced 2022\u20132025; transferable termite bond.",
+      "Top-tier schools: J. Larry Newton 9/10, Fairhope Middle 10/10, Fairhope High 9/10.",
+      "Built 1986 \u2014 no federal lead-paint disclosure trigger.",
+      "Tax burden very low: $1,388 in 2025 with homestead.",
+      "FEMA Zone X confirmed for the corridor (per neighbor 1013 record).",
+      "Listed below tax-assessed value of $458,900."
+    ],
+    "bad": [
+      "Listing language explicitly says \"fixer-upper\" \u2014 buyer to verify everything.",
+      "Eleven price cuts over ten months: $519,900 \u2192 $389,000 (-25%).",
+      "Walk Score 0/100 \u2014 fully car-dependent rural location.",
+      "Septic system, not municipal sewer; well or rural water authority, not city water.",
+      "Likely Baldwin EMC for power; no city natural gas; no Fairhope city services.",
+      "Property is in unincorporated Baldwin County \u2014 Sheriff response, not Fairhope PD."
+    ],
+    "ugly": [
+      "Eastern Shore is a \"very high\" hurricane zone (Augurisk Storm Risk 73%).",
+      "April 2014 flood put Fish River 9 ft above base flood elevation.",
+      "Two prior listings withdrawn (2014\u201315 and mid-2025) \u2014 possible inspection failures.",
+      "Listing status conflict: Active on Zillow, Pending on a third-party feed.",
+      "All-in monthly carry at 20% down is ~$2,600 \u2014 verify against household budget.",
+      "Fairhope median sale up 4% YoY; insurance and tax escalation will compound."
+    ]
+  },
+  "at_a_glance": {
+    "title": "The Property in Numbers",
+    "stats": [
+      {
+        "big": "$389,000",
+        "label": "CURRENT LIST PRICE",
+        "sub": "Down from $519,900 (Jun 2025)",
+        "color": "coral"
+      },
+      {
+        "big": "2,875",
+        "label": "LIVING SQUARE FEET",
+        "sub": "$135 / sqft",
+        "color": "teal"
+      },
+      {
+        "big": "2.4",
+        "label": "ACRES",
+        "sub": "Irregular metes-and-bounds, 135 \u00d7 767",
+        "color": "green"
+      },
+      {
+        "big": "4 / 3",
+        "label": "BEDROOMS / BATHROOMS",
+        "sub": "2 main-level masters, slab foundation",
+        "color": "teal"
+      },
+      {
+        "big": "1986",
+        "label": "YEAR BUILT",
+        "sub": "Roof, septic, HVAC all 2022\u20132025",
+        "color": "green"
+      },
+      {
+        "big": "$1,388",
+        "label": "ANNUAL TAX (2025)",
+        "sub": "Homestead exemption applied",
+        "color": "coral"
+      }
+    ],
+    "source_note": "Sources: Zillow public records, Baldwin County Revenue Commission."
+  },
+  "monthly_carry": {
+    "title": "What You Actually Pay Each Month",
+    "subtitle": "Based on a $365,000 negotiated purchase, current Freddie Mac PMMS rate of 6.30% (May 1, 2026), and Eastern Shore insurance estimates. Numbers are estimates \u2014 get a real binder before contract.",
+    "scenarios": [
+      {
+        "label": "10% DOWN",
+        "color": "crimson",
+        "down": 36500,
+        "loan": 328500,
+        "pi": 2034,
+        "pmi": 192,
+        "tax": 145,
+        "ins": 350,
+        "wind": 225,
+        "flood": 80,
+        "total": 3026,
+        "note": "PMI required until 78% LTV."
+      },
+      {
+        "label": "20% DOWN",
+        "color": "coral",
+        "down": 73000,
+        "loan": 292000,
+        "pi": 1807,
+        "pmi": "\u2014",
+        "tax": 145,
+        "ins": 350,
+        "wind": 225,
+        "flood": 80,
+        "total": 2607,
+        "note": "Standard conforming. No PMI."
+      },
+      {
+        "label": "25% DOWN",
+        "color": "amber",
+        "down": 91250,
+        "loan": 273750,
+        "pi": 1694,
+        "pmi": "\u2014",
+        "tax": 145,
+        "ins": 350,
+        "wind": 225,
+        "flood": 80,
+        "total": 2494,
+        "note": "Best rate tier on most jumbo grids."
+      },
+      {
+        "label": "ALL CASH",
+        "color": "green",
+        "down": 365000,
+        "loan": "\u2014",
+        "pi": "\u2014",
+        "pmi": "\u2014",
+        "tax": 145,
+        "ins": 350,
+        "wind": 225,
+        "flood": 80,
+        "total": 800,
+        "note": "Carrying cost only. Strong offer leverage."
+      }
+    ],
+    "source_note": "Tax estimate uses post-sale reassessment to ~$1,750/yr (homestead exemption resets at sale). Insurance figures: Eastern Shore midpoints \u2014 actual varies by carrier and credit profile."
+  },
+  "price_history": {
+    "title": "11 Cuts, 308 Days, Minus 25%",
+    "subtitle": "From the initial $519,900 ask to today's $389,000 \u2014 11 reductions and a 25% haircut across two listing cycles. The pattern says either condition is worse than disclosed, prior buyers walked at inspection, or both. Either way, the seller has shown willingness to discount.",
+    "points": [
+      {
+        "label": "Jun 27\n2025",
+        "price": 519900
+      },
+      {
+        "label": "Jul 14",
+        "price": 499900
+      },
+      {
+        "label": "Aug 1",
+        "price": 489900
+      },
+      {
+        "label": "Aug 8",
+        "price": 479900
+      },
+      {
+        "label": "Oct 3",
+        "price": 469900
+      },
+      {
+        "label": "Oct 29",
+        "price": 449000
+      },
+      {
+        "label": "Jan 15\n2026",
+        "price": 429000
+      },
+      {
+        "label": "Feb 3",
+        "price": 424000
+      },
+      {
+        "label": "Feb 15",
+        "price": 419000
+      },
+      {
+        "label": "Feb 22",
+        "price": 409000
+      },
+      {
+        "label": "Mar 5",
+        "price": 399000
+      },
+      {
+        "label": "Mar 16",
+        "price": 389000
+      }
+    ],
+    "callouts_label": "THE NUMBERS",
+    "callouts": [
+      {
+        "big": "-$130,900",
+        "label": "Total reduction"
+      },
+      {
+        "big": "-25.2%",
+        "label": "Off original ask"
+      },
+      {
+        "big": "11",
+        "label": "Price cuts"
+      },
+      {
+        "big": "308 days",
+        "label": "On market this cycle"
+      },
+      {
+        "big": "2 cycles",
+        "label": "Listings withdrawn"
+      }
+    ],
+    "source_note": "Sources: Zillow MLS history; Baldwin Realtors; cross-checked with findgulfcoastproperties.com."
+  },
+  "comps": {
+    "title": "What the Subject Should Cost",
+    "subtitle": "Normalizing 5 nearby closed sales by price-per-square-foot exposes the real fair-value range. Apply the condition discount back, and the subject's $389K ask sits at the top of fair value \u2014 meaning negotiation leverage is real but bounded.",
+    "chart_title": "$ per sqft  \u00b7  Willow Bend Road corridor",
+    "entries": [
+      {
+        "label": "1013\n(2012, creek)",
+        "psf": 173
+      },
+      {
+        "label": "1102\n(2002)",
+        "psf": 195
+      },
+      {
+        "label": "1380\n(4.7 ac)",
+        "psf": 167
+      },
+      {
+        "label": "1525\n(5BR)",
+        "psf": 182
+      },
+      {
+        "label": "1615\n(creek)",
+        "psf": 163
+      },
+      {
+        "label": "Subject\n1090",
+        "psf": 135
+      }
+    ],
+    "fair_value_walk": [
+      {
+        "label": "Comp average (5 sales)",
+        "value": "$176 / sqft"
+      },
+      {
+        "label": "Strip waterfront premium",
+        "value": "-15%"
+      },
+      {
+        "label": "Strip newer-build premium",
+        "value": "-10%"
+      },
+      {
+        "label": "Adjusted base (1986, no water)",
+        "value": "$135 / sqft"
+      },
+      {
+        "label": "Apply fixer discount (-25%)",
+        "value": "$101 / sqft"
+      }
+    ],
+    "implied_range": "$290K \u2013 $387K",
+    "implied_takeaway": "Subject's $389K ask sits at the top of fair value ($387K). Opening offer of $350\u2013365K is supported by the analysis, not aggressive.",
+    "source_note": "All five comp $/sqft figures are recorded closed sales from county deed records, cross-checked against MLS sold history. No AVM estimate is used as a comp. Strips are applied sequentially (176 \u00d7 0.85 = 150 \u00d7 0.90 = 135), not summed. Adjustments reflect typical regional appraiser conventions."
+  },
+  "projection": {
+    "title": "What This Property Costs Over Time",
+    "subtitle": "Tax has grown 52% in 6 years (2019-2025) and Eastern Shore insurance is escalating ~7%/yr. The 'sticker' monthly carry today is not what you'll pay in year 5. Plan accordingly.",
+    "chart_title": "Monthly carry by component  \u00b7  $/month",
+    "years": [
+      {
+        "label": "Year 1\n2026",
+        "pi": 1807,
+        "tax": 145,
+        "ins": 655
+      },
+      {
+        "label": "Year 2",
+        "pi": 1807,
+        "tax": 154,
+        "ins": 701
+      },
+      {
+        "label": "Year 3",
+        "pi": 1807,
+        "tax": 163,
+        "ins": 750
+      },
+      {
+        "label": "Year 4",
+        "pi": 1807,
+        "tax": 173,
+        "ins": 802
+      },
+      {
+        "label": "Year 5\n2030",
+        "pi": 1807,
+        "tax": 183,
+        "ins": 858
+      }
+    ],
+    "year1_carry": 2607,
+    "year5_carry": 2848,
+    "delta_label": "+$241/mo",
+    "delta_sub": "by year 5  \u00b7  +9.2% nominal",
+    "cumulative_note": "Cumulative 5-yr extra cost over a flat baseline: $7,008 (sum of the four year-over-year deltas \u00d7 12).",
+    "source_note": "Assumes: 6% annual tax growth (trailing avg 2019-2025 was 8%), 7% insurance growth (Eastern Shore industry avg). P&I fixed at 6.30% 30-yr."
+  },
+  "schools": {
+    "title": "The Strongest Reason to Pay the Repair Premium",
+    "subtitle": "Baldwin County school assignments here put a buyer in the top decile of Alabama public schools \u2014 a primary driver of the property's resale floor regardless of condition.",
+    "list": [
+      {
+        "name": "J. Larry Newton School",
+        "grades": "PK \u2013 6",
+        "rating": "9",
+        "rating_sub": "/10 GreatSchools",
+        "distance": "2.4 mi",
+        "facts": "846 students  \u00b7  17:1 ratio  \u00b7  State 92/A",
+        "tagline": "A\u2212 on Niche",
+        "color": "green"
+      },
+      {
+        "name": "Fairhope Middle School",
+        "grades": "7 \u2013 8",
+        "rating": "10",
+        "rating_sub": "/10 GreatSchools",
+        "distance": "4.1 mi",
+        "facts": "Highest-rated middle school in 36532",
+        "tagline": "Top in area",
+        "color": "coral"
+      },
+      {
+        "name": "Fairhope High School",
+        "grades": "9 \u2013 12",
+        "rating": "9",
+        "rating_sub": "/10 GreatSchools",
+        "distance": "4.4 mi",
+        "facts": "Top-decile public high school in Alabama",
+        "tagline": "High Niche grade",
+        "color": "teal"
+      }
+    ],
+    "source_note": "Sources: GreatSchools.org; Niche K-12; Baldwin County Public Schools."
+  },
+  "climate": {
+    "title": "Climate & Hazard Exposure",
+    "subtitle": "Storm risk is the headline concern; flood is moderate on a Zone X parcel; wildfire and earthquake are non-issues here. These scores drive what insurance will cost \u2014 for a sourced premium range and a quote spec sheet, run property-insurance-brief on this address.",
+    "risks": [
+      {
+        "icon": "FaWind",
+        "label": "STORM (HURRICANE)",
+        "level": "73 / 100  \u00b7  SEVERE",
+        "color": "crimson",
+        "body": "Augurisk Storm Risk: 73% (severe). 58 named hurricanes since 1930. Sally 2020 caused widespread Eastern Shore damage. Expect 2-5% named-storm deductibles."
+      },
+      {
+        "icon": "FaWater",
+        "label": "FLOOD",
+        "level": "46 / 100  \u00b7  MODERATE",
+        "color": "amber",
+        "body": "Augurisk: 46% moderate. FEMA Map Service Center confirms Zone X at the parcel. Pull a FIRMette at closing to verify the home pad pad."
+      },
+      {
+        "icon": "FaTree",
+        "label": "WILDFIRE",
+        "level": "27 / 100  \u00b7  LOW",
+        "color": "green",
+        "body": "Augurisk: 27% low. First Street typically scores Eastern Shore Fire Factor 1-3. Coastal humidity and lawn cover keep risk minimal. Non-issue."
+      },
+      {
+        "icon": "FaShieldAlt",
+        "label": "RADON (EPA Zone 3)",
+        "level": "LOW",
+        "color": "green",
+        "body": "Baldwin is EPA Zone 3 (lowest tier). Average indoor levels under 2 pCi/L. A $50 test kit at inspection covers the diligence."
+      },
+      {
+        "icon": "FaBolt",
+        "label": "EARTHQUAKE",
+        "level": "15 / 100  \u00b7  LOW",
+        "color": "green",
+        "body": "Augurisk: 15% low. Coastal sedimentary plain, not karst limestone. Negligible seismic activity. Non-issue for inspection."
+      },
+      {
+        "icon": "FaFire",
+        "label": "LEAD / ASBESTOS",
+        "level": "LOW",
+        "color": "green",
+        "body": "Built 1986 \u2014 past lead-paint federal disclosure era. Minor asbestos risk in 1980s materials; AHERA inspection only if renovating."
+      }
+    ],
+    "source_note": "Sources: Augurisk Fairhope city profile, EPA Radon Zones, First Street Foundation, FEMA MSC."
+  },
+  "diligence": {
+    "title": "Itemized Pre-Closing Costs",
+    "subtitle": "Line-item reality of what you'll spend before contract close. Budget for the high end on this property.",
+    "groups": [
+      {
+        "category": "INSPECTIONS",
+        "color": "coral",
+        "rows": [
+          {
+            "item": "General home inspection",
+            "note": "Required baseline.",
+            "low": 400,
+            "high": 600
+          },
+          {
+            "item": "Septic tank pump + drainfield eval",
+            "note": "Independent of seller. Mandatory for this property.",
+            "low": 400,
+            "high": 700
+          },
+          {
+            "item": "Termite / WDO inspection",
+            "note": "Alabama-required at sale.",
+            "low": 100,
+            "high": 200
+          },
+          {
+            "item": "Water quality test (if well)",
+            "note": "Bacteria, nitrates, coliform, depth/flow.",
+            "low": 150,
+            "high": 300
+          },
+          {
+            "item": "Radon test",
+            "note": "$50 DIY kit. Low priority in EPA Zone 3.",
+            "low": 50,
+            "high": 150
+          },
+          {
+            "item": "Sewer scope",
+            "note": "N/A \u2014 septic system.",
+            "low": null,
+            "high": null
+          }
+        ]
+      },
+      {
+        "category": "STRUCTURAL & SURVEY",
+        "color": "teal",
+        "rows": [
+          {
+            "item": "Boundary survey",
+            "note": "Mandatory: irregular metes-and-bounds 135\u00d7767.",
+            "low": 1200,
+            "high": 2500
+          },
+          {
+            "item": "Roof Fortified inspection",
+            "note": "For potential insurance discount on 2022 roof.",
+            "low": 200,
+            "high": 400
+          },
+          {
+            "item": "4-point insurance inspection",
+            "note": "Common requirement for 1986 build.",
+            "low": 150,
+            "high": 300
+          },
+          {
+            "item": "Wind mitigation inspection",
+            "note": "Insurance discount on Eastern Shore.",
+            "low": 75,
+            "high": 150
+          }
+        ]
+      },
+      {
+        "category": "LENDER & TITLE",
+        "color": "green",
+        "rows": [
+          {
+            "item": "Appraisal (lender-required)",
+            "note": "Paid through lender, ordered after offer.",
+            "low": 500,
+            "high": 700
+          },
+          {
+            "item": "Title search & insurance",
+            "note": "Typically rolled into closing costs.",
+            "low": 1500,
+            "high": 2500
+          }
+        ]
+      }
+    ],
+    "total_low": 4725,
+    "total_high": 8500,
+    "source_note": "Plan for the high end. On a fixer-upper with two prior listing failures, every line above is non-negotiable."
+  },
+  "inventory": {
+    "title": "What Else $310K-$415K Buys in 36532",
+    "subtitle": "Before you over-anchor on this property, see what else is on the shelf at adjacent price points. The subject's space-per-dollar is the pitch \u2014 but the alternatives are newer and need less work.",
+    "subject": {
+      "address": "1090 Willow Bend Rd",
+      "price": "$389,000",
+      "bed_bath": "4 / 3",
+      "sqft": "2,875",
+      "lot": "2.4 ac",
+      "year": "1986",
+      "psf": "$135",
+      "note": "Fixer condition. 2.4 acres. No HOA. Top schools. Septic + well."
+    },
+    "alternatives": [
+      {
+        "address": "265 Royal Ln",
+        "price": "$415,000",
+        "bed_bath": "3 / 2",
+        "sqft": "2,162",
+        "psf": "$192",
+        "note": "Smaller, fewer beds, but newer condition. Closer to town."
+      },
+      {
+        "address": "21775 Landry Ln",
+        "price": "$365K est.",
+        "bed_bath": "4 / 3",
+        "sqft": "2,478",
+        "psf": "~$147",
+        "note": "Comparable beds/baths, less sqft. In Fairhope ZIP."
+      },
+      {
+        "address": "10311 Jacob Ct",
+        "price": "$332,500",
+        "bed_bath": "4 / 2",
+        "sqft": "1,918",
+        "psf": "$173",
+        "note": "Same beds, smaller footprint, lower price. Less land."
+      },
+      {
+        "address": "16267 Tigris Dr",
+        "price": "$310,000",
+        "bed_bath": "4 / 2",
+        "sqft": "1,504",
+        "psf": "$206",
+        "note": "Cheapest 4-bed in the area. Half the sqft. Likely tract home."
+      }
+    ],
+    "source_note": "Sources: Redfin Fairhope cheap-homes feed; Homes.com active listings; pulled at report date."
+  },
+  "red_flags": {
+    "title": "What to Resolve Before You Sign",
+    "items": [
+      {
+        "title": "Severe price-cut pattern",
+        "body": "11 reductions across two listing cycles and two withdrawals. Either condition issues caused inspection failures or the seller persistently overpriced. Order a top-shelf inspection before proceeding."
+      },
+      {
+        "title": "Self-disclosed fixer-upper",
+        "body": "MLS includes \"buyer to verify all information during due diligence\" language. Repairs may exceed obvious cosmetic scope. Budget for an unknown layer of deferred maintenance."
+      },
+      {
+        "title": "Septic system, not municipal sewer",
+        "body": "2022 upgrade is a positive but you must verify tank size, drainfield condition, Approval-for-Use permit on file, and absence of surfacing or soggy areas. Required: independent septic inspection."
+      },
+      {
+        "title": "Hurricane-zone insurance cost",
+        "body": "Augurisk Storm Risk 73%. Eastern Shore is \"very high\" hurricane risk. Expect $3,500\u2013$6,000+/yr for wind plus homeowners plus flood. Get a binder quote BEFORE removing the financing/inspection contingency."
+      },
+      {
+        "title": "Two prior failed listings",
+        "body": "Withdrawn 2014\u201315 and again mid-2025. Alabama is caveat emptor \u2014 the listing agent will not proactively disclose prior deals that fell through at inspection unless you ask. Ask anyway."
+      },
+      {
+        "title": "Tax escalation runway",
+        "body": "Property tax up 52% since 2019. Assessment will reset on sale. Plan for $2,800/mo by year 5 even at a fixed 6.30% loan rate. Eastern Shore insurance compounds the bleed."
+      }
+    ],
+    "footer_note": "These are the items that change the number. Nothing here substitutes for the inspection."
+  },
+  "scripts": {
+    "title": "Bring These Into the Negotiation",
+    "subtitle": "Three audiences, three lists. Print this slide and take it to the showing, the open house, and the inspection. Do not improvise \u2014 work the script.",
+    "agent": [
+      "This listing was withdrawn twice before the current cycle. What happened each time?",
+      "Eleven cuts in ten months \u2014 did any buyer go under contract and walk? Why?",
+      "What specific items led the seller to label this a fixer-upper?",
+      "Is the 2022 septic upgrade documented with an Approval-for-Use permit?",
+      "Is water private well or East Central Baldwin Water Authority?",
+      "Has the seller carried flood insurance? FEMA Special Flood Hazard Area?",
+      "Was the 2022 roof installed to Fortified standards? Certificate?",
+      "Open or closed code violations on file with Baldwin County?",
+      "Any easements, encroachments, or recorded restrictions?",
+      "Will the seller provide the CLUE report (5-yr claim history)?"
+    ],
+    "neighbors": [
+      "How long have you lived here? (gauges institutional memory)",
+      "The 2014 area flood \u2014 did 1090 take any water?",
+      "Hurricane Sally 2020 \u2014 what damage did the corridor see?",
+      "Road maintenance \u2014 county or private? Drainage after heavy rain?",
+      "Anyone had well water issues \u2014 quality, pressure, supply?",
+      "Septic problems on this stretch we should test for?",
+      "Any neighborhood issues \u2014 noise, drainage disputes, problem properties?",
+      "Wildlife and insects on this stretch of river?"
+    ],
+    "inspector": [
+      "Septic \u2014 verify 2022 upgrade, drainfield on a wooded 2.4-acre lot.",
+      "Roof \u2014 confirm 2022 install, evaluate Fortified retrofit eligibility.",
+      "HVAC \u2014 pull serial numbers, verify 2022 + 2025 install dates.",
+      "Foundation \u2014 slab on grade in 1986, look for settling/moisture.",
+      "Electrical \u2014 1986 panel may be Federal Pacific or Zinsco (recall items).",
+      "Plumbing \u2014 check for galvanized supply, polybutylene (1978\u201396).",
+      "Termite \u2014 verify transferable bond is current and valid.",
+      "Crawl spaces \u2014 moisture, vapor barriers, condition."
+    ],
+    "footer_note": "Print this slide. The questions you don't ask in writing are the issues you find at closing."
+  },
+  "action": {
+    "title": "A Phased Diligence Plan",
+    "phases": [
+      {
+        "title": "PRE-OFFER",
+        "time": "Under 24 hours",
+        "color": "teal",
+        "items": [
+          "Confirm listing status with the listing brokerage (listing brokerage). Active or contingent?",
+          "Pull FEMA FIRMette at msc.fema.gov for the parcel coordinates.",
+          "Pull Baldwin County GIS / Parcel Viewer record (parcel 4709310001070).",
+          "Run NSOPW.gov sex-offender search at the address.",
+          "Request the Alabama property disclosure form."
+        ]
+      },
+      {
+        "title": "AT OFFER",
+        "time": "1\u20133 days",
+        "color": "coral",
+        "items": [
+          "Get insurance binder quotes from at least 2 carriers: wind + HO + flood.",
+          "Order title commitment to identify easements, restrictions, liens.",
+          "Submit offer at $348K\u2013$364K with 10\u201314 day inspection contingency.",
+          "Request seller to order CLUE report (5\u20137 yr claim history).",
+          "Request seller-paid Fortified Roof inspection for the 2022 roof."
+        ]
+      },
+      {
+        "title": "INSPECTION",
+        "time": "10\u201314 days",
+        "color": "amber",
+        "items": [
+          "Hire 4 specialists per the diligence budget slide.",
+          "Add Alabama-required termite / WDO inspection.",
+          "Order water-quality test if private well. Independent boundary survey.",
+          "Pull permit history from Baldwin County Citizenserve portal.",
+          "Pull septic Approval-for-Use from Baldwin County Health."
+        ]
+      },
+      {
+        "title": "PRE-CLOSING",
+        "time": "Final week",
+        "color": "green",
+        "items": [
+          "Confirm seller delivers: termite bond transferred, septic permit, well test.",
+          "File for new homestead exemption at Revenue Commission within 30 days.",
+          "Set up utility transfers: Baldwin EMC, Solid Waste, internet, water.",
+          "Final walkthrough day-of-closing.",
+          "Allocate $4,725\u2013$8,500 for diligence per inspection budget slide."
+        ]
+      }
+    ]
+  },
+  "offer": {
+    "title": "The Number, The Walk-Away, The Upside",
+    "opening": "$348K \u2013 $364K",
+    "rationale_lines": [
+      "Fair value $290K-$387K from slide 6",
+      "(comp avg $176 \u2192 base $135 \u2192 -25% fixer).",
+      "Opening = $387K \u00d7 0.90 to \u00d7 0.94."
+    ],
+    "walk_away": [
+      "Septic inspection reveals failed drainfield ($15K\u2013$30K replacement).",
+      "Roof rejects Fortified eligibility AND shows hidden damage.",
+      "FEMA confirms Zone AE at the home pad without LOMA available.",
+      "Title shows undisclosed encumbrances."
+    ],
+    "reduce_further": [
+      "Inspection finds more than $25K in deferred maintenance not credited.",
+      "Septic system found undersized for 4BR.",
+      "CLUE report shows undisclosed wind or water claim.",
+      "Boundary survey reveals encroachment or easement issue."
+    ],
+    "go_to_ask": [
+      "FEMA confirms full Zone X classification.",
+      "Septic in great shape; permit on file.",
+      "Foundation clean; electrical updated to current code.",
+      "Competing offer materializes (verify, do not assume)."
+    ],
+    "bottom_line": "This is a value play, not a turnkey buy. Buy the lot and the schools \u2014 pay accordingly for the house."
+  },
+  "sources": {
+    "title": "Show Your Work",
+    "list": [
+      "Freddie Mac Primary Mortgage Market Survey (May 1, 2026)",
+      "Baldwin County Revenue Commissioner & GIS Parcel Viewer",
+      "Baldwin County Probate (Landmark WEB) \u2014 deeds and liens",
+      "Baldwin County Citizenserve portal \u2014 permits post-Nov 2020",
+      "Baldwin County Health Department \u2014 septic permits",
+      "FEMA Flood Map Service Center; AlabamaFlood.com",
+      "Augurisk Fairhope city profile \u2014 multi-hazard composite",
+      "First Street Foundation \u2014 climate factor scores",
+      "FCC National Broadband Map \u2014 internet availability",
+      "GreatSchools, Niche K-12 \u2014 school ratings",
+      "Zillow, Redfin, Homes.com \u2014 MLS history and AVMs",
+      "NeighborhoodScout \u2014 appreciation history",
+      "FEMA Map Service Center \u2014 parcel flood zone"
+    ],
+    "caveats": [
+      "SYNTHETIC EXAMPLE. Address, parcel ID, and MLS number are fabricated. Do not treat any figure here as real market data.",
+      "Monthly carry estimates use the Freddie Mac PMMS rate; your rate will differ by credit profile, lender, and points paid.",
+      "Insurance figures are orientation bands, not quotes. property-insurance-brief owns the sourced range and the coverage spec.",
+      "Tax projection assumes 6% annual growth; the parcel's trailing 6-yr average was 8%.",
+      "Flood zone is parcel-confirmed from the FEMA Map Service Center. Pull a FIRMette before close.",
+      "First Street and Augurisk are model outputs, not certainties.",
+      "Comp analysis applies typical appraiser adjustments to five recorded sales. property-appraisal owns the defensible value; the appraisal at contract is the only authoritative one.",
+      "Alabama is caveat emptor. Buyer's diligence, not seller's disclosure, is the operative protection.",
+      "Decision-support only. Not a substitute for a real estate attorney, survey, inspection, insurance binder, or title commitment."
+    ]
+  }
+}
