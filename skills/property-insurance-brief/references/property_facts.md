@@ -1,3 +1,10 @@
+<!-- SYNCED SHARED REFERENCE — DO NOT EDIT IN ISOLATION.
+     This file is duplicated byte-for-byte into all three skills
+     (property-intel-report, property-appraisal, property-insurance-brief) so
+     that each downloaded, self-contained .skill package can read it at runtime.
+     If you change one copy you MUST change all three identically.
+     CI enforces this via scripts/check-shared-refs.py. -->
+
 # Shared Property Facts Cache
 
 The three property skills (`property-intel-report`, `property-appraisal`, `property-insurance-brief`) research the same house. Without a cache they collect the same facts three times, spend 70-90 web calls on one property, and publish decks that contradict each other.

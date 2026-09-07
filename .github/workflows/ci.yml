@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  shared-refs:
+    name: Shared reference sync check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Assert synced shared references are byte-identical
+        run: python3 scripts/check-shared-refs.py
+
+  # NOTE: An example-build smoke test is intentionally omitted. The deck build
+  # scripts (skills/*/scripts/build_deck.js and build_spec_sheet.py) run inside
+  # Claude's execution environment and depend on packages that are not vendored
+  # or version-pinned in this repo (pptxgenjs, react, react-dom, sharp,
+  # react-icons; reportlab for the spec sheet), and the repo declares no build
+  # command (no package.json / requirements.txt / lockfile). Add per-skill build
+  # jobs here once a reproducible, pinned build command exists in the repo.

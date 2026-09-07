@@ -43,6 +43,16 @@ skills/
 
 Each skill folder contains its `SKILL.md` (the instructions Claude follows), reference docs (methodology, data sources, schemas, dated rate anchors), a build script that renders and validates the deliverable, and a fully synthetic worked example.
 
+### Synced shared reference
+
+Each skill ships its own copy of `references/property_facts.md` (the shared research-cache protocol) so a downloaded, self-contained `.skill` package can read it at runtime — a packaged skill cannot reach a repo-root shared file. The three copies are kept **byte-identical by hand**: if you edit one, edit all three the same way. CI enforces this with `scripts/check-shared-refs.py`, which you can also run locally:
+
+```
+python3 scripts/check-shared-refs.py
+```
+
+The other reference files (`data_schema.md`, `data_sources.md`, `rates_and_anchors.md`) intentionally differ per skill and are not synced.
+
 ## Honesty rules baked in
 
 - Every rate and anchor carries an `as_of` date; anything older than six months is re-verified or labeled stale.
