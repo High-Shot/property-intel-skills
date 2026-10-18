@@ -1,7 +1,7 @@
 <title>__TITLE__</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-/* Layout: headline tiles, then three working panels (carry, storm-day cash, value vs rebuild)
+/* Layout: headline tiles, the reconciliation note, then working panels (carry, repairs, storm-day cash, value vs rebuild)
    in one column on phones and two columns on desktop. Locked property-suite palette. */
 :root {
   --bg: #F3F6F8; --surface: #FFFFFF; --sunk: #EAF0F4; --ink: #132235; --muted: #586A7D; --hair: #D3DCE3;
@@ -113,6 +113,35 @@ input[type=range] { width: 100%; accent-color: var(--teal); margin: 4px 0; }
 #val-body, #ded-body { display: grid; gap: 16px; }
 .explain { font-size: 14px; border-left: 3px solid var(--teal); padding-left: 10px; color: var(--ink); max-width: 68ch; }
 
+/* reconciliation note */
+.note { background: var(--surface); border: 1px solid var(--hair); border-left: 4px solid var(--coral); border-radius: 10px; padding: 18px; display: grid; gap: 12px; }
+.note h2 { font-size: 20px; text-wrap: balance; }
+.note-items { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.note-item { display: grid; gap: 3px; align-content: start; min-width: 0; }
+.note-item .k { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.note-item.key .k { color: var(--coral); }
+.note-item p { margin: 0; font-size: 14.5px; max-width: 62ch; }
+
+/* repairs */
+.rtable { width: 100%; border-collapse: collapse; font-size: 14px; }
+.rtable th { text-align: left; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 700; padding: 0 8px 6px 0; border-bottom: 1px solid var(--hair); }
+.rtable td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
+.rtable td.n, .rtable th.n { text-align: right; white-space: nowrap; padding-right: 0; }
+.rtable .d { display: block; font-size: 12.5px; color: var(--muted); }
+.rtable tr.up td { color: var(--muted); }
+.tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 1px 6px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+.tag.wet { background: var(--sunk); color: var(--bad); }
+.tag.up { background: var(--sunk); color: var(--teal); }
+.rwrap { overflow-x: auto; }
+.seg { display: inline-flex; border: 1px solid var(--teal); border-radius: 999px; overflow: hidden; }
+.seg button { font: inherit; font-size: 13px; font-weight: 700; padding: 5px 12px; border: 0; background: transparent; color: var(--teal); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--teal); color: var(--surface); }
+.rctl { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.check { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+.check input { width: 17px; height: 17px; accent-color: var(--teal); }
+.fit { font-size: 14px; border-radius: 8px; padding: 10px 12px; background: var(--sunk); }
+.fit.ok b { color: var(--good); } .fit.no b { color: var(--bad); }
+
 details.src summary { cursor: pointer; font-weight: 700; color: var(--teal); }
 details.src ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--muted); display: grid; gap: 3px; }
 footer { color: var(--muted); font-size: 12.5px; display: grid; gap: 4px; }
@@ -129,6 +158,12 @@ footer { color: var(--muted); font-size: 12.5px; display: grid; gap: 4px; }
 
   <section class="tiles num" id="tiles" aria-live="polite"></section>
 
+  <section class="note" id="note" hidden>
+    <div class="eyebrow">What the three briefs say together</div>
+    <h2 id="note-h"></h2>
+    <div class="note-items" id="note-items"></div>
+  </section>
+
   <div class="panels">
     <section class="panel span2" id="carry-panel">
       <div class="panel-h">
@@ -141,15 +176,32 @@ footer { color: var(--muted); font-size: 12.5px; display: grid; gap: 4px; }
         <div class="ticks num" id="ticks"></div>
       </div>
       <div class="controls">
+        <div class="ctl"><label for="loan">Loan type</label>
+          <select id="loan"><option value="conv" selected>Conventional</option><option value="fha">FHA</option></select></div>
         <div class="ctl"><label for="down">Down payment</label>
           <select id="down"><option value="3.5">3.5%</option><option value="5">5%</option><option value="10">10%</option><option value="20" selected>20%</option><option value="25">25%</option><option value="cash">All cash</option></select></div>
         <div class="ctl"><label for="rate">Rate (30-yr fixed)</label><input type="number" id="rate" step="0.05" min="0" max="20"></div>
         <div class="ctl"><label for="term">Term</label><select id="term"><option value="30" selected>30 years</option><option value="15">15 years</option></select></div>
       </div>
+      <label class="check" id="fin-wrap" hidden><input type="checkbox" id="fin"> <span id="fin-label">Add repairs to the loan (renovation loan)</span></label>
       <div class="total num"><span class="sub">Estimated monthly total</span><span class="tv" id="total-out"></span></div>
       <div class="bar" id="bar" aria-hidden="true"></div>
       <div class="lines num" id="lines"></div>
       <div class="delta num" id="delta"></div>
+    </section>
+
+    <section class="panel span2" id="rep-panel" hidden>
+      <div class="panel-h">
+        <h2>Repairs before move-in</h2>
+        <span class="sub" id="rep-sub"></span>
+      </div>
+      <div class="rctl">
+        <div class="seg" role="group" aria-label="Repair scope"><button type="button" id="sc-min" aria-pressed="true">Minimum scope</button><button type="button" id="sc-full" aria-pressed="false">Full scope</button></div>
+        <label class="check"><input type="checkbox" id="upg"> Include upgrades</label>
+      </div>
+      <div class="rwrap"><table class="rtable num" id="rtable"></table></div>
+      <div class="total num"><span class="sub" id="rep-total-k">Estimated cost</span><span class="tv" id="rep-total"></span></div>
+      <div class="fit num" id="rep-fit"></div>
     </section>
 
     <section class="panel" id="ded-panel">
@@ -205,16 +257,23 @@ var F = /*__DATA__*/null;
   var price = $("price");
   price.min = pMin; price.max = pMax; price.value = pDefault;
   $("rate").value = F.rate_pct != null ? F.rate_pct : "";
+  if (F.buyer) {
+    if (F.buyer.loan_type === "fha" || F.buyer.loan_type === "conv") $("loan").value = F.buyer.loan_type;
+    var dp = String(F.buyer.down_pct);
+    if ([].some.call($("down").options, function (o) { return o.value === dp; })) $("down").value = dp;
+  }
 
   var marks = [];
   if (V) { marks.push([V.low, "Walk-away"]); marks.push([V.point, "Fair value"]); }
   if (list) marks.push([list, "List"]);
+  if (F.buyer && F.buyer.planned_offer && F.buyer.planned_offer >= pMin && F.buyer.planned_offer <= pMax) marks.push([F.buyer.planned_offer, "Your plan"]);
   function drawTicks() {
     var span = pMax - pMin;
     var lastPct = -100, row = 0;
+    var minPct = 84 / Math.max(240, $("ticks").clientWidth || 600) * 100; // ~84px between label centers
     $("ticks").innerHTML = marks.map(function (m) {
       var pct = (m[0] - pMin) / span * 100;
-      row = pct - lastPct < 22 ? 1 - row : 0; // drop a label to the second row when it would collide
+      row = pct - lastPct < minPct ? 1 - row : 0; // drop a label to the second row when it would collide
       lastPct = pct;
       var cls = pct < 12 ? "l" : pct > 88 ? "r" : "";
       return "<span class=\"" + cls + "\" style=\"left:" + pct.toFixed(2) + "%;top:" + (row * 26) + "px\"><b>" + kShort(m[0]) + "</b>" + m[1] + "</span>";
@@ -223,9 +282,11 @@ var F = /*__DATA__*/null;
   // keep labels apart when two marks sit close together
   marks.sort(function (a, b) { return a[0] - b[0]; });
 
+  var scope = "min", withUpg = false;
   function state() {
     var d = $("down").value;
-    return { price: +price.value, downPct: d === "cash" ? 100 : +d, cash: d === "cash", ratePct: parseFloat($("rate").value) || 0, years: +$("term").value };
+    var fin = F.repairs && $("fin").checked ? repairBudget(F, scope, withUpg).mid : 0;
+    return { price: +price.value, downPct: d === "cash" ? 100 : +d, cash: d === "cash", ratePct: parseFloat($("rate").value) || 0, years: +$("term").value, loanType: $("loan").value, financed: fin };
   }
 
   // ---------- carry ----------
@@ -238,7 +299,7 @@ var F = /*__DATA__*/null;
     var c = computeCarry(F, s);
     $("price-out").textContent = money(s.price);
     $("total-out").textContent = rangeMo(c.low, c.high);
-    var scaleMax = computeCarry(F, { price: pMax, downPct: s.downPct, cash: s.cash, ratePct: s.ratePct, years: s.years }).high || 1;
+    var scaleMax = computeCarry(F, { price: pMax, downPct: s.downPct, cash: s.cash, ratePct: s.ratePct, years: s.years, loanType: s.loanType, financed: s.financed }).high || 1;
     var segs = [
       ["pi", c.pi, 0], ["pmi", c.pmi, 0], ["tax", c.tax || 0, 0], ["hoa", c.hoa, 0],
       ["ins", c.insLo || 0, (c.insHi || 0) - (c.insLo || 0)], ["fl", c.flLo || 0, (c.flHi || 0) - (c.flLo || 0)]
@@ -256,8 +317,10 @@ var F = /*__DATA__*/null;
       var col = SEG.filter(function (x) { return x[0] === key; })[0][2];
       rows.push("<div><span class=\"sw\" style=\"background:var(" + col + ")\"></span><span>" + label + "</span><b>" + val + "</b>" + (src ? "<span class=\"src\">" + esc(src) + "</span>" : "") + "</div>");
     };
-    row("pi", "Principal & interest", c.loan ? mo(c.pi) : "$0 (cash)", c.loan ? money(c.loan) + " loan at " + s.ratePct.toFixed(2) + "%, " + s.years + " yrs. Rate: " + (F.rate_source || "entered") + (F.rate_date ? ", " + F.rate_date : "") : null);
-    if (c.pmi > 0) row("pmi", "PMI", mo(c.pmi), (F.pmi_rate * 100).toFixed(2) + "%/yr of loan while LTV is above 80% (intel report anchor, as of " + F.pmi_as_of + "). Drops off at 78% LTV.");
+    row("pi", "Principal & interest", c.loan ? mo(c.pi) : "$0 (cash)", c.loan ? money(c.loan) + " loan" + (c.fha ? " (incl. " + money(c.ufmip) + " upfront MIP)" : "") + (c.financed ? ", " + money(c.financed) + " of it repairs" : "") + " at " + s.ratePct.toFixed(2) + "%, " + s.years + " yrs. Rate: " + (F.rate_source || "entered") + (F.rate_date ? ", " + F.rate_date : "") : null);
+    if (c.pmi > 0) row("pmi", c.fha ? "FHA mortgage insurance" : "PMI", mo(c.pmi), c.fha
+      ? (c.mipRate * 100).toFixed(2) + "%/yr of the base loan, plus 1.75% upfront rolled into the loan (HUD, as of " + F.fha.as_of + "). " + (c.ltv > 0.9 ? "Lasts the life of the loan at this down payment." : "Lasts 11 years at 10%+ down.")
+      : (F.pmi_rate * 100).toFixed(2) + "%/yr of loan while LTV is above 80% (intel report anchor, as of " + F.pmi_as_of + "). Drops off at 78% LTV.");
     row("tax", "Property tax", c.tax != null ? mo(c.tax) : "not researched", c.tax != null ? "Post-sale estimate from the intel report; seller exemptions reset at sale. Held fixed across offer prices." : "Run property-intel-report to add it. The total excludes tax.");
     if (c.hoa) row("hoa", "HOA", mo(c.hoa), "From the listing.");
     row("ins", "Homeowners insurance", c.insLo != null ? rangeMo(c.insLo, c.insHi) : "not researched", c.insLo != null ? "Insurance brief range (" + money(F.premium_low) + "–" + money(F.premium_high) + "/yr), excl. flood. Not a quote." : "Run property-insurance-brief to add it. The total excludes insurance.");
@@ -265,15 +328,18 @@ var F = /*__DATA__*/null;
     $("lines").innerHTML = rows.join("");
 
     var notes = [];
+    if (c.fha && s.downPct < F.fha.min_down_pct) notes.push("FHA minimum is " + F.fha.min_down_pct + "% down, so this uses " + F.fha.min_down_pct + "%.");
+    if (c.overLimit) notes.push("<b>Base loan " + money(c.base) + " is above the county FHA limit of " + money(F.fha.loan_limit) + ".</b> FHA will not cover it; lower the price or financed repairs.");
+    else if (c.fha && F.fha.loan_limit) notes.push("Base loan " + money(c.base) + " is under the " + money(F.fha.loan_limit) + " county FHA limit.");
     if (list && s.price !== list) {
-      var cl = computeCarry(F, { price: list, downPct: s.downPct, cash: s.cash, ratePct: s.ratePct, years: s.years });
+      var cl = computeCarry(F, { price: list, downPct: s.downPct, cash: s.cash, ratePct: s.ratePct, years: s.years, loanType: s.loanType, financed: s.financed });
       var dm = cl.low - c.low;
       notes.push("This offer is " + money(Math.abs(list - s.price)) + (s.price < list ? " below" : " above") + " list (" + kShort(list) + "): <b>" + (dm >= 0 ? money(dm) + "/mo less" : money(-dm) + "/mo more") + "</b> than paying list" + (s.cash ? "." : ", and " + money(Math.abs(cl.down - c.down)) + (dm >= 0 ? " less" : " more") + " down payment."));
     }
     if (!s.cash) {
       var per10 = pmt(10000 * (1 - s.downPct / 100), s.ratePct, s.years);
       notes.push("Each $10K off the price saves about <b>" + money(per10) + "/mo</b> in principal and interest at this rate.");
-      notes.push("Down payment " + money(c.down) + (c.pmi > 0 ? "; PMI applies below 20% down." : "."));
+      notes.push("Down payment " + money(c.down) + (c.fha ? "." : c.pmi > 0 ? "; PMI applies below 20% down." : "."));
     } else notes.push("All cash: carry is tax and insurance only.");
     if (c.missing.length) notes.push("Missing from the total: " + c.missing.join(" and ") + ".");
     $("delta").innerHTML = notes.join(" ");
@@ -285,7 +351,8 @@ var F = /*__DATA__*/null;
     var t = [];
     t.push(V ? tile("Indicated value", money(V.point), kShort(V.low) + "–" + kShort(V.high) + " · " + V.confidence + " confidence" + (list ? " · list " + kShort(list) : ""))
       : tile("Indicated value", "Not run", "Run property-appraisal for the value number", true));
-    t.push(tile("Monthly at " + money(+price.value), rangeMo(c.low, c.high).replace("/mo", ""), (c.missing.length ? "Excludes " + c.missing.join(" and ") + " · " : "") + "per month, " + ($("down").value === "cash" ? "all cash" : $("down").value + "% down")));
+    t.push(tile("Monthly at " + money(+price.value), rangeMo(c.low, c.high).replace("/mo", ""), (c.missing.length ? "Excludes " + c.missing.join(" and ") + " · " : "") + "per month, " + ($("down").value === "cash" ? "all cash" : c.downPct + "% down" + (c.fha ? " FHA" : ""))));
+    if (F.repairs) { var rb = repairBudget(F, "min", false); t.push(tile("Repairs before move-in", kShort(rb.low) + "–" + kShort(rb.high), "Minimum scope, from your walkthrough")); }
     if (F.cov_a_est && F.wind_deductible_pct) t.push(tile("Wind deductible chosen", money(F.cov_a_est * F.wind_deductible_pct / 100), F.wind_deductible_pct + "% of " + kShort(F.cov_a_est) + " dwelling coverage" + (F.wind_deductible_default ? " · default, not chosen" : "")));
     else if (F.aop_deductible) t.push(tile("Deductible", money(F.aop_deductible), "Flat, all other perils"));
     else t.push(tile("Storm-day cash", "Not run", "Run property-insurance-brief for deductibles", true));
@@ -375,13 +442,58 @@ var F = /*__DATA__*/null;
     body.innerHTML = html;
   }
 
+  // ---------- reconciliation note ----------
+  function drawNote() {
+    if (!F.note) return;
+    $("note").hidden = false;
+    $("note-h").textContent = F.note.headline;
+    $("note-items").innerHTML = (F.note.items || []).map(function (it) {
+      return "<div class=\"note-item" + (it.key ? " key" : "") + "\"><div class=\"k\">" + esc(it.label) + "</div><p>" + esc(it.body) + "</p></div>";
+    }).join("");
+  }
+
+  // ---------- repairs ----------
+  function drawRepairs() {
+    if (!F.repairs) return;
+    $("rep-panel").hidden = false; $("fin-wrap").hidden = false;
+    var b = repairBudget(F, scope, withUpg);
+    $("rep-sub").textContent = (F.repairs.basis || "Cure-cost estimates from the appraisal brief.") + " Ranges until contractor bids come back.";
+    var hasFull = F.repairs.items.some(function (r) { return r.full_low != null; });
+    $("sc-full").disabled = !hasFull;
+    $("rtable").innerHTML = "<thead><tr><th>Item</th><th class=\"n\">Low</th><th class=\"n\">High</th></tr></thead><tbody>" +
+      b.rows.map(function (r) {
+        return "<tr" + (r.category === "upgrade" ? " class=\"up\"" : "") + "><td>" + esc(r.item) +
+          (r.moisture ? "<span class=\"tag wet\">moisture</span>" : "") + (r.category === "upgrade" ? "<span class=\"tag up\">upgrade</span>" : "") +
+          (r.detail ? "<span class=\"d\">" + esc(r.detail) + "</span>" : "") + "</td><td class=\"n\">" + money(r.low) + "</td><td class=\"n\">" + money(r.high) + "</td></tr>";
+      }).join("") + "</tbody>";
+    $("rep-total-k").textContent = "Estimated cost, " + (scope === "full" ? "full" : "minimum") + " scope" + (withUpg ? " with upgrades" : "");
+    $("rep-total").textContent = money(b.low) + "–" + money(b.high);
+    var s = state();
+    var per = s.cash ? 0 : pmt(b.mid * (1 - Math.max(s.downPct, s.loanType === "fha" ? F.fha.min_down_pct : 0) / 100) * (s.loanType === "fha" ? 1 + F.fha.ufmip_rate : 1), s.ratePct, s.years);
+    var fit = "<b>" + (b.fitsLimited ? "Fits" : "Over") + "</b> the FHA 203(k) Limited cap of " + money(b.cap) + " with a " + F.k203.contingency_pct + "% contingency (" + money(b.withContHigh) + " at the high end; lenders may require 10-20%). " +
+      (s.cash ? "" : "Financing the midpoint (" + money(b.mid) + ") adds about <b>" + money(per) + "/mo</b> in principal and interest at " + s.ratePct.toFixed(2) + "%. ") +
+      "The renovation loan also needs the seller to accept it; check the listing's financing terms.";
+    $("rep-fit").className = "fit num " + (b.fitsLimited ? "ok" : "no");
+    $("rep-fit").innerHTML = fit;
+    $("fin-label").textContent = "Add repairs to the loan (" + money(b.mid) + " midpoint, renovation loan)";
+  }
+  function setScope(v) { scope = v; $("sc-min").setAttribute("aria-pressed", v === "min"); $("sc-full").setAttribute("aria-pressed", v === "full"); drawRepairs(); render(); }
+
   // ---------- sources ----------
   $("sources").innerHTML = (F.sources || []).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") || "<li>No provenance recorded.</li>";
 
-  function render() { drawCarry(); drawTiles(); }
+  function render() { drawCarry(); drawTiles(); if (F.repairs) drawRepairs(); }
   price.addEventListener("input", render);
-  ["down", "rate", "term"].forEach(function (id) { $(id).addEventListener("input", render); $(id).addEventListener("change", render); });
+  if (F.repairs) {
+    $("sc-min").addEventListener("click", function () { setScope("min"); });
+    $("sc-full").addEventListener("click", function () { setScope("full"); });
+    $("upg").addEventListener("change", function () { withUpg = $("upg").checked; render(); });
+    $("fin").addEventListener("change", render);
+  }
+  ["loan", "down", "rate", "term"].forEach(function (id) { $(id).addEventListener("input", render); $(id).addEventListener("change", render); });
   drawTicks();
+  window.addEventListener("resize", drawTicks);
+  drawNote();
   render();
   drawDeductible(true);
   drawValue();

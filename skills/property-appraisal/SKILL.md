@@ -122,7 +122,8 @@ Slides 1 and 9 are dark marine. All others white.
 - Your interview questions were already folded into the dossier's single combined batch. Do not ask again. Read the answers from the conversation and proceed.
 - Write your headline outputs back to the cache before finishing so the reconciliation note can use them.
 - Deliver your own files normally. The orchestrator writes the reconciliation note; you do not.
-- Write `value` (point, low, high, confidence, method) back to `property_facts.json`. The insurance skill uses it for context and the reconciliation note compares it against the intel deck's comp screen.
+- Write `value` (point, low, high, confidence, method) back to `property_facts.json`.
+- When the buyer walked it, also write `repairs`: one item per repair at cure cost (low/high, no 1.25 multiplier; that lives in the condition slide), fuller scope in `full_low`/`full_high` when the buyer named one, `moisture: true` on rot or water items, and optional improvements as `category: "upgrade"`. The dashboard's repair panel and 203(k) check read it. The insurance skill uses it for context and the reconciliation note compares it against the intel deck's comp screen.
 
 ## Design System
 

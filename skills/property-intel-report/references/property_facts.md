@@ -23,7 +23,7 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
 
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "normalized_address": "1090 willow bend rd fairhope al 36532",
   "written_by": ["property-intel-report"],
   "last_updated": "YYYY-MM-DD",
@@ -56,7 +56,7 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
     "median_psf": 0, "psf_yoy_pct": 0,
     "months_inventory": null, "median_dom": null,
     "mortgage_rate_pct": 0, "rate_source": "", "rate_date": "",
-    "tax_annual_post_sale": 0, "hoa_monthly": 0
+    "tax_annual_post_sale": 0, "hoa_monthly": 0, "fha_loan_limit": 0
   },
 
   "comps": [
@@ -82,6 +82,28 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
     "from_skill": "", "as_of": ""
   },
 
+  "repairs": {
+    "from_skill": "property-appraisal", "as_of": "YYYY-MM-DD",
+    "basis": "From the buyer's walkthrough, priced at cure cost",
+    "items": [
+      {"item": "", "detail": "", "low": 0, "high": 0,
+       "full_low": null, "full_high": null, "full_detail": "",
+       "moisture": false, "category": "repair | upgrade"}
+    ]
+  },
+
+  "buyer": {
+    "financing": {"loan_type": "fha | conv", "down_pct": 0, "planned_offer": null}
+  },
+
+  "dossier": {
+    "note": {
+      "headline": "",
+      "items": [{"label": "", "body": "", "key": false}],
+      "as_of": "YYYY-MM-DD"
+    }
+  },
+
   "provenance": {
     "structure.year_built": {"source": "Baldwin Co. Revenue Commission",
                              "tier": 1, "retrieved": "YYYY-MM-DD"}
@@ -101,8 +123,14 @@ The dossier dashboard (`property-intel-report` Stage 5) reads only this cache. E
 | `market.tax_annual_post_sale`, `market.hoa_monthly` | `property-intel-report` | Carry, held fixed across offer prices |
 | `value.point`, `value.low`, `value.high`, `value.confidence` | `property-appraisal` | Value tile, slider marks, value vs rebuild |
 | `insurance.*` numeric fields above | `property-insurance-brief` | Carry insurance range, deductible dollars, Cov A |
+| `market.fha_loan_limit` | `property-intel-report` | FHA county-limit check in the carry and repair panels |
+| `repairs.*` | `property-appraisal` | Repair panel: minimum vs full scope, upgrades, 203(k) Limited fit, financed-repair carry. Written only when the buyer walked it |
+| `buyer.financing` | `property-intel-report` (from the conversation) | Default loan type, down payment, and a "your plan" mark on the price slider. Omit when the buyer has not said |
+| `dossier.note` | `property-intel-report` Stage 5 | The reconciliation note, rendered at the top of the dashboard |
 
 A missing field shows as a notice in its panel, never as a guess.
+
+`repairs.items[].low/high` are cure costs before the appraisal's moisture multiplier; the appraisal's condition slide carries the value impact, this block carries the cash the buyer spends. `full_low`/`full_high` hold the fuller scope when the buyer named one ("downstairs carpet at least, ideally all"). `category: "upgrade"` marks optional improvements (a kitchen refresh) that the panel shows only when the buyer ticks "include upgrades."
 
 ## Source tiers
 

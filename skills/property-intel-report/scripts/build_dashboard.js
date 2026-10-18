@@ -18,10 +18,17 @@
 
 const fs = require("fs");
 const path = require("path");
-const { pmt, computeCarry, deductibleTable } = require("./dashboard_math.js");
+const { pmt, fhaAnnualMip, computeCarry, repairBudget, deductibleTable } = require("./dashboard_math.js");
 
 // PMI anchor, mirrored from references/rates_and_anchors.md. Update both together.
 const PMI_RATE = 0.007, PMI_AS_OF = "2026-08";
+// FHA and 203(k) anchors, mirrored from references/rates_and_anchors.md §1a. Update both together.
+const FHA = {
+  as_of: "2026-10", min_down_pct: 3.5, ufmip_rate: 0.0175, mip_high_balance: 726200,
+  mip30_gt95: 0.0055, mip30_le95: 0.0050, mip30_high_gt95: 0.0075, mip30_high_le95: 0.0070,
+  mip15_gt90: 0.0040, mip15_le90: 0.0015, mip15_high_gt90: 0.0065, mip15_high_le90: 0.0040
+};
+const K203 = { as_of: "2026-10", limited_cap: 75000, contingency_pct: 10 };
 
 // ===== args =====
 const argv = process.argv.slice(2);
@@ -70,6 +77,11 @@ const F = {
   wind_deductible_options_pct: INS && Array.isArray(INS.wind_deductible_options_pct) ? INS.wind_deductible_options_pct : [],
   aop_deductible: INS ? num(INS.aop_deductible) : null,
   wind_note: INS ? INS.wind_note || null : null,
+  fha: Object.assign({}, FHA, { loan_limit: num(M.fha_loan_limit) }),
+  k203: K203,
+  repairs: PF.repairs && Array.isArray(PF.repairs.items) && PF.repairs.items.length ? PF.repairs : null,
+  buyer: PF.buyer && PF.buyer.financing ? PF.buyer.financing : null,
+  note: PF.dossier && PF.dossier.note && PF.dossier.note.headline ? PF.dossier.note : null,
   sources: Object.entries(PF.provenance || {}).map(([k, v]) =>
     `${k}: ${v.source}${v.tier ? ` (Tier ${v.tier})` : ""}${v.retrieved ? `, retrieved ${v.retrieved}` : ""}`)
 };
@@ -101,6 +113,30 @@ else {
 const daysOld = s => (s && /^\d{4}-\d{2}-\d{2}/.test(s)) ? (today - new Date(s.slice(0, 10) + "T12:00:00Z")) / 864e5 : null;
 const rateRetrieved = (PF.provenance || {})["market.mortgage_rate_pct"]?.retrieved || M.rate_date;
 const rAge = daysOld(rateRetrieved);
+// ===== validation: repairs, FHA, reconciliation note =====
+if (F.repairs) {
+  if (F.repairs.from_skill && F.repairs.from_skill !== "property-appraisal") warn(`repairs.from_skill is "${F.repairs.from_skill}"; property-appraisal owns the condition and repair list`);
+  F.repairs.items.forEach((r, i) => {
+    if (!(typeof r.low === "number" && typeof r.high === "number" && r.low <= r.high)) warn(`repairs.items[${i}] "${r.item}" needs numeric low <= high`);
+    if (r.full_low != null && !(r.full_low >= r.low && r.full_high >= r.full_low)) warn(`repairs.items[${i}] "${r.item}" full scope must be >= minimum scope`);
+  });
+}
+if (F.repairs && F.fha.loan_limit == null) warn("market.fha_loan_limit missing; the FHA and 203(k) checks cannot test the county limit");
+const fhaAgeMo = (() => { const [y, m] = FHA.as_of.split("-").map(Number); return (today.getUTCFullYear() - y) * 12 + (today.getUTCMonth() + 1 - m); })();
+if (fhaAgeMo > 6) warn(`FHA/203(k) anchors are ${fhaAgeMo} months old (as_of ${FHA.as_of}); re-verify in rates_and_anchors.md and here`);
+if (opt.appraisal && opt.insurance && opt.intel && !F.note) warn("dossier.note missing: a full dossier run must write the reconciliation note into property_facts.json so the dashboard carries it");
+if (F.note) {
+  const items = F.note.items || [];
+  if (items.length < 1 || items.length > 5) warn(`dossier.note has ${items.length} items; write 3-4 (carry vs premium, list vs value, value vs Cov A, the one thing)`);
+  const words = [F.note.headline].concat(items.map(x => `${x.label} ${x.body}`)).join(" ").split(/\s+/).length;
+  if (words > 230) warn(`dossier.note runs ${words} words; keep it under ~200`);
+  if (F.value) {
+    const pv = `$${Math.round(F.value.point / 1000)}K`, pvFull = `$${F.value.point.toLocaleString("en-US")}`;
+    const blob = JSON.stringify(F.note);
+    if (!blob.includes(pv) && !blob.includes(pvFull)) warn(`dossier.note never states the appraisal point (${pv}); the note must reconcile against it`);
+  }
+
+}
 if (rAge == null) warn("mortgage rate has no retrieval date; cannot tell if it is current");
 else if (rAge > 7) warn(`mortgage rate is ${Math.round(rAge)} days old; market fields go stale after 7 days. Re-pull Freddie Mac PMMS`);
 const [py, pm] = PMI_AS_OF.split("-").map(Number);
@@ -160,6 +196,11 @@ if (F.value && F.rate_pct != null) {
   const hand = pmt(F.value.point * 0.8, F.rate_pct, 30);
   if (Math.abs(c.pi - hand) > 0.5) warn("internal: carry P&I does not match the payment formula");
   if (!(c.low <= c.high)) warn("internal: carry low exceeds high");
+  const f = computeCarry(F, { price: F.value.point, downPct: 3.5, cash: false, ratePct: F.rate_pct, years: 30, loanType: "fha", financed: 0 });
+  const fBase = F.value.point - Math.round(F.value.point * 0.035);
+  if (Math.abs(f.pi - pmt(fBase + Math.round(fBase * FHA.ufmip_rate), F.rate_pct, 30)) > 0.5) warn("internal: FHA P&I does not match base + upfront MIP");
+  if (Math.abs(f.pmi - fBase * FHA.mip30_gt95 / 12) > 0.5) warn("internal: FHA annual MIP does not match the 96.5% LTV tier");
+  if (F.repairs) { const rb = repairBudget(F, "min", false); if (!(rb.low <= rb.high)) warn("internal: repair budget low exceeds high"); }
 }
 if (F.cov_a_est && F.wind_deductible_options_pct.length) deductibleTable(F, {});
 
@@ -169,7 +210,7 @@ const escHtml = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt
 page = page
   .replace("__TITLE__", escHtml(`${F.address} Dossier`))
   .replace("/*__DATA__*/null", () => JSON.stringify(F).replace(/</g, "\\u003c"))
-  .replace("/*__MATH__*/", () => [pmt, computeCarry, deductibleTable].map(f => f.toString()).join("\n"));
+  .replace("/*__MATH__*/", () => [pmt, fhaAnnualMip, computeCarry, repairBudget, deductibleTable].map(f => f.toString()).join("\n"));
 
 if (!flags.has("--fragment")) {
   let head = "";

@@ -17,6 +17,21 @@ Last full review: **2026-08**.
 | PMI default | 0.70%/yr of loan balance, LTV > 80% | 2026-08 | Annually. Range 0.30%–1.00% by credit tier. Mirrored in `scripts/build_dashboard.js` (`PMI_RATE`, `PMI_AS_OF`); change both together |
 | PMI auto-termination | 78% LTV (Homeowners Protection Act of 1998) | statutory | Only on a change in federal law |
 
+### 1a. FHA and renovation loans
+
+| Anchor | Value | as_of | Verify |
+|---|---|---|---|
+| FHA minimum down | 3.5% | 2026-10 | Annually |
+| FHA upfront MIP | 1.75% of base loan, financed | 2026-10 | Annually (HUD mortgagee letters) |
+| FHA annual MIP, 30-yr, base ≤ $726,200 | 0.55% at LTV > 95%; 0.50% at ≤ 95% | 2026-10 | Annually. Bankrate, Sep 2026 |
+| FHA annual MIP, 30-yr, base > $726,200 | 0.75% / 0.70% | 2026-10 | Annually |
+| FHA annual MIP, 15-yr | 0.40% at LTV > 90%, 0.15% at ≤ 90% (high balance 0.65% / 0.40%, simplified) | 2026-10 | Annually |
+| FHA county loan limit | Research per county every run; write to `market.fha_loan_limit` | — | Every run |
+| 203(k) Limited repair cap | $75,000 | 2026-10 | Annually |
+| Renovation contingency shown | 10% (lenders may require 10-20%) | 2026-10 | Per lender |
+
+All of §1a is mirrored in `scripts/build_dashboard.js` (`FHA`, `K203`). Change both together; the builder warns when its copy is older than six months.
+
 The per-$100K payment shortcut in `calculations.md` §1 spans 5.00%–7.50%. **If the current PMMS rate falls outside that band, do not extrapolate from the table — compute PMT directly from the formula.** The table is a sanity check, not the method.
 
 ---

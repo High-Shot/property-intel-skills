@@ -18,30 +18,65 @@ function pmt(principal, ratePct, years) {
   return r === 0 ? principal / n : principal * r / (1 - Math.pow(1 + r, -n));
 }
 
-// F: dashboard facts (see build_dashboard.js). s: { price, downPct, ratePct, years, cash }.
+// FHA annual MIP rate (decimal) by term and LTV. Base loans above F.fha.mip_high_balance use the higher tier.
+function fhaAnnualMip(F, ltv, years, base) {
+  var m = F.fha, hi = base > m.mip_high_balance;
+  if (years > 15) return ltv > 0.95 ? (hi ? m.mip30_high_gt95 : m.mip30_gt95) : (hi ? m.mip30_high_le95 : m.mip30_le95);
+  return ltv > 0.90 ? (hi ? m.mip15_high_gt90 : m.mip15_gt90) : (hi ? m.mip15_high_le90 : m.mip15_le90);
+}
+
+// F: dashboard facts (see build_dashboard.js).
+// s: { price, downPct, ratePct, years, cash, loanType: "conv"|"fha", financed: repair dollars added to the loan }.
+// Down payment is taken on price + financed repairs, the way renovation loans size the base.
 function computeCarry(F, s) {
-  var down = s.cash ? s.price : Math.round(s.price * s.downPct / 100);
-  var loan = Math.max(0, s.price - down);
+  var financed = s.cash ? 0 : (s.financed || 0);
+  var cost = s.price + financed;
+  var fha = !s.cash && s.loanType === "fha";
+  var downPct = fha ? Math.max(s.downPct, F.fha.min_down_pct) : s.downPct;
+  var down = s.cash ? s.price : Math.round(cost * downPct / 100);
+  var base = Math.max(0, cost - down);
+  var ufmip = fha ? Math.round(base * F.fha.ufmip_rate) : 0;
+  var loan = base + ufmip;
   var pi = pmt(loan, s.ratePct, s.years);
-  var ltv = s.price ? loan / s.price : 0;
-  var pmi = ltv > 0.8 ? loan * F.pmi_rate / 12 : 0;
+  var ltv = cost ? base / cost : 0;
+  var mipRate = fha ? fhaAnnualMip(F, ltv, s.years, base) : 0;
+  var mi = fha ? base * mipRate / 12 : (ltv > 0.8 ? base * F.pmi_rate / 12 : 0);
   var tax = F.tax_annual != null ? F.tax_annual / 12 : null;
   var hoa = F.hoa_monthly || 0;
   var insLo = F.premium_low != null ? F.premium_low / 12 : null;
   var insHi = F.premium_high != null ? F.premium_high / 12 : null;
   var flLo = F.flood_premium_low != null ? F.flood_premium_low / 12 : null;
   var flHi = F.flood_premium_high != null ? F.flood_premium_high / 12 : null;
-  var fixed = pi + pmi + (tax || 0) + hoa;
+  var fixed = pi + mi + (tax || 0) + hoa;
   var missing = [];
   if (tax == null) missing.push("tax");
   if (insLo == null) missing.push("insurance");
   return {
-    down: down, loan: loan, ltv: ltv, pi: pi, pmi: pmi, tax: tax, hoa: hoa,
+    down: down, downPct: downPct, base: base, ufmip: ufmip, loan: loan, ltv: ltv, financed: financed,
+    fha: fha, mipRate: mipRate, overLimit: fha && F.fha.loan_limit ? base > F.fha.loan_limit : false,
+    pi: pi, pmi: mi, tax: tax, hoa: hoa,
     insLo: insLo, insHi: insHi, flLo: flLo, flHi: flHi,
     low: fixed + (insLo || 0) + (flLo || 0),
     high: fixed + (insHi || 0) + (flHi || 0),
     missing: missing
   };
+}
+
+// Repair budget from the appraisal's walkthrough list. scope: "min" | "full". withUpgrades: include upgrade items.
+// Full scope uses each item's full_low/full_high when present, else its low/high.
+function repairBudget(F, scope, withUpgrades) {
+  var items = ((F.repairs && F.repairs.items) || []).filter(function (r) { return r.category !== "upgrade" || withUpgrades; });
+  var lo = 0, hi = 0;
+  var rows = items.map(function (r) {
+    var full = scope === "full" && r.full_low != null;
+    var a = full ? r.full_low : r.low, b = full ? r.full_high : r.high;
+    lo += a; hi += b;
+    return { item: r.item, detail: full ? (r.full_detail || r.detail) : r.detail, low: a, high: b, category: r.category || "repair", moisture: !!r.moisture };
+  });
+  var cont = F.k203.contingency_pct / 100;
+  var withContHi = Math.round(hi * (1 + cont));
+  return { rows: rows, low: lo, high: hi, mid: Math.round((lo + hi) / 2), withContHigh: withContHi,
+    fitsLimited: withContHi <= F.k203.limited_cap, cap: F.k203.limited_cap };
 }
 
 // Wind deductible options in dollars. quotes: optional { pct: annualPremium } typed by the buyer.
@@ -64,4 +99,4 @@ function deductibleTable(F, quotes) {
   return { options: opts, base: base };
 }
 
-module.exports = { pmt, computeCarry, deductibleTable };
+module.exports = { pmt, fhaAnnualMip, computeCarry, repairBudget, deductibleTable };

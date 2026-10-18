@@ -127,6 +127,9 @@ After both siblings finish, build one interactive page from the cache. It carrie
 - **Monthly carry vs offer price.** A slider from below the walk-away ceiling to list, with down payment, rate, and term controls. P&I, PMI, and tax compute live; homeowners and flood insurance show as the insurance brief's range, never a point.
 - **Storm-day cash.** Each wind deductible option in dollars (percentage × Cov A). The buyer can type real quoted premiums to see the annual savings and how many years of savings one claim erases, and their post-closing cash to check whether it covers the chosen deductible.
 - **Market value vs rebuild cost.** The appraisal's value range and the insurance brief's Cov A on one scale, with a one-line explanation of why they differ.
+- **Loan type.** Conventional (PMI) or FHA (1.75% upfront MIP financed, annual MIP by LTV and term, county loan limit check). Write `market.fha_loan_limit` in Stage 2, and `buyer.financing` when the buyer has said how they will finance; it sets the defaults and marks their planned offer on the slider.
+- **Repairs before move-in.** Present when the appraisal wrote a `repairs` block from a walkthrough: minimum vs full scope, optional upgrades, the 203(k) Limited fit with contingency, and what financing the repairs adds per month. A checkbox adds them to the carry.
+- **The reconciliation note**, at the top of the page (below).
 
 ```bash
 node <skill_path>/scripts/build_dashboard.js property_facts.json <address>_dossier.html \
@@ -149,6 +152,8 @@ Deliver all the files together (this deck, the appraisal deck and its comp explo
 - **The one thing that changes the decision.** One sentence. Not a summary of the three decks — the single finding that most moves the buy/walk call.
 
 Keep the note under 200 words. The decks carry the detail.
+
+**Write the note into the cache, not just the chat.** Put it in `property_facts.json` as `dossier.note` (`headline`, 3-4 `items` with `label` and `body`, `key: true` on the one-thing item) before building the dashboard, so it ships at the top of the page the buyer keeps and shares. The builder warns on a full dossier run without it, when it runs long, and when it cites a value that is not the appraisal's point. The chat reply can then be a short pointer to it.
 
 If a sibling skill fails or is unavailable, deliver what you have, say which piece is missing and why, and give the user the one-line command to run it separately. Never hold a finished deck hostage to an unfinished one.
 
