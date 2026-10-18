@@ -11,6 +11,8 @@ Mirrors the 9 slides. Fill every field. Numbers are raw (no $ or commas); the bu
     "beds": 4, "baths": 2.5, "sqft": 2350,
     "lot_acres": 0.42, "year_built": 1998,
     "parcel_id": "05-46-03-...",                // or "unavailable"
+    "lat": 30.60412, "lng": -87.90388,          // optional; explorer map only, see data_sources.md § Coordinates
+    "geo_source": "County GIS parcel centroid",  // optional, names where the coordinates came from
     "report_date": "<Month D, YYYY>"   // generated from the run date, never hardcoded
   },
 
@@ -45,12 +47,22 @@ Mirrors the 9 slides. Fill every field. Numbers are raw (no $ or commas); the bu
       "sqft": 2280,
       "ppsf": 182,                               // sold_price / sqft, rounded
       "distance_mi": 0.4,
+      "lat": 30.60823, "lng": -87.89912,         // optional; must agree with distance_mi or the explorer warns
       "source": "Redfin sold page (MLS)",
       "source_tier": 1,                          // 1 or 2 only — never 3
       "key_diffs": "Similar age; smaller lot; original kitchen",
       "net_adjustment": 12000,                   // signed number
       "adjusted_value": 427000,
       "weight": 0.30                             // all weights sum to 1.0
+    }
+  ],
+
+  "screened_out": [                             // EXPLORER ONLY, optional, 0-8 entries
+    {
+      "address": "910 Example Ridge Rd",
+      "sold_price": 512000, "sold_date": "<Mon YYYY>", "sqft": 3150, "distance_mi": 0.8,
+      "lat": 30.6084, "lng": -87.8915,          // optional
+      "reason": "3,150 sq ft is 34% above the subject; outside the ±25% size screen"   // required
     }
   ],
 
@@ -129,6 +141,9 @@ Mirrors the 9 slides. Fill every field. Numbers are raw (no $ or commas); the bu
 - `point_value` should equal `base_indicated_value + condition_total` (rounded to nearest $1,000). If they differ, the build script prints a warning.
 - `range_low`/`range_high` must bracket `point_value` per the confidence rubric widths.
 - Max 5 comps, max 8 condition adjustments, max 8 schedule rows — layout limits.
+- `lat`/`lng` are optional everywhere. Supply them for the subject and every comp, or the explorer shows a notice where the map would be. Partial coordinates count as none.
+- `screened_out[].reason` is required for every entry. A dropped sale without a reason reads as a hidden comp.
+- The explorer recomputes value from `adjusted_value` and `weight` only. If those do not reproduce `base_indicated_value` and `point_value` within $1,000, the explorer builder warns; fix the grid, not the explorer.
 
 ## Thin-comp path
 

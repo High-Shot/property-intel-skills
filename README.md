@@ -5,7 +5,7 @@ Three Claude skills that turn a street address into decision-ready documents for
 | Skill | Question it answers | Output |
 |---|---|---|
 | **property-intel-report** | What am I buying and what could go wrong? | 16-slide PowerPoint: all-in monthly carry, normalized comps, 5-year cost projection, climate risk, inspection budget, red flags, offer strategy, question scripts |
-| **property-appraisal** | What is it worth? | 9-slide valuation brief: comp grid, adjustment schedule, condition adjustments, reconciliation, AVM cross-check, value-vs-list verdict |
+| **property-appraisal** | What is it worth? | 9-slide valuation brief: comp grid, adjustment schedule, condition adjustments, reconciliation, AVM cross-check, value-vs-list verdict, plus an interactive comp explorer |
 | **property-insurance-brief** | How do I insure it and what will it cost? | 11-slide coverage brief plus a one-page PDF quote spec sheet you hand to three agents so every quote prices the identical spec |
 
 The three skills work as a family. `property-intel-report` is the front door; ask for "the full workup" and it runs all three in sequence, sharing research through a common `property_facts.json` cache so the same house is only researched once and the three documents never contradict each other.

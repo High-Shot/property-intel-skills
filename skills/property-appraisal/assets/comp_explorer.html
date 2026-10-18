@@ -1,0 +1,465 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: summary rail beside map + strip on desktop; stacked summary-first on phones.
+   Palette and faces are the property suite's locked design system. */
+:root {
+  --bg: #F3F6F8;
+  --surface: #FFFFFF;
+  --sunk: #EAF0F4;
+  --ink: #132235;
+  --muted: #586A7D;
+  --hair: #D3DCE3;
+  --marine: #0A2540;
+  --teal: #1C7293;
+  --coral: #E36414;
+  --good: #2A9D8F;
+  --bad: #B23A48;
+  --warn: #A8861A;
+  --pin-off: #A7B4C0;
+  --band: rgba(28,114,147,0.14);
+  --font-h: Georgia, "Times New Roman", serif;
+  --font-b: Calibri, Carlito, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-n: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #081626; --surface: #0E2236; --sunk: #13304A; --ink: #E3EBF2; --muted: #93A7BA;
+    --hair: #20405E; --marine: #CFE0EE; --teal: #5BB0CF; --coral: #F2873F; --good: #4CC2B3;
+    --bad: #E06A78; --warn: #D9B544; --pin-off: #4C6178; --band: rgba(91,176,207,0.18);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #081626; --surface: #0E2236; --sunk: #13304A; --ink: #E3EBF2; --muted: #93A7BA;
+  --hair: #20405E; --marine: #CFE0EE; --teal: #5BB0CF; --coral: #F2873F; --good: #4CC2B3;
+  --bad: #E06A78; --warn: #D9B544; --pin-off: #4C6178; --band: rgba(91,176,207,0.18);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-b); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
+.num { font-variant-numeric: tabular-nums; }
+.eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral); }
+h1 { font-family: var(--font-h); font-size: clamp(24px, 4vw, 34px); line-height: 1.12; margin: 4px 0 2px; color: var(--marine); text-wrap: balance; }
+h2 { font-family: var(--font-h); font-size: 19px; margin: 0; color: var(--marine); }
+.sub { color: var(--muted); font-size: 14px; }
+header.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--muted); font-size: 13.5px; }
+.facts b { color: var(--ink); font-weight: 600; }
+
+.grid { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 960px) { .grid { grid-template-columns: minmax(0, 1fr) 340px; } .rail { order: 2; } .main { order: 1; } }
+.main, .rail { display: grid; gap: 20px; align-content: start; min-width: 0; }
+@media (min-width: 960px) { .rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); } }
+
+.panel { background: var(--surface); border: 1px solid var(--hair); border-radius: 10px; padding: 18px; min-width: 0; }
+.panel-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+
+/* Summary rail */
+.value-label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.value { font-family: var(--font-h); font-size: 40px; font-weight: 700; color: var(--marine); line-height: 1.05; margin: 4px 0 2px; }
+.range { color: var(--muted); font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
+.chip { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; border: 1px solid currentColor; letter-spacing: 0.02em; }
+.chip.High { color: var(--good); } .chip.Medium { color: var(--warn); } .chip.Low { color: var(--bad); }
+.chip.count { color: var(--teal); }
+.chip.v-below { color: var(--good); } .chip.v-at { color: var(--teal); } .chip.v-above { color: var(--warn); } .chip.v-sig { color: var(--bad); }
+.walk { display: grid; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hair); font-size: 14px; }
+.walk div { display: flex; justify-content: space-between; gap: 10px; }
+.walk .tot { border-top: 1px solid var(--marine); padding-top: 6px; font-weight: 700; color: var(--marine); }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.stat { background: var(--sunk); border-radius: 8px; padding: 8px 10px; }
+.stat .k { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.stat .v { font-size: 16px; font-weight: 700; color: var(--ink); }
+.listline { margin-top: 12px; font-size: 14px; color: var(--ink); }
+.note { margin-top: 12px; font-size: 13px; color: var(--muted); border-left: 3px solid var(--warn); padding-left: 10px; }
+.note[hidden] { display: none; }
+button.reset {
+  margin-top: 14px; width: 100%; font: inherit; font-weight: 700; font-size: 14px; padding: 9px 12px; border-radius: 8px;
+  border: 1px solid var(--teal); background: transparent; color: var(--teal); cursor: pointer;
+}
+button.reset:disabled { opacity: 0.45; cursor: default; }
+button.reset:not(:disabled):hover { background: var(--band); }
+:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+
+/* Map */
+.map-box { width: 100%; max-width: 100%; }
+svg { display: block; width: 100%; height: auto; }
+.ring { fill: none; stroke: var(--hair); stroke-width: 1; stroke-dasharray: 3 4; }
+.ring-label { fill: var(--muted); font-size: 10px; font-family: var(--font-b); }
+.axis { stroke: var(--hair); stroke-width: 1; }
+.pin { cursor: pointer; }
+.pin circle { stroke: var(--surface); stroke-width: 2; }
+.pin.on circle { fill: var(--teal); }
+.pin.off circle { fill: var(--pin-off); }
+.pin text.n { fill: #FFFFFF; font-size: 11px; font-weight: 700; font-family: var(--font-b); pointer-events: none; }
+.pin text.lbl { fill: var(--ink); font-size: 10.5px; font-weight: 700; font-family: var(--font-b); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+.pin.off text.lbl { fill: var(--muted); }
+.pin.sel circle { stroke: var(--coral); stroke-width: 3; }
+.subject path { fill: var(--coral); stroke: var(--surface); stroke-width: 2; }
+.subject text { fill: var(--coral); font-size: 11px; font-weight: 700; font-family: var(--font-b); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+.screened circle { fill: none; stroke: var(--pin-off); stroke-width: 1.5; stroke-dasharray: 2 2; }
+.north { fill: var(--muted); font-size: 10px; font-weight: 700; font-family: var(--font-b); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.nomap { color: var(--muted); font-size: 14px; padding: 18px; background: var(--sunk); border-radius: 8px; }
+
+/* Strip plot */
+.strip .tick { fill: var(--muted); font-size: 10.5px; font-family: var(--font-b); }
+.strip .grid-l { stroke: var(--hair); stroke-width: 1; }
+.strip .band { fill: var(--band); }
+.strip .dot.on { fill: var(--teal); stroke: var(--surface); stroke-width: 1.5; }
+.strip .dot.off { fill: none; stroke: var(--pin-off); stroke-width: 1.5; }
+.strip .dot-n { fill: #FFFFFF; font-size: 9px; font-weight: 700; font-family: var(--font-b); pointer-events: none; }
+.strip .pt { stroke: var(--marine); stroke-width: 2.5; }
+.strip .lst { stroke: var(--coral); stroke-width: 2; stroke-dasharray: 5 3; }
+.strip .pt-l { fill: var(--marine); font-size: 11px; font-weight: 700; font-family: var(--font-b); }
+.strip .lst-l { fill: var(--coral); font-size: 11px; font-weight: 700; font-family: var(--font-b); }
+
+/* Comp cards */
+.comps { display: grid; gap: 10px; }
+.comp {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: start;
+  border: 1px solid var(--hair); border-radius: 9px; padding: 12px 14px; background: var(--surface);
+}
+.comp.off { background: var(--sunk); }
+.comp.off .c-main, .comp.off .c-val { opacity: 0.6; }
+.comp.sel { border-color: var(--coral); box-shadow: 0 0 0 1px var(--coral); }
+.comp input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--teal); cursor: pointer; }
+.c-addr { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.badge { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--teal); color: #FFFFFF; font-size: 11.5px; font-weight: 700; }
+.comp.off .badge { background: var(--pin-off); }
+.tier { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; border: 1px solid currentColor; }
+.tier.t1 { color: var(--good); } .tier.t2 { color: var(--warn); }
+.c-meta { color: var(--muted); font-size: 13px; }
+.c-diffs { font-size: 13px; color: var(--ink); margin-top: 2px; }
+.c-src { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.c-val { text-align: right; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.c-val .adj { font-family: var(--font-h); font-size: 18px; font-weight: 700; color: var(--marine); }
+.c-val .net.pos { color: var(--good); } .c-val .net.neg { color: var(--bad); }
+.c-val .wt { font-weight: 700; color: var(--ink); }
+@media (max-width: 520px) {
+  .comp { grid-template-columns: auto minmax(0, 1fr); }
+  .c-val { grid-column: 2; text-align: left; white-space: normal; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+  .value { font-size: 34px; }
+}
+.screen-list { display: grid; gap: 6px; font-size: 13.5px; }
+.screen-list > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 8px 0; border-top: 1px solid var(--hair); }
+.screen-list .why { color: var(--muted); font-size: 12.5px; }
+a { color: var(--teal); }
+footer { color: var(--muted); font-size: 12.5px; display: grid; gap: 4px; }
+@media (prefers-reduced-motion: no-preference) { .value, .comp, .pin circle { transition: all 160ms ease; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Comp Explorer</div>
+      <h1 id="addr"></h1>
+      <div class="sub" id="csz"></div>
+    </div>
+    <div class="facts" id="facts"></div>
+  </header>
+
+  <div class="grid">
+    <aside class="rail">
+      <section class="panel" aria-live="polite">
+        <div class="value-label">Indicated value</div>
+        <div class="value num" id="v-point"></div>
+        <div class="range num" id="v-range"></div>
+        <div class="chips" id="v-chips"></div>
+        <div class="listline num" id="v-list"></div>
+        <div class="walk num" id="v-walk"></div>
+        <div class="stats num" id="v-stats"></div>
+        <div class="note" id="v-note" hidden></div>
+        <button class="reset" id="reset" type="button" disabled>Reset to the deck's comps</button>
+      </section>
+    </aside>
+
+    <div class="main">
+      <section class="panel">
+        <div class="panel-h">
+          <h2>Where the comps sit</h2>
+          <span class="sub">Tap a pin to find its card</span>
+        </div>
+        <div class="map-box" id="map"></div>
+        <div class="legend" id="legend"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-h">
+          <h2>Adjusted $/sq ft</h2>
+          <span class="sub">Each comp's adjusted value ÷ subject living area</span>
+        </div>
+        <div class="strip" id="strip"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-h">
+          <h2>Comparable sales</h2>
+          <span class="sub">Uncheck a comp to see the value without it</span>
+        </div>
+        <div class="comps" id="comps"></div>
+      </section>
+
+      <section class="panel" id="screened-panel" hidden>
+        <div class="panel-h">
+          <h2>Screened out</h2>
+          <span class="sub">Sales reviewed and dropped, with the reason</span>
+        </div>
+        <div class="screen-list" id="screened"></div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <div>Valuation estimate for buyer decision support. Not a licensed (USPAP) appraisal.</div>
+    <div id="foot-note"></div>
+  </footer>
+</div>
+
+<script>
+var D = /*__DATA__*/null;
+/*__MATH__*/
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var money = function (n) { return (n < 0 ? "−$" : "$") + Math.abs(Math.round(n)).toLocaleString("en-US"); };
+  var signed = function (n) { return (n >= 0 ? "+$" : "−$") + Math.abs(Math.round(n)).toLocaleString("en-US"); };
+  var kShort = function (n) { return n >= 1e6 ? "$" + (n / 1e6).toFixed(2).replace(/0$/, "") + "M" : "$" + Math.round(n / 1000) + "K"; };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var SVGNS = "http://www.w3.org/2000/svg";
+
+  var inc = D.comps.map(function () { return true; });
+  var selected = -1;
+
+  // ---------- static header ----------
+  $("addr").textContent = D.address;
+  $("csz").textContent = D.city_state_zip + (D.report_date ? " · Prepared " + D.report_date : "");
+  var f = [];
+  if (D.list_price) f.push("List <b class=\"num\">" + money(D.list_price) + "</b>");
+  f.push("<b class=\"num\">" + D.subject_sqft.toLocaleString("en-US") + "</b> sq ft");
+  if (D.beds) f.push("<b>" + D.beds + "</b> bd / <b>" + D.baths + "</b> ba");
+  if (D.year_built) f.push("Built <b>" + D.year_built + "</b>");
+  $("facts").innerHTML = f.map(function (x) { return "<span>" + x + "</span>"; }).join("");
+  $("foot-note").textContent = "The deck's value uses all " + D.comps.length + " comps shown here. Unchecking comps tests how much the number depends on each sale; it does not replace the reconciliation in the deck.";
+
+  // ---------- map geometry (local miles, north up) ----------
+  var hasGeo = D.lat != null && D.lng != null && D.comps.every(function (c) { return c.lat != null && c.lng != null; });
+  var MAP = null;
+  if (hasGeo) {
+    var cos0 = Math.cos(D.lat * Math.PI / 180);
+    var toXY = function (lat, lng) { return { x: (lng - D.lng) * 69.172 * cos0, y: (lat - D.lat) * 69.0 }; };
+    var pts = D.comps.map(function (c) { return toXY(c.lat, c.lng); });
+    var spts = (D.screened_out || []).filter(function (s) { return s.lat != null && s.lng != null; })
+      .map(function (s) { var p = toXY(s.lat, s.lng); p.s = s; return p; });
+    var maxR = Math.max.apply(null, pts.concat(spts).map(function (p) { return Math.hypot(p.x, p.y); }).concat([0.1]));
+    var steps = [0.25, 0.5, 1, 2, 3, 5, 10];
+    var ringStep = steps.find(function (s) { return maxR / s <= 3; }) || 10;
+    var nRings = Math.max(1, Math.ceil(maxR / ringStep));
+    MAP = { pts: pts, spts: spts, ringStep: ringStep, nRings: nRings, outer: nRings * ringStep };
+  }
+
+  function drawMap(r) {
+    var box = $("map");
+    if (!MAP) {
+      box.innerHTML = "<div class=\"nomap\">Coordinates were not recorded for every comp, so the map is off. Distances from the subject appear on each card.</div>";
+      $("legend").innerHTML = "";
+      return;
+    }
+    var W = Math.max(300, Math.min(760, Math.round(box.clientWidth || 640))), H = W < 520 ? W : Math.round(W * 0.6), cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 28;
+    var s = R / MAP.outer;
+    var svg = "<svg viewBox=\"0 0 " + W + " " + H + "\" role=\"img\" aria-label=\"Comp locations relative to the subject, north up\">";
+    for (var k = 1; k <= MAP.nRings; k++) {
+      var rr = k * MAP.ringStep * s;
+      svg += "<circle class=\"ring\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"" + rr.toFixed(1) + "\"/>";
+      svg += "<text class=\"ring-label\" x=\"" + (cx + 4) + "\" y=\"" + (cy - rr + 12).toFixed(1) + "\">" + (k * MAP.ringStep) + " mi</text>";
+    }
+    svg += "<line class=\"axis\" x1=\"" + cx + "\" y1=\"" + (cy - R) + "\" x2=\"" + cx + "\" y2=\"" + (cy + R) + "\"/>";
+    svg += "<line class=\"axis\" x1=\"" + (cx - R) + "\" y1=\"" + cy + "\" x2=\"" + (cx + R) + "\" y2=\"" + cy + "\"/>";
+    svg += "<text class=\"north\" x=\"" + (W - 26) + "\" y=\"22\" text-anchor=\"middle\">N</text>";
+    svg += "<path d=\"M" + (W - 26) + " 26 l-5 12 l5 -3 l5 3 z\" fill=\"var(--muted)\"/>";
+    MAP.spts.forEach(function (p) {
+      svg += "<g class=\"screened\"><title>" + esc(p.s.address + ": screened out. " + (p.s.reason || "")) + "</title><circle cx=\"" + (cx + p.x * s).toFixed(1) + "\" cy=\"" + (cy - p.y * s).toFixed(1) + "\" r=\"6\"/></g>";
+    });
+    svg += "<g class=\"subject\"><path d=\"M" + cx + " " + (cy - 11) + " l9 11 l-9 11 l-9 -11 z\"/><text x=\"" + (cx + 13) + "\" y=\"" + (cy + 4) + "\">Subject</text></g>";
+    MAP.pts.forEach(function (p, i) {
+      var x = cx + p.x * s, y = cy - p.y * s;
+      var right = x < W - 90;
+      var cls = "pin " + (inc[i] ? "on" : "off") + (selected === i ? " sel" : "");
+      svg += "<g class=\"" + cls + "\" data-i=\"" + i + "\" tabindex=\"0\" role=\"button\" aria-label=\"Comp " + (i + 1) + ", " + esc(D.comps[i].address) + "\">";
+      svg += "<circle cx=\"" + x.toFixed(1) + "\" cy=\"" + y.toFixed(1) + "\" r=\"11\"/>";
+      svg += "<text class=\"n\" x=\"" + x.toFixed(1) + "\" y=\"" + (y + 4).toFixed(1) + "\" text-anchor=\"middle\">" + (i + 1) + "</text>";
+      svg += "<text class=\"lbl\" x=\"" + (right ? x + 15 : x - 15).toFixed(1) + "\" y=\"" + (y + 4).toFixed(1) + "\" text-anchor=\"" + (right ? "start" : "end") + "\">" + kShort(D.comps[i].adjusted_value) + " adj.</text>";
+      svg += "</g>";
+    });
+    svg += "</svg>";
+    box.innerHTML = svg;
+    box.querySelectorAll(".pin").forEach(function (g) {
+      var go = function () { focusComp(+g.getAttribute("data-i")); };
+      g.addEventListener("click", go);
+      g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    });
+    var leg = "<span><i style=\"background:var(--teal)\"></i>Included comp</span><span><i style=\"background:var(--pin-off)\"></i>Excluded</span><span><i style=\"background:var(--coral);border-radius:2px\"></i>Subject</span>";
+    if (MAP.spts.length) leg += "<span><i style=\"border:1.5px dashed var(--pin-off)\"></i>Screened out</span>";
+    leg += "<span>Rings every " + MAP.ringStep + " mi</span>";
+    $("legend").innerHTML = leg;
+  }
+
+  // ---------- strip plot ----------
+  function niceStep(span) {
+    var raw = span / 5, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var n = raw / mag;
+    return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * mag;
+  }
+  function drawStrip(r) {
+    var sq = D.subject_sqft;
+    var vals = D.comps.map(function (c) { return c.adjusted_value / sq; });
+    var all = vals.concat([r.low / sq, r.high / sq]);
+    if (D.list_price) all.push(D.list_price / sq);
+    var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
+    var pad = Math.max((hi - lo) * 0.12, 4);
+    var step = niceStep(hi - lo + 2 * pad);
+    var a = Math.floor((lo - pad) / step) * step, b = Math.ceil((hi + pad) / step) * step;
+    var W = Math.max(300, Math.min(760, Math.round($("strip").clientWidth || 640))), H = 150, L = 16, Rr = 16, top = 30, y0 = 92;
+    var X = function (v) { return L + (v - a) / (b - a) * (W - L - Rr); };
+    var svg = "<svg viewBox=\"0 0 " + W + " " + H + "\" role=\"img\" aria-label=\"Adjusted price per square foot for each comp, with the value range, point value and list price\">";
+    for (var t = a; t <= b + 1e-9; t += step) {
+      var x = X(t);
+      svg += "<line class=\"grid-l\" x1=\"" + x.toFixed(1) + "\" y1=\"" + top + "\" x2=\"" + x.toFixed(1) + "\" y2=\"" + (y0 + 22) + "\"/>";
+      svg += "<text class=\"tick\" x=\"" + x.toFixed(1) + "\" y=\"" + (y0 + 38) + "\" text-anchor=\"middle\">$" + Math.round(t) + "</text>";
+    }
+    var bx1 = X(r.low / sq), bx2 = X(r.high / sq);
+    svg += "<rect class=\"band\" x=\"" + bx1.toFixed(1) + "\" y=\"" + top + "\" width=\"" + (bx2 - bx1).toFixed(1) + "\" height=\"" + (y0 + 22 - top) + "\" rx=\"3\"/>";
+    var px = X(r.point / sq);
+    svg += "<line class=\"pt\" x1=\"" + px.toFixed(1) + "\" y1=\"" + top + "\" x2=\"" + px.toFixed(1) + "\" y2=\"" + (y0 + 22) + "\"/>";
+    var lx = D.list_price ? X(D.list_price / sq) : null;
+    // keep the two top labels apart
+    var ptAnchor = "middle", lstAnchor = "middle";
+    if (lx !== null && Math.abs(lx - px) < 110) { if (lx > px) { ptAnchor = "end"; lstAnchor = "start"; } else { ptAnchor = "start"; lstAnchor = "end"; } }
+    var clampX = function (x, anchor) { return anchor === "middle" ? Math.min(Math.max(x, 60), W - 60) : x; };
+    svg += "<text class=\"pt-l\" x=\"" + clampX(px + (ptAnchor === "end" ? -4 : ptAnchor === "start" ? 4 : 0), ptAnchor).toFixed(1) + "\" y=\"" + (top - 10) + "\" text-anchor=\"" + ptAnchor + "\">Point $" + Math.round(r.point / sq) + "</text>";
+    if (lx !== null) {
+      svg += "<line class=\"lst\" x1=\"" + lx.toFixed(1) + "\" y1=\"" + top + "\" x2=\"" + lx.toFixed(1) + "\" y2=\"" + (y0 + 22) + "\"/>";
+      svg += "<text class=\"lst-l\" x=\"" + clampX(lx + (lstAnchor === "end" ? -4 : lstAnchor === "start" ? 4 : 0), lstAnchor).toFixed(1) + "\" y=\"" + (top - 10) + "\" text-anchor=\"" + lstAnchor + "\">List $" + Math.round(D.list_price / sq) + "</text>";
+    }
+    // dots, nudged vertically when two land close together
+    var order = vals.map(function (v, i) { return i; }).sort(function (i, j) { return vals[i] - vals[j]; });
+    var lastX = -1e9, lane = 0;
+    order.forEach(function (i) {
+      var x = X(vals[i]);
+      lane = (x - lastX < 20) ? (lane + 1) % 3 : 0;
+      lastX = x;
+      var y = y0 - lane * 22;
+      svg += "<g><title>" + esc("Comp " + (i + 1) + ": $" + Math.round(vals[i]) + "/sq ft adjusted") + "</title>";
+      svg += "<circle class=\"dot " + (inc[i] ? "on" : "off") + "\" cx=\"" + x.toFixed(1) + "\" cy=\"" + y + "\" r=\"9\"/>";
+      if (inc[i]) svg += "<text class=\"dot-n\" x=\"" + x.toFixed(1) + "\" y=\"" + (y + 3) + "\" text-anchor=\"middle\">" + (i + 1) + "</text>";
+      svg += "</g>";
+    });
+    svg += "</svg>";
+    $("strip").innerHTML = svg;
+  }
+
+  // ---------- comp cards ----------
+  function drawCards(r) {
+    var html = D.comps.map(function (c, i) {
+      var on = inc[i];
+      var net = c.net_adjustment;
+      var osm = (c.lat != null && c.lng != null) ? " · <a href=\"https://www.openstreetmap.org/?mlat=" + c.lat + "&amp;mlon=" + c.lng + "#map=17/" + c.lat + "/" + c.lng + "\" target=\"_blank\" rel=\"noopener\">map</a>" : "";
+      return "<div class=\"comp " + (on ? "on" : "off") + (selected === i ? " sel" : "") + "\" id=\"comp-" + i + "\">" +
+        "<input type=\"checkbox\" id=\"inc-" + i + "\" data-i=\"" + i + "\"" + (on ? " checked" : "") + " aria-label=\"Include comp " + (i + 1) + "\">" +
+        "<div class=\"c-main\"><label for=\"inc-" + i + "\" class=\"c-addr\"><span class=\"badge\">" + (i + 1) + "</span>" + esc(c.address) +
+        " <span class=\"tier t" + c.source_tier + "\">T" + c.source_tier + "</span></label>" +
+        "<div class=\"c-meta num\">Sold " + money(c.sold_price) + " · " + esc(c.sold_date) + " · " + c.sqft.toLocaleString("en-US") + " sq ft · $" + c.ppsf + "/sq ft · " + c.distance_mi + " mi" + osm + "</div>" +
+        (c.key_diffs ? "<div class=\"c-diffs\">" + esc(c.key_diffs) + "</div>" : "") +
+        "<div class=\"c-src\">" + esc(c.source) + "</div></div>" +
+        "<div class=\"c-val num\"><div class=\"adj\">" + money(c.adjusted_value) + "</div>" +
+        "<div class=\"net " + (net >= 0 ? "pos" : "neg") + "\">" + signed(net) + " net adj.</div>" +
+        "<div>weight <span class=\"wt\">" + (on ? Math.round(r.weights[i] * 100) + "%" : "out") + "</span></div></div>" +
+        "</div>";
+    }).join("");
+    $("comps").innerHTML = html;
+    $("comps").querySelectorAll("input[type=checkbox]").forEach(function (cb) {
+      cb.addEventListener("change", function () { inc[+cb.getAttribute("data-i")] = cb.checked; render(); });
+    });
+  }
+
+  function drawScreened() {
+    var s = D.screened_out || [];
+    if (!s.length) return;
+    $("screened-panel").hidden = false;
+    $("screened").innerHTML = s.map(function (x) {
+      return "<div><div><b>" + esc(x.address) + "</b><div class=\"why\">" + esc(x.reason) + "</div></div><div class=\"num\">" +
+        (x.sold_price ? money(x.sold_price) : "") + (x.sold_date ? "<div class=\"why\">" + esc(x.sold_date) + "</div>" : "") + "</div></div>";
+    }).join("");
+  }
+
+  // ---------- summary ----------
+  function drawSummary(r) {
+    if (r.empty) {
+      $("v-point").textContent = "—";
+      $("v-range").textContent = "Select at least one comp.";
+      $("v-chips").innerHTML = "<span class=\"chip count\">0 of " + r.total + " comps</span>";
+      $("v-list").textContent = ""; $("v-walk").innerHTML = ""; $("v-stats").innerHTML = "";
+      $("v-note").hidden = true;
+      return;
+    }
+    $("v-point").textContent = money(r.point);
+    $("v-range").textContent = money(r.low) + " to " + money(r.high);
+    var vcls = { "Priced below value": "v-below", "Priced at value": "v-at", "Priced above value": "v-above", "Significantly overpriced": "v-sig" };
+    var chips = "<span class=\"chip " + r.confidence + "\">" + r.confidence + " confidence</span>" +
+      "<span class=\"chip count\">" + r.included + " of " + r.total + " comps</span>";
+    if (r.verdict) chips += "<span class=\"chip " + vcls[r.verdict] + "\">" + r.verdict + "</span>";
+    $("v-chips").innerHTML = chips;
+    if (D.list_price) {
+      var d = D.list_price - r.point;
+      var p = Math.abs(d / D.list_price * 100).toFixed(1);
+      $("v-list").textContent = Math.abs(d) < 500 ? "List matches the point value." :
+        "List is " + kShort(Math.abs(d)) + " (" + p + "%) " + (d > 0 ? "above" : "below") + " the point value.";
+    } else $("v-list").textContent = "Off-market: no list price to compare.";
+    $("v-walk").innerHTML =
+      "<div><span>Weighted comp value</span><span>" + money(r.base) + "</span></div>" +
+      "<div><span>Condition adjustments</span><span>" + signed(D.condition_total) + "</span></div>" +
+      "<div class=\"tot\"><span>Point value</span><span>" + money(r.point) + "</span></div>";
+    var avm = (D.avm_checks || []).map(function (a) { return a.value; });
+    $("v-stats").innerHTML =
+      "<div class=\"stat\"><div class=\"k\">Median</div><div class=\"v\">$" + Math.round(r.medianAdjPsf) + "</div></div>" +
+      "<div class=\"stat\"><div class=\"k\">Mean</div><div class=\"v\">$" + Math.round(r.meanAdjPsf) + "</div></div>" +
+      "<div class=\"stat\"><div class=\"k\">AVM band</div><div class=\"v\">" + (avm.length ? kShort(Math.min.apply(null, avm)) + "–" + kShort(Math.max.apply(null, avm)) : "—") + "</div></div>";
+    var notes = [];
+    if (!r.isDefault) notes.push("Deck value " + money(D.value_conclusion.point_value) + " uses all " + r.total + " comps. This view is " + signed(r.point - D.value_conclusion.point_value) + " from it.");
+    if (r.thin) notes.push("Fewer than 3 comps: confidence is Low and the range widens to at least ±15%.");
+    else if (r.confidenceDropped) notes.push("Confidence drops because the remaining comps no longer meet the rubric's count or Tier 1 requirement.");
+    $("v-note").hidden = !notes.length;
+    $("v-note").textContent = notes.join(" ");
+  }
+
+  function focusComp(i) {
+    selected = i;
+    render();
+    var el = $("comp-" + i);
+    if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+  }
+
+  function render() {
+    var r = computeValue(D, inc);
+    drawSummary(r);
+    drawMap(r);
+    drawStrip(r.empty ? computeValue(D, D.comps.map(function () { return true; })) : r);
+    drawCards(r.empty ? { weights: D.comps.map(function () { return 0; }) } : r);
+    $("reset").disabled = inc.every(Boolean);
+  }
+
+  $("reset").addEventListener("click", function () { inc = D.comps.map(function () { return true; }); selected = -1; render(); });
+  drawScreened();
+  render();
+  var lastW = innerWidth, rt;
+  addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { if (innerWidth !== lastW) { lastW = innerWidth; render(); } }, 150); });
+})();
+</script>

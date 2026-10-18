@@ -113,6 +113,53 @@ function footerDisclaimer(s, dark = false) {
     color: dark ? "7A93AB" : C.steel, italic: true, align: "center", margin: 0
   });
 }
+// $/sq ft strip: each comp's adjusted value over subject GLA, the value range as a band,
+// the point value, and the list price. Same picture as the comp explorer's strip.
+function psfStrip(s, pres, y) {
+  const sq = D.property?.sqft;
+  const comps = (D.comps || []).slice(0, 5);
+  const vc = D.value_conclusion || {};
+  if (!sq || !comps.length || !vc.point_value) return;
+  const list = D.value_vs_price?.list_price ?? D.property?.list_price;
+  const vals = comps.map(c => c.adjusted_value / sq);
+  const all = [...vals, vc.range_low / sq, vc.range_high / sq, ...(list ? [list / sq] : [])];
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad = Math.max((hi - lo) * 0.1, 3);
+  lo -= pad; hi += pad;
+  const x0 = 2.75, x1 = 12.25, axisY = y + 0.78;
+  const X = v => x0 + (v - lo) / (hi - lo) * (x1 - x0);
+  s.addText("ADJUSTED $/SQ FT", { x: 0.85, y: y + 0.22, w: 1.8, h: 0.3, fontFace: FONT_B, fontSize: 10, color: C.teal, bold: true, charSpacing: 2, margin: 0 });
+  s.addText("comp value ÷ subject GLA", { x: 0.85, y: y + 0.5, w: 1.85, h: 0.3, fontFace: FONT_B, fontSize: 9, color: C.steel, italic: true, margin: 0 });
+  // range band
+  const bx = X(vc.range_low / sq), bw = X(vc.range_high / sq) - bx;
+  s.addShape(pres.shapes.RECTANGLE, { x: bx, y: y + 0.32, w: bw, h: 0.62, fill: { color: "E3EEF3" }, line: { color: "E3EEF3" } });
+  s.addShape(pres.shapes.LINE, { x: x0, y: axisY + 0.16, w: x1 - x0, h: 0, line: { color: C.hairline, width: 0.75 } });
+  // point and list markers with labels kept apart
+  const px = X(vc.point_value / sq);
+  s.addShape(pres.shapes.LINE, { x: px, y: y + 0.28, w: 0, h: 0.7, line: { color: C.marine, width: 2.25 } });
+  const lx = list ? X(list / sq) : null;
+  const near = lx !== null && Math.abs(lx - px) < 1.6;
+  const pLabelX = near && lx > px ? px - 1.6 : near ? px + 0.05 : px - 0.8;
+  s.addText(`Point $${Math.round(vc.point_value / sq)}`, { x: pLabelX, y: y, w: 1.55, h: 0.26, fontFace: FONT_B, fontSize: 10, color: C.marine, bold: true, align: near ? (lx > px ? "right" : "left") : "center", margin: 0 });
+  if (lx !== null) {
+    s.addShape(pres.shapes.LINE, { x: lx, y: y + 0.28, w: 0, h: 0.7, line: { color: C.coral, width: 1.75, dashType: "dash" } });
+    const lLabelX = near && lx > px ? lx + 0.05 : near ? lx - 1.6 : lx - 0.8;
+    s.addText(`List $${Math.round(list / sq)}`, { x: lLabelX, y: y, w: 1.55, h: 0.26, fontFace: FONT_B, fontSize: 10, color: C.coral, bold: true, align: near ? (lx > px ? "left" : "right") : "center", margin: 0 });
+  }
+  // comp dots, stacked when close
+  const order = vals.map((v, i) => i).sort((a, b) => vals[a] - vals[b]);
+  let lastX = -99, lane = 0;
+  order.forEach(i => {
+    const cx = X(vals[i]);
+    lane = cx - lastX < 0.28 ? (lane + 1) % 2 : 0;
+    lastX = cx;
+    const cy = axisY - 0.06 - lane * 0.3;
+    s.addShape(pres.shapes.OVAL, { x: cx - 0.13, y: cy - 0.13, w: 0.26, h: 0.26, fill: { color: C.teal }, line: { color: C.white, width: 1 } });
+    s.addText(String(i + 1), { x: cx - 0.13, y: cy - 0.13, w: 0.26, h: 0.26, fontFace: FONT_B, fontSize: 8.5, color: C.white, bold: true, align: "center", valign: "middle", margin: 0 });
+  });
+  s.addText(`$${Math.round(lo)}`, { x: x0 - 0.5, y: axisY + 0.2, w: 1, h: 0.22, fontFace: FONT_B, fontSize: 8.5, color: C.steel, align: "center", margin: 0 });
+  s.addText(`$${Math.round(hi)}`, { x: x1 - 0.5, y: axisY + 0.2, w: 1, h: 0.22, fontFace: FONT_B, fontSize: 8.5, color: C.steel, align: "center", margin: 0 });
+}
 const confColor = c => (c === "High" ? C.green : c === "Medium" ? C.amber : C.crimson);
 const impactColor = i => (i === "positive" ? C.green : i === "negative" ? C.crimson : i === "assumed" ? C.amber : C.steel);
 const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : t === "reported-unverified" ? C.coral : C.steel);
@@ -229,6 +276,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
       "Each comp is adjusted toward the subject; superior features subtract, inferior features add. Tier 1 = MLS/record-grade sold price.", C.coral);
 
     const comps = (D.comps || []).slice(0, 5);
+    const compRowH = comps.length >= 5 ? 0.64 : 0.72; // 5 rows at 0.72 pushed the sources line off the page
     const rows = [];
     const hdr = ["Comp", "Sold", "Sold Price", "SqFt", "$/SF", "Net Adj", "Adj. Value", "Wt", "Tier"];
     rows.push(hdr.map(t => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.marine }, fontFace: FONT_B, fontSize: 10.5, align: "center", valign: "middle" } })));
@@ -251,19 +299,19 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
       x: 0.6, y: 2.15, w: 12.13,
       colW: [3.6, 0.95, 1.35, 0.9, 0.85, 1.35, 1.55, 0.68, 0.9],
       border: { type: "solid", pt: 0.5, color: C.hairline },
-      rowH: [0.42, ...comps.map(() => 0.72)],
+      rowH: [0.42, ...comps.map(() => compRowH)],
       margin: 0.06
     });
 
     // Weighted value callout
-    const tblBottom = 2.15 + 0.42 + comps.length * 0.72;
+    const tblBottom = 2.15 + 0.42 + comps.length * compRowH;
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: tblBottom + 0.22, w: 12.13, h: 0.62, fill: { color: "F0F5F8" }, line: { color: C.teal, width: 1 }, rectRadius: 0.06 });
     s.addText([
       { text: "Weighted indicated value (before subject condition adjustments):  ", options: { fontFace: FONT_B, fontSize: 13, color: C.graphite } },
       { text: fmt$(D.reconciliation.base_indicated_value), options: { fontFace: FONT_H, fontSize: 16, color: C.marine, bold: true } }
     ], { x: 0.9, y: tblBottom + 0.22, w: 11.6, h: 0.62, valign: "middle", margin: 0 });
     // Sources line
-    s.addText("Sources: " + comps.map((c, i) => `[${i + 1}] ${c.source}`).join("  ·  "), { x: 0.6, y: tblBottom + 0.98, w: 12.13, h: 0.5, fontFace: FONT_B, fontSize: 8.5, color: C.steel, italic: true, margin: 0 });
+    s.addText("Sources: " + comps.map((c, i) => `[${i + 1}] ${c.source}`).join("  ·  "), { x: 0.6, y: tblBottom + 0.94, w: 12.13, h: 0.36, fontFace: FONT_B, fontSize: 8.5, color: C.steel, italic: true, margin: 0 });
     footerDisclaimer(s);
   }
 
@@ -381,16 +429,18 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
     (V.anchor_points || []).slice(0, 3).forEach((a, i) => {
       const x = 0.85 + i * 4.0;
       const colors = [C.green, C.teal, C.crimson];
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.35, w: 3.7, h: 2.5, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.08, shadow: sh() });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.35, w: 3.7, h: 2.05, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.08, shadow: sh() });
       s.addShape(pres.shapes.RECTANGLE, { x, y: 2.35, w: 3.7, h: 0.12, fill: { color: colors[i] }, line: { color: colors[i] } });
-      s.addText(a.label.toUpperCase(), { x: x + 0.25, y: 2.65, w: 3.2, h: 0.35, fontFace: FONT_B, fontSize: 12, color: colors[i], bold: true, charSpacing: 2, margin: 0 });
-      s.addText(fmt$(a.value), { x: x + 0.25, y: 3.05, w: 3.2, h: 0.75, fontFace: FONT_H, fontSize: 30, color: C.marine, bold: true, margin: 0 });
-      s.addText(a.note, { x: x + 0.25, y: 3.85, w: 3.2, h: 0.85, fontFace: FONT_B, fontSize: 11, color: C.graphite, margin: 0 });
+      s.addText(a.label.toUpperCase(), { x: x + 0.25, y: 2.6, w: 3.2, h: 0.32, fontFace: FONT_B, fontSize: 12, color: colors[i], bold: true, charSpacing: 2, margin: 0 });
+      s.addText(fmt$(a.value), { x: x + 0.25, y: 2.92, w: 3.2, h: 0.62, fontFace: FONT_H, fontSize: 28, color: C.marine, bold: true, margin: 0 });
+      s.addText(a.note, { x: x + 0.25, y: 3.56, w: 3.2, h: 0.75, fontFace: FONT_B, fontSize: 10.5, color: C.graphite, margin: 0 });
     });
 
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 5.35, w: 11.6, h: 1.35, fill: { color: C.marine }, line: { color: C.marine }, rectRadius: 0.08, shadow: sh() });
-    s.addText("BOTTOM LINE", { x: 1.15, y: 5.52, w: 10.9, h: 0.32, fontFace: FONT_B, fontSize: 11, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
-    s.addText(V.bottom_line, { x: 1.15, y: 5.85, w: 10.9, h: 0.75, fontFace: FONT_B, fontSize: 14, color: C.white, valign: "top", margin: 0 });
+    psfStrip(s, pres, 4.55);
+
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 5.78, w: 11.6, h: 1.2, fill: { color: C.marine }, line: { color: C.marine }, rectRadius: 0.08, shadow: sh() });
+    s.addText("BOTTOM LINE", { x: 1.15, y: 5.9, w: 10.9, h: 0.32, fontFace: FONT_B, fontSize: 11, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
+    s.addText(V.bottom_line, { x: 1.15, y: 6.2, w: 10.9, h: 0.7, fontFace: FONT_B, fontSize: 13.5, color: C.white, valign: "top", margin: 0 });
     footerDisclaimer(s);
   }
 

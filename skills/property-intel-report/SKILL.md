@@ -120,7 +120,7 @@ Both read the `property_facts.json` you wrote in Stage 2, so each costs roughly 
 
 ### The reconciliation note
 
-Deliver all four files together (this deck, the appraisal deck, the insurance deck, the spec-sheet PDF) with a short cover note that reconciles the three headline numbers against each other. This is the part a buyer cannot do themselves, and it is the reason the dossier is worth more than three separate runs:
+Deliver all the files together (this deck, the appraisal deck and its comp explorer, the insurance deck, the spec-sheet PDF) with a short cover note that reconciles the three headline numbers against each other. This is the part a buyer cannot do themselves, and it is the reason the dossier is worth more than three separate runs:
 
 - **Carry vs premium.** This deck's monthly carry used an insurance estimate. The insurance brief produced a sourced range. State the delta and which number to plan against. If the sourced range moves monthly carry by more than $75, say so explicitly — that is a real change to affordability.
 - **List vs value.** This deck's comp screen produced a fair-value range. The appraisal produced a point value with a confidence rating. The appraisal governs. If the two disagree by more than 5%, name the reason (usually comp selection or a condition adjustment the screen could not see).

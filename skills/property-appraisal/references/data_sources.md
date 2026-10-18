@@ -42,6 +42,16 @@ These populate the AVM cross-check band on the reconciliation slide and nothing 
 - Realtor.com market trends pages
 - Zillow Home Value Index via search snippets
 
+## Coordinates (explorer map only)
+
+Coordinates place pins on the explorer map. They never enter the value math, so a cheaper source is fine as long as it lands on the right parcel.
+
+1. **County GIS parcel centroid** (Tier 1). Best when the GIS portal fetches. Often it does not; see County portal quirks.
+2. **US Census Geocoder** (Tier 2, address-range interpolation, typically within a few hundred feet): `WebFetch https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=<URL-encoded full address>&benchmark=Public_AR_Current&format=json` and read `result.addressMatches[0].coordinates` (`x` = lng, `y` = lat). Free, no key, one call per address. New-construction streets may not match yet.
+3. **Listing or sold page** (Tier 2). Many portal pages carry lat/lng in their page data.
+
+Record the source in `property.geo_source`. Never guess coordinates from a street name or move a pin by hand to match `distance_mi`. If an address will not geocode, leave its coordinates out: a notice where the map would be beats a pin in the wrong place. The explorer builder cross-checks every comp's coordinates against its `distance_mi` and warns on disagreement, which is how bad geocodes get caught.
+
 ## Known regional constraints
 
 - **Baldwin County, AL**: Revenue Commission and GIS portals are JavaScript-interactive and do not respond to web fetch. Tax and parcel figures must come via search snippets or portal pages, labeled "est." where unverified, with a verify-at-the-Revenue-Commission note.

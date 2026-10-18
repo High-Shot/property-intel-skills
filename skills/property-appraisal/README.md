@@ -18,6 +18,8 @@ Give it an address. It researches sold comps and property records, then asks you
 8. Value vs List — verdict and three negotiation anchor numbers
 9. Sources & Caveats
 
+It also builds a **comp explorer**: one HTML page from the same data file with a north-up map of the comps around the subject, an adjusted $/sq ft strip against the list price, and a checkbox on every comp. Uncheck one and the value, range, confidence, and verdict recompute through the same weighted grid the deck uses. It opens on the deck's exact numbers and says how far any other selection moves from them.
+
 ## Guardrails baked in
 
 - Every sold price carries a source tier. AVM estimates are never comps, only a cross-check band.
@@ -29,12 +31,17 @@ Give it an address. It researches sold comps and property records, then asks you
 - Comps: 3-5 in the grid. Fewer than 3 available means confidence Low, a wider range, and the shortage stated on the slide — never a padded grid.
 - Unattended runs never stall on the interview: they build on neutral assumptions, drop confidence a level, and say so.
 
-## Build command
+## Build commands
 
 ```bash
 NODE_PATH=$(npm root -g) \
   node scripts/build_deck.js appraisal_data.json output.pptx
+
+node scripts/build_explorer.js appraisal_data.json comps.html            # standalone page
+node scripts/build_explorer.js appraisal_data.json comps.html --fragment # for an Artifact publish
 ```
+
+The explorer needs no dependencies. `--strict` makes any WARN exit 2 for unattended runs.
 
 Deps: `npm install -g pptxgenjs react react-dom react-icons sharp`
 
@@ -50,4 +57,7 @@ Deliver with `SendUserFile` (Cowork) or `present_files` (claude.ai). Do not assu
 - `references/data_sources.md` — comp sources by reliability tier, county portal quirks
 - `references/data_schema.md` — JSON schema
 - `scripts/build_deck.js` — 9-slide deck builder, shares the intel report's design system
+- `scripts/build_explorer.js` — comp explorer builder and validator
+- `scripts/explorer_math.js` — the recompute logic, shared by the validator and the page
+- `assets/comp_explorer.html` — explorer page template
 - `examples/sample_appraisal_data.json` — synthetic worked example

@@ -30,7 +30,8 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
 
   "address": {
     "street": "", "city": "", "state": "", "zip": "",
-    "county": "", "parcel_id": "", "mls": ""
+    "county": "", "parcel_id": "", "mls": "",
+    "lat": null, "lng": null
   },
 
   "structure": {
@@ -60,7 +61,8 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
   "comps": [
     {"address": "", "sold_price": 0, "sold_date": "", "sqft": 0,
      "psf": 0, "lot_acres": 0, "year_built": 0, "beds": 0, "baths": 0,
-     "distance_mi": 0, "source": "", "tier": 1, "notes": ""}
+     "distance_mi": 0, "lat": null, "lng": null,
+     "source": "", "tier": 1, "notes": ""}
   ],
 
   "value": {

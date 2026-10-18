@@ -1,6 +1,6 @@
 ---
 name: property-appraisal
-description: "Estimate the market value of a residential property using a sales comparison appraisal with owner-interview condition adjustments. Use this skill whenever the user asks what a house is worth, asks to appraise a property, asks for a valuation, a CMA, a fair value estimate, or asks 'is this house priced right', 'what should I offer based on value', 'what would this appraise for', or provides an address with intent to value it. If the user wants a full buyer's brief rather than just a number, run property-intel-report instead; if they want coverage or premiums, run property-insurance-brief. Companion to property-intel-report: that skill covers diligence and risk, this one produces the value number. Produces a 9-slide PowerPoint valuation brief with a comp grid, adjustment schedule, condition adjustments from a one-batch buyer interview, reconciliation, AVM cross-check, and a value-vs-list verdict."
+description: "Estimate the market value of a residential property using a sales comparison appraisal with owner-interview condition adjustments. Use this skill whenever the user asks what a house is worth, asks to appraise a property, asks for a valuation, a CMA, a fair value estimate, or asks 'is this house priced right', 'what should I offer based on value', 'what would this appraise for', or provides an address with intent to value it. If the user wants a full buyer's brief rather than just a number, run property-intel-report instead; if they want coverage or premiums, run property-insurance-brief. Companion to property-intel-report: that skill covers diligence and risk, this one produces the value number. Produces a 9-slide PowerPoint valuation brief with a comp grid, adjustment schedule, condition adjustments from a one-batch buyer interview, reconciliation, AVM cross-check, and a value-vs-list verdict, plus an interactive comp explorer page (map, $/sq ft strip, comp toggles that recompute the value)."
 ---
 
 # Property Appraisal (Buyer's Valuation Brief)
@@ -15,8 +15,8 @@ This is a valuation estimate, not a licensed appraisal. The deck says so. Never 
 
 ```
 INTAKE  →  RESEARCH  →  INTERVIEW  →  SYNTHESIZE  →  RENDER
-(address)  (comps +     (one batch    (appraisal     (PPTX)
-            records)     of questions)  JSON)
+(address)  (comps +     (one batch    (appraisal     (PPTX +
+            records)     of questions)  JSON)         explorer)
 ```
 
 Run in order. The interview comes AFTER research so the questions can reference specific facts ("records show a 2004 roof permit — has it been replaced since?") and skip anything research already answered.
@@ -33,6 +33,7 @@ Then research the gaps with parallel `WebSearch` + `WebFetch`. Target 25-35 tool
 
 1. **Subject property record**: sqft, beds/baths, year built, lot, garage, parcel ID, last sale price and date.
 2. **Sold comps (the core)**: screen 5-8 closed sales, then carry the **strongest 3-5** into the grid (the deck fits 5). Criteria: within ~1 mile (rural: 3-5 miles), sold in the last 6 months (stretch to 12 if thin), similar sqft (±25%), age (±15 yrs), and style. For each: sold price, sold date, sqft, lot, beds/baths, condition clues from listing remarks. Record the SOURCE and TIER for every sold price (see data_sources.md). Never use an AVM estimate as a comp. Say in the reconciliation how many you screened and why you dropped the ones you dropped. If fewer than 3 survive screening, take the thin-comp path in `references/data_schema.md` rather than loosening the criteria to reach a count.
+   Record **coordinates** for the subject and every comp you carry (lat/lng to 5 decimals) and for each sale you screen out. Sources and tiers are in `references/data_sources.md` § Coordinates. Coordinates drive the explorer map only; they never enter the value math. Keep the strongest 2-5 rejected sales with a one-line reason each in `screened_out`, so the buyer can see what was considered and why it was dropped.
 3. **Active/pending competition**: 2-3 listings, for ceiling context only.
 4. **AVM cross-checks**: Zestimate, Redfin Estimate, Realtor.com estimate. Sanity band only, clearly labeled, never blended into the comp math.
 5. **Market condition**: ZIP or city median $/sqft trend, months of inventory, median days on market. Used for the time adjustment.
@@ -76,14 +77,25 @@ NODE_PATH=$(npm root -g) \
 
 If deps are missing: `npm install -g pptxgenjs react react-dom react-icons sharp`.
 
+Then build the comp explorer from the same data file:
+
+```bash
+node <skill_path>/scripts/build_explorer.js appraisal_data.json <address>_comps.html
+```
+
+No dependencies. Add `--fragment` when publishing through an Artifact tool (it supplies its own page skeleton); add `--strict` on unattended runs so any WARN exits non-zero. The explorer shows the deck's exact numbers at rest. When the buyer unchecks a comp, it renormalizes the remaining weights, recomputes the weighted comp value, adds the same condition total, re-rates confidence (it can only drop), widens the range on the thin-comp path, and re-reads the verdict per methodology §8. It never recomputes from raw median $/sq ft: that is the shortcut this skill exists to avoid. The recompute logic lives in `scripts/explorer_math.js`, which the builder uses both to validate and to write into the page, so the two cannot drift.
+
 QA before delivery (rendered images do not display back in this environment):
 1. Extract text with python-pptx and confirm every slide has its expected content.
 2. Run programmatic bounds checks: no shape extends past 13.333 × 7.5, comp-grid rows fit the table area.
 3. Spot-check the math: recompute one comp's net adjustment and the weighted value by hand.
+4. Run the explorer builder and read its output. It warns when the recomputed value does not reproduce the deck's point value or base within $1,000, when the deck verdict disagrees with methodology §8, when a comp's coordinates disagree with its `distance_mi` (bad geocode), when coordinates are missing (the map turns into a notice), and when a screened-out sale has no reason.
 
 The builder prints `WARN:` lines for any broken arithmetic or layout contract. Treat every WARN as a fix-before-delivery item; nothing is blocked for you.
 
 Then deliver. Write the deck to the working directory as `<address>_appraisal.pptx` and hand it to the user with `SendUserFile` (Cowork) or `present_files` (claude.ai), whichever is available. Do not assume `/mnt/user-data/outputs/` exists.
+
+Deliver the explorer alongside it. If the runtime has an Artifact tool, build with `--fragment` and publish it as an artifact so the buyer gets a link that works on a phone; otherwise send the standalone `.html` file. One line in the delivery message is enough: "The explorer lets you drop any comp and see what the value does without it." The explorer is optional only when the buyer asked for the deck alone.
 
 ## Output Standards — 9 slides, always this order
 
@@ -94,7 +106,7 @@ Then deliver. Write the deck to the working directory as `<address>_appraisal.pp
 5. Adjustment Schedule — the rates applied and their basis
 6. Condition Adjustments — interview-derived line items with dollar impacts
 7. Reconciliation — comp weighting, AVM cross-check band, sensitivity low/high cases
-8. Value vs List Price — delta, verdict headline, negotiation anchors, bottom line
+8. Value vs List Price — delta, verdict headline, negotiation anchors, adjusted $/sq ft strip (comps, range band, point, list), bottom line
 9. Sources, Confidence & Caveats (dark)
 
 Slides 1 and 9 are dark marine. All others white.
@@ -138,3 +150,4 @@ Icons: only react-icons/fa names already validated in the build script. Unvalida
 - `references/interview.md` — the one-batch question set and answer-to-adjustment mapping
 - `references/data_sources.md` — comp sources by reliability tier
 - `references/data_schema.md` — full JSON schema, field by field
+- `scripts/build_explorer.js` + `scripts/explorer_math.js` + `assets/comp_explorer.html` — interactive comp explorer, built from the same JSON
