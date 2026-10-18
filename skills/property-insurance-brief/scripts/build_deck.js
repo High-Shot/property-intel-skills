@@ -242,7 +242,8 @@ function sourceNote(s, text) {
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: y0, w: cw, h: ch, fill: { color: C.white }, line: { color: borderC, width: borderW }, rectRadius: 0.08, shadow: sh() });
       if (o.chosen) {
         s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + cw - 1.55, y: y0 + 0.2, w: 1.35, h: 0.38, fill: { color: col }, line: { color: col }, rectRadius: 0.19 });
-        s.addText("YOUR PICK", { x: x + cw - 1.55, y: y0 + 0.2, w: 1.35, h: 0.38, fontFace: FONT_B, fontSize: 9.5, color: C.white, bold: true, charSpacing: 1, align: "center", valign: "middle", margin: 0 });
+        // "default" is truthy, so it shares the highlight, but it must never read as the buyer's choice.
+        s.addText(o.chosen === "default" ? "DEFAULT" : "YOUR PICK", { x: x + cw - 1.55, y: y0 + 0.2, w: 1.35, h: 0.38, fontFace: FONT_B, fontSize: 9.5, color: C.white, bold: true, charSpacing: 1, align: "center", valign: "middle", margin: 0 });
       }
       s.addText(o.pct, { x: x + 0.28, y: y0 + 0.18, w: 1.9, h: 0.65, fontFace: FONT_H, fontSize: 34, color: col, bold: true, margin: 0 });
       s.addText(o.dollars, { x: x + 0.28, y: y0 + 0.88, w: cw - 0.56, h: 0.62, fontFace: FONT_H, fontSize: 26, color: C.marine, bold: true, margin: 0 });
