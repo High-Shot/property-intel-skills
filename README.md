@@ -14,7 +14,7 @@ The three skills work as a family. `property-intel-report` is the front door; as
 
 **Easiest: download the packaged skills.** Grab the `.skill` files from the [latest release](../../releases/latest), then add them to Claude:
 
-- **Claude.ai / Claude desktop:** Settings → Capabilities → Skills → upload the `.skill` file.
+- **Claude.ai / Claude desktop:** Customize → Skills → Add → Upload skill, and drop in all three `.skill` files. Uploading a skill with the same name replaces the old version in place.
 - **Claude Code:** unzip each `.skill` into `~/.claude/skills/` so you end up with `~/.claude/skills/property-intel-report/SKILL.md` (and siblings).
 
 Install all three. They cross-reference each other; a solo install works but disables dossier mode and cross-skill routing.
