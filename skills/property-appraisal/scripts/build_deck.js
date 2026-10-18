@@ -350,7 +350,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
     header(s, pres, "CONDITION ADJUSTMENTS", "What the Interview Changed",
       "Applied once to the weighted comp value. Tags: verified · assumed (neutral default) · reported-unverified (half weight).", C.coral);
     const items = (D.condition_adjustments || []).slice(0, 8);
-    const startY = 2.15, rowH2 = Math.min(0.62, 4.0 / Math.max(items.length, 1));
+    const startY = 2.15, rowH2 = Math.min(0.62, 3.75 / Math.max(items.length, 1)); // 2.15 + 3.75 + 0.25 + 0.85 = 7.0 clears the 7.12 footer
     items.forEach((c, i) => {
       const y = startY + i * rowH2;
       const tc = tagColor(c.tag);

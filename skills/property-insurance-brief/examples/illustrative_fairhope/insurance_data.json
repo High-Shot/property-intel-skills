@@ -86,9 +86,9 @@
         "color": "green"
       },
       {
-        "big": "YES",
+        "big": "NO",
         "label": "FLOOD (SEPARATE)",
-        "sub": "NFIP quote requested",
+        "sub": "Zone X, not lender-required",
         "color": "amber"
       }
     ],
@@ -155,9 +155,9 @@
       {
         "pct": "2%",
         "dollars": "$7,700",
-        "chosen": true,
+        "chosen": "default",
         "color": "coral",
-        "note": "Your pick. Manageable from reserves; meaningful premium relief vs 1%."
+        "note": "Standard spec on every property. Meaningful premium relief vs 1%."
       },
       {
         "pct": "5%",
@@ -167,7 +167,7 @@
         "note": "Cheapest premium. One named-storm claim costs more than years of savings."
       }
     ],
-    "framing": "The question is not which is cheapest. It's how large a check you can write the week after a hurricane. Your interview answer: up to about $8K without hardship.",
+    "framing": "Every spec carries the standard 2% wind deductible: $7,700 out of pocket on this house after a named storm. 1% and 5% are quoted beside it.",
     "detail_note": "Named-storm vs hurricane vs wind/hail deductible triggers differ by carrier. The spec sheet forces each quote to state its trigger.",
     "source_note": ""
   },
@@ -188,15 +188,15 @@
         "color": "teal"
       },
       {
-        "big": "$500-900/yr",
-        "label": "NFIP BALLPARK",
-        "sub": "Zone X preferred-risk, est.; quote to confirm",
+        "big": "Not quoted",
+        "label": "FLOOD POLICY",
+        "sub": "Not lender-required in Zone X",
         "color": "amber"
       }
     ],
-    "body": "Zone X means flood coverage is optional and cheap, which is exactly when it is worth quoting. Storm surge and rain-driven flooding do not respect zone lines, and preferred-risk pricing exists because the actuarial risk is low, not zero.",
-    "recommendation": "Request an NFIP quote alongside every homeowners quote. Compare one private flood quote if any carrier offers it.",
-    "source_note": "Zone and freeboard from property-intel-report research (FEMA MSC, USGS lidar). NFIP ballpark est. pending Risk Rating 2.0 quote."
+    "body": "Zone X sits outside the Special Flood Hazard Area, so the lender does not require flood coverage. Storm surge and rain flooding do not respect zone lines; the zone and elevation are reported so you can decide.",
+    "recommendation": "Not quoting flood unless the lender requires it. An NFIP quote is one call away if you want it.",
+    "source_note": "Zone and freeboard from property-intel-report research (FEMA MSC, USGS lidar)."
   },
   "levers": {
     "title": "What Actually Moves the Premium",
@@ -212,7 +212,7 @@
       {
         "rank": "2",
         "lever": "Wind deductible choice",
-        "status": "2% selected.",
+        "status": "2% standard spec.",
         "impact": "Each step 1% to 2% to 5% trades premium for storm-day cash exposure. Quoted three ways on the spec sheet.",
         "color": "coral"
       },
@@ -293,7 +293,7 @@
       },
       {
         "label": "FEMA flood zone",
-        "value": "X (flood quoted separately)"
+        "value": "X (flood not requested)"
       },
       {
         "label": "Occupancy",
@@ -391,7 +391,7 @@
     "list": [
       "ALDOI ComparePremiums: real HO-3 premiums by company and territory",
       "Alabama Coastal Insurance Shopper's Guide: Smart Home America / ALDOI",
-      "Surplus Line Association of Alabama / ALDOI \u2014 surplus lines tax, minimum earned premium, guaranty-fund status",
+      "Surplus Line Association of Alabama / ALDOI — surplus lines tax, minimum earned premium, guaranty-fund status",
       "Strengthen Alabama Homes: FORTIFIED grant program",
       "IBHS FORTIFIED Home standard",
       "FEMA Map Service Center: flood zone determination",
@@ -402,7 +402,8 @@
       "This brief is educational decision support, not insurance advice; the buyer selects coverage.",
       "Replacement cost estimate is provisional until a carrier estimator runs.",
       "Rates, credits, and carrier appetite change frequently; figures dated as of preparation.",
-      "Surplus lines quotes carry AL tax, fully earned fees, and minimum earned premium; always compare total walk-out cost, not property premium."
+      "Surplus lines quotes carry AL tax, fully earned fees, and minimum earned premium; always compare total walk-out cost, not property premium.",
+      "Wind deductible set at the standard 2% default; 1% and 5% quoted for comparison."
     ]
   }
 }

@@ -14,14 +14,14 @@ From `interview.md`. Each is a **default**, not a recommendation, and renders ma
 
 | Line | Default | as_of | Verify |
 |---|---|---|---|
-| Wind deductible (coastal) | 2%, written `chosen: "default"` | 2026-08 | Per territory — quote the steps carriers actually write |
+| Wind deductible (coastal) | 2% standing rule, never asked; written `chosen: "default"` | 2026-10 | Per territory — quote the steps carriers actually write |
 | All-other-perils deductible | $2,500 | 2025-Q4 | Annually |
 | Cov C (contents) | 50% of Cov A, replacement cost | 2026-08 | Standard across most HO-3 forms |
 | Liability | $300K | 2026-08 | Scale to net worth, see §2 |
 | MedPay | $5,000 | 2026-08 | Rarely varies |
 | Water backup | $10,000 | 2025-Q4 | Annually |
 | Ordinance / law | 25% | 2026-08 | Applies to homes built before the jurisdiction's current code cycle. **Verify the adoption year** rather than assuming 2006 |
-| Flood | Always quoted, never assumed away | 2026-08 | — |
+| Flood | Quoted only when the lender requires it (SFHA zones A/V); zone always reported | 2026-10 | — |
 
 ## 2. Liability by net worth
 

@@ -77,7 +77,7 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
       { "big": "$2,500",   "label": "AOP DEDUCTIBLE",   "sub": "All other perils",             "color": "coral" },
       { "big": "50%",      "label": "PERSONAL PROPERTY","sub": "Of Cov A · replacement cost",  "color": "teal" },
       { "big": "$300K",    "label": "LIABILITY",        "sub": "Umbrella deferred",            "color": "green" },
-      { "big": "YES",      "label": "FLOOD (SEPARATE)", "sub": "NFIP quote requested",         "color": "amber" }
+      { "big": "NO",       "label": "FLOOD (SEPARATE)", "sub": "Zone X, not lender-required",  "color": "amber" }
     ],
     "source_note": "Dwelling basis is an estimate until a carrier replacement-cost estimator runs."
   },
@@ -114,12 +114,12 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
       // Exactly 3 cards — the three deductibles actually offered in this market (commonly 1/2/5, sometimes 2/3/5 per real quotes). Chosen one gets "chosen": true → renders with accent border + pill.
       { "pct": "1%", "dollars": "$3,850", "chosen": false, "color": "green",
         "note": "Lowest storm-day exposure, highest premium." },
-      { "pct": "2%", "dollars": "$7,700", "chosen": true,  "color": "coral",
-        "note": "Your pick. Manageable from reserves; meaningful premium relief vs 1%." },
+      { "pct": "2%", "dollars": "$7,700", "chosen": "default", "color": "coral",
+        "note": "Standard spec on every property. Meaningful premium relief vs 1%." },   // standing rule: 2% is never asked
       { "pct": "5%", "dollars": "$19,250", "chosen": false, "color": "crimson",
         "note": "Cheapest premium. One named storm claim costs more than years of savings." }
     ],
-    "framing": "The question is not 'which is cheapest' — it's 'how much can you write a check for the week after a hurricane.' Your interview answer: up to ~$8K without hardship.",
+    "framing": "Every spec carries the standard 2% wind deductible: $7,700 out of pocket on this house after a named storm. 1% and 5% are quoted beside it.",
     "detail_note": "Named-storm vs hurricane vs wind/hail deductible triggers differ by carrier. The spec sheet forces each quote to state its trigger.",
     "source_note": ""
   },
@@ -134,7 +134,7 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
       { "big": "~$500-900/yr", "label": "NFIP BALLPARK", "sub": "Zone X standard-rated, est. — quote to confirm", "color": "amber" }
     ],
     "body": "Zone X means flood coverage is optional and cheap — which is exactly when it's worth quoting. Storm surge and rain-driven flooding don't respect zone lines, and 'preferred risk' pricing exists because the actuarial risk is low, not zero.",
-    "recommendation": "Request an NFIP quote alongside every homeowners quote. Compare one private flood quote if any carrier offers it.",
+    "recommendation": "Not quoting flood: Zone X, so the lender does not require it. An NFIP quote is one call away if you want it.",   // standing rule: quote flood only in an SFHA (A/V)
     "source_note": "Zone and freeboard from property-intel-report research (FEMA MSC, USGS lidar)."
   },
 

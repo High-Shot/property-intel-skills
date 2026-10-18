@@ -45,9 +45,9 @@ County portal quirks (which assessor and GIS sites resist automated fetch, and w
 Ask the buyer ONE batch of questions before synthesizing. Never drip-feed. The full question set, phrasing guidance, and the answer-to-dollar-adjustment mapping are in `references/interview.md`.
 
 Rules:
-- 8-12 questions max. Cut any question research already answered, and say so ("permits show the roof was replaced in 2021, so I'm skipping that one").
+- 5 questions max, usually fewer. Assume the buyer has not walked the house: every question must be answerable from the listing. Cut any question research already answered, and say so ("permits show the roof was replaced in 2021, so I'm skipping that one").
 - Reference research facts in the questions where possible.
-- First question is always: "Have you walked the property, or are you working from photos?" This sets the condition-input confidence.
+- First question is always: "Have you walked it, or going off the listing?" This sets the condition-input confidence. No answer means photos-only.
 - If the buyer answers "I don't know" to something, proceed with the neutral assumption from interview.md and label the resulting adjustment as assumed.
 - If the buyer skips the interview entirely, proceed with all-neutral assumptions, drop confidence one level, and say so on the caveats slide.
 

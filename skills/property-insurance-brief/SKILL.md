@@ -46,8 +46,8 @@ Then research the gaps with parallel `WebSearch` + `WebFetch`. Target 15-25 tool
 Ask the buyer ONE batch of questions before synthesizing. Never drip-feed. The question set, phrasing rules, and the answer-to-spec mapping are in `references/interview.md`.
 
 Rules:
-- 8-12 questions max. Cut anything research or a sibling-skill run already answered, and say so.
-- First question is always the deductible-tolerance question. Coastal: "After a hurricane, how large a check could you write without hardship?" — it drives the wind deductible, the single biggest coverage decision in a named-storm market. Inland: "After a major hail or wind event, how large a check could you write without hardship?" — same purpose against the flat or hail deductible.
+- 3 questions max. Cut anything research or a sibling-skill run already answered, and say so.
+- Never ask about the deductible or flood. Standing rules: 2% wind deductible on every coastal property (`chosen: "default"`, 1% and 5% quoted beside it), $2,500 AOP inland, and flood quoted only when the lender requires it (SFHA zones A or V). See `references/interview.md` § Standing rules.
 - If the buyer answers "I don't know," apply the neutral default from interview.md and mark the resulting spec line as a default, not a selection.
 - If the buyer skips the interview entirely, build the spec on all defaults, say so on the caveats slide, and flag the wind deductible as unchosen.
 

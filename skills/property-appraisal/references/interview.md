@@ -1,30 +1,24 @@
 # The Buyer Interview (one batch)
 
-Asked after research, before synthesis. One message, all questions at once, numbered so the buyer can answer inline. 8-12 questions. Cut anything research already answered and say which ones you cut and why ("permit records show a 2021 roof — skipping that question").
+Asked after research, before synthesis. One message, all questions at once, numbered so the buyer can answer inline. **5 questions max, usually fewer.** Most buyers have not walked the house yet, so every question must be answerable from the listing photos and remarks. Cut anything research already answered and say which ones you cut and why ("the listing says new HVAC — skipping that question").
 
 ## Phrasing rules
 
-- Reference research facts where possible: "The 2019 listing photos show original oak cabinets — still the case?"
-- Offer answer shortcuts: "(rough year is fine)", "(skip any you don't know)".
+- Reference research facts where possible: "The listing photos show original oak cabinets — still the case?"
+- Offer answer shortcuts: "(one word is fine)", "(skip any you don't know)".
 - Never ask about things the deck doesn't use.
 - Close the batch with: "Skip any you don't know. I'll use neutral assumptions and label them."
 
 ## The question set
 
-**Q0 (always first): Have you walked the property in person, or are you working from photos and the listing?**
-Sets condition-input confidence. Photos-only pushes confidence down per methodology §6.
+**Q0 (always first): Have you walked it, or going off the listing?** One word is enough. No answer means photos-only: set `walked: false` and apply the photos-only confidence rule in methodology §6.
 
-**Q1. Roof — age and material, best guess?**
-**Q2. HVAC — age of the system(s)? Any known issues?**
-**Q3. Water heater — age, tank or tankless?**
-**Q4. Kitchen — original, partially updated, or fully remodeled? Rough year if updated.**
-**Q5. Bathrooms — same scale, per bath if they differ.**
-**Q6. Flooring — type and condition in the main living areas.**
-**Q7. Known defects — anything on foundation, moisture/drainage, pests, windows, or electrical? Anything the listing discloses or the agent mentioned?**
-**Q8. Renovations in the last 10 years — what was done and rough spend, if known.**
-**Q9. Lot and location negatives — busy road, power lines, backs to commercial, drainage from neighbors, anything that made you pause on site?**
-**Q10. Extras — pool, workshop/outbuilding, whole-home generator, dock, owned solar, fencing condition?**
-**Q11 (only if list price context is missing): What's the asking price, and do you have a number in your head?**
+**Q1. Kitchen and baths — original, partly updated, or remodeled?** Per bath if they differ. Listing photos are fine.
+**Q2. Flooring in the main living areas — type, and any visible wear?**
+**Q3. Anything that gave you pause — defects in the photos or remarks, a busy road, neighbors, drainage?**
+**Q4 (only if research did not answer it): Roof, HVAC, or water heater age, if you know it?**
+
+Not asked, handled by research or neutral defaults: renovation spend, extras (pool, outbuilding, generator, solar, dock — read from the listing), lot size and garage (public record). If the buyer volunteers any of these, use them.
 
 ## Answer-to-adjustment mapping
 
