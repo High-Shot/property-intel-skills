@@ -14,7 +14,7 @@ Last full review: **2026-08**.
 |---|---|---|---|
 | 30-yr fixed rate source | Freddie Mac PMMS, weekly | 2026-08 | **Every run.** Never cache. |
 | PMMS mirror | FRED series `MORTGAGE30US` | 2026-08 | If the series ID 404s, use any named weekly national average and cite it |
-| PMI default | 0.70%/yr of loan balance, LTV > 80% | 2026-08 | Annually. Range 0.30%–1.00% by credit tier |
+| PMI default | 0.70%/yr of loan balance, LTV > 80% | 2026-08 | Annually. Range 0.30%–1.00% by credit tier. Mirrored in `scripts/build_dashboard.js` (`PMI_RATE`, `PMI_AS_OF`); change both together |
 | PMI auto-termination | 78% LTV (Homeowners Protection Act of 1998) | statutory | Only on a change in federal law |
 
 The per-$100K payment shortcut in `calculations.md` §1 spans 5.00%–7.50%. **If the current PMMS rate falls outside that band, do not extrapolate from the table — compute PMT directly from the formula.** The table is a sanity check, not the method.

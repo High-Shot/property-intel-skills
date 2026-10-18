@@ -27,7 +27,9 @@ Stage 5 runs only when the user asks for the complete picture ("everything on th
 
 When it does run: this deck ships first, then `property-appraisal`, then `property-insurance-brief`. Order matters — the appraisal's Cov A anchor feeds the insurance brief. Both read the `property_facts.json` written in Stage 2, so each costs 8-12 research calls instead of 25-35. The two sibling interviews are folded into one combined batch at the start, capped at 12 questions, so the user is interrupted once rather than three times.
 
-All four files deliver together with a reconciliation note under 200 words covering the carry-vs-sourced-premium delta, the list-vs-value gap, the value-vs-Cov-A distinction, and the one finding that most moves the buy/walk call. That note is the reason a dossier beats three separate runs.
+A **dossier dashboard** builds from `property_facts.json` after both siblings finish: monthly carry against an offer-price slider, the wind deductible in dollars with a quote break-even calculator, and market value against rebuild cost on one scale. It reads numbers only from the cache, never from slide copy, and cross-checks every shared figure against the three decks before delivery.
+
+All the files deliver together with a reconciliation note under 200 words covering the carry-vs-sourced-premium delta, the list-vs-value gap, the value-vs-Cov-A distinction, and the one finding that most moves the buy/walk call. That note is the reason a dossier beats three separate runs.
 
 If a sibling fails, deliver what exists, name what is missing, and give the command to run it separately. Never hold a finished deck for an unfinished one.
 
@@ -39,6 +41,15 @@ NODE_PATH=$(npm root -g) \
 ```
 
 Deps: `npm install -g pptxgenjs react react-dom react-icons sharp`
+
+Dossier dashboard (Stage 5 only, no dependencies):
+
+```bash
+node scripts/build_dashboard.js property_facts.json dossier.html \
+  --appraisal appraisal_data.json --insurance insurance_data.json --intel property_data.json
+```
+
+`examples/dossier_sample/property_facts.json` builds clean against the appraisal skill's sample (`--today 2026-07-08`).
 
 Deliver with `SendUserFile` (Cowork) or `present_files` (claude.ai). Do not assume `/mnt/user-data/outputs/` exists.
 

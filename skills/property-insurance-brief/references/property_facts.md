@@ -23,7 +23,7 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "normalized_address": "1090 willow bend rd fairhope al 36532",
   "written_by": ["property-intel-report"],
   "last_updated": "YYYY-MM-DD",
@@ -55,7 +55,8 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
     "days_on_market": 0, "last_sale_price": 0, "last_sale_date": "",
     "median_psf": 0, "psf_yoy_pct": 0,
     "months_inventory": null, "median_dom": null,
-    "mortgage_rate_pct": 0, "rate_source": "", "rate_date": ""
+    "mortgage_rate_pct": 0, "rate_source": "", "rate_date": "",
+    "tax_annual_post_sale": 0, "hoa_monthly": 0
   },
 
   "comps": [
@@ -71,8 +72,13 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
   },
 
   "insurance": {
+    "market_profile": "coastal | inland",
     "cov_a_est": 0, "premium_low": 0, "premium_high": 0,
-    "wind_deductible_pct": null, "flood_required": null,
+    "wind_deductible_options_pct": [1, 2, 5],
+    "wind_deductible_pct": null, "wind_deductible_chosen": "true | default",
+    "aop_deductible": 0,
+    "flood_premium_low": null, "flood_premium_high": null, "flood_required": null,
+    "wind_note": "",
     "from_skill": "", "as_of": ""
   },
 
@@ -84,6 +90,19 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
 ```
 
 Omit any block you did not research. Do not write a key with a placeholder value — absent means "not researched," `null` means "researched and unavailable." That distinction is what lets the next skill know whether to try again.
+
+## Dashboard fields
+
+The dossier dashboard (`property-intel-report` Stage 5) reads only this cache. Each field is written by the skill that owns it, as a number, never a display string like `"$3,200"`.
+
+| Field | Written by | Dashboard use |
+|---|---|---|
+| `market.list_price`, `market.mortgage_rate_pct`, `rate_source`, `rate_date` | `property-intel-report` | Offer slider bounds, P&I. Rate goes stale after 7 days |
+| `market.tax_annual_post_sale`, `market.hoa_monthly` | `property-intel-report` | Carry, held fixed across offer prices |
+| `value.point`, `value.low`, `value.high`, `value.confidence` | `property-appraisal` | Value tile, slider marks, value vs rebuild |
+| `insurance.*` numeric fields above | `property-insurance-brief` | Carry insurance range, deductible dollars, Cov A |
+
+A missing field shows as a notice in its panel, never as a guess.
 
 ## Source tiers
 

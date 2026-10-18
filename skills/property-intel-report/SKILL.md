@@ -60,6 +60,8 @@ Synthesis is where Claude does the work the buyer is paying for. Specifically:
 
 All rates, percentages, and dollar anchors used below live in `references/rates_and_anchors.md` with an `as_of` date on each. Read that file rather than the numbers in this summary, and re-verify any anchor older than six months during Stage 2. `references/calculations.md` holds the formulas; where this file and calculations.md ever disagree, calculations.md governs.
 
+**Write the post-sale tax to the cache.** Once computed, write the annual figure to `property_facts.json` as `market.tax_annual_post_sale` with provenance, plus `market.hoa_monthly` if the listing shows one. This skill owns those numbers; the dossier dashboard reads them from the cache.
+
 **Monthly carry calculation.** Compute P&I at the current PMMS rate using `PMT = P * r * (1+r)^n / ((1+r)^n - 1)` for n=360, r=APR/12. Add PMI, property tax (project post-sale reassessment, not seller's homestead-protected number), homeowners insurance, wind/hurricane (separate policy in coastal hurricane zones), and flood. Take every rate from `rates_and_anchors.md`.
 
 If `property_facts.json` carries an `insurance` block from a `property-insurance-brief` run, use those figures and cite them. Otherwise use the orientation bands in `rates_and_anchors.md` and label them est.
@@ -118,9 +120,28 @@ Both read the `property_facts.json` you wrote in Stage 2, so each costs roughly 
 
 **Interviews still happen.** The appraisal and insurance skills each ask one batch of questions. Combine them into a single batch at the start of the dossier run rather than interrupting the user twice: ask the appraisal's condition questions and the insurance skill's coverage questions together, capped at 12 total, cutting anything the cache already answered. If the run is unattended, both skills build on documented defaults per their own unattended rules; do not stall the chain.
 
+### The dossier dashboard
+
+After both siblings finish, build one interactive page from the cache. It carries the math that crosses skills, which no single deck can show:
+
+- **Monthly carry vs offer price.** A slider from below the walk-away ceiling to list, with down payment, rate, and term controls. P&I, PMI, and tax compute live; homeowners and flood insurance show as the insurance brief's range, never a point.
+- **Storm-day cash.** Each wind deductible option in dollars (percentage × Cov A). The buyer can type real quoted premiums to see the annual savings and how many years of savings one claim erases, and their post-closing cash to check whether it covers the chosen deductible.
+- **Market value vs rebuild cost.** The appraisal's value range and the insurance brief's Cov A on one scale, with a one-line explanation of why they differ.
+
+```bash
+node <skill_path>/scripts/build_dashboard.js property_facts.json <address>_dossier.html \
+  --appraisal appraisal_data.json --insurance insurance_data.json --intel property_data.json
+```
+
+The dashboard reads numbers **only** from `property_facts.json`. It never parses slide copy and never produces a number another skill owns. The three deck files are passed for one purpose: the builder cross-checks that the decks and the dashboard show the same value, range, confidence, premium range, Cov A, chosen deductible, deductible dollars, and tax, and that this deck's carry insurance is within $75/mo of the sourced range. Every mismatch prints a `WARN:`. Fix the deck or the cache, whichever is wrong, and rebuild. Do not deliver a dashboard that disagrees with a deck.
+
+It also warns when a required cache field is missing (the matching panel shows a notice instead of a number), when the mortgage rate is more than 7 days old, and when its PMI anchor is more than six months old. Use `--fragment` to publish through an Artifact tool, `--strict` on unattended runs, `--today YYYY-MM-DD` to pin the staleness checks to the run date.
+
+Fields the siblings must write for the dashboard are listed in `references/property_facts.md` under "Dashboard fields." If a sibling did not write them, the cache write failed; say so rather than filling the gap by hand.
+
 ### The reconciliation note
 
-Deliver all the files together (this deck, the appraisal deck and its comp explorer, the insurance deck, the spec-sheet PDF) with a short cover note that reconciles the three headline numbers against each other. This is the part a buyer cannot do themselves, and it is the reason the dossier is worth more than three separate runs:
+Deliver all the files together (this deck, the appraisal deck and its comp explorer, the insurance deck, the spec-sheet PDF, and the dossier dashboard) with a short cover note that reconciles the three headline numbers against each other. This is the part a buyer cannot do themselves, and it is the reason the dossier is worth more than three separate runs:
 
 - **Carry vs premium.** This deck's monthly carry used an insurance estimate. The insurance brief produced a sourced range. State the delta and which number to plan against. If the sourced range moves monthly carry by more than $75, say so explicitly — that is a real change to affordability.
 - **List vs value.** This deck's comp screen produced a fair-value range. The appraisal produced a point value with a confidence rating. The appraisal governs. If the two disagree by more than 5%, name the reason (usually comp selection or a condition adjustment the screen could not see).

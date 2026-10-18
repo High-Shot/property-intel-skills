@@ -122,7 +122,7 @@ Plus the standalone `spec_sheet.pdf`: one page, letter portrait, property block 
 - Your interview questions were already folded into the dossier's single combined batch. Do not ask again. Read the answers from the conversation and proceed.
 - Write your headline outputs back to the cache before finishing so the reconciliation note can use them.
 - Deliver your own files normally. The orchestrator writes the reconciliation note; you do not.
-- Write `insurance` (cov_a_est, premium_low, premium_high, wind_deductible_pct, flood_required) back to `property_facts.json`. The reconciliation note compares your sourced range against the intel deck's carry estimate.
+- Write the `insurance` block back to `property_facts.json` as numbers, not display strings: `market_profile`, `cov_a_est`, `premium_low`, `premium_high`, `wind_deductible_options_pct` (e.g. `[1, 2, 5]`, empty on an inland profile), `wind_deductible_pct`, `wind_deductible_chosen` (`true` or `"default"`, matching the deck), `aop_deductible`, `flood_premium_low`, `flood_premium_high`, `flood_required`, and optionally a one-line `wind_note`. The dossier dashboard renders these and cross-checks them against `insurance_data.json`; a deck and a cache that disagree is a fix-before-delivery warning.
 - Your Cov A anchors to **rebuild cost**, not to the appraisal's market value. If a `value` block is present, use it as context, never as Cov A.
 
 ## Design System

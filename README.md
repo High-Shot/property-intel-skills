@@ -28,7 +28,7 @@ Start a conversation and give Claude an address with intent:
 - "Should I buy 123 Main St, Anytown TX? Full property report."
 - "What would 123 Main St appraise for?"
 - "What will insurance run on 123 Main St? Build the quote spec."
-- "Give me everything on this house" → full dossier: all three documents plus a reconciliation note.
+- "Give me everything on this house" → full dossier: all three documents, an interactive dashboard (monthly carry by offer price, storm-day deductible cash, value vs rebuild cost), and a reconciliation note.
 
 Each skill asks a short interview (condition details for the appraisal, coverage preferences for insurance). Skip it and the skill builds on documented defaults, labels every assumption, and lowers its stated confidence.
 

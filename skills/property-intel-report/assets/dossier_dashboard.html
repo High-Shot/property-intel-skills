@@ -1,0 +1,389 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: headline tiles, then three working panels (carry, storm-day cash, value vs rebuild)
+   in one column on phones and two columns on desktop. Locked property-suite palette. */
+:root {
+  --bg: #F3F6F8; --surface: #FFFFFF; --sunk: #EAF0F4; --ink: #132235; --muted: #586A7D; --hair: #D3DCE3;
+  --marine: #0A2540; --teal: #1C7293; --coral: #E36414; --good: #2A9D8F; --bad: #B23A48; --warn: #A8861A;
+  --seg-pi: #0A2540; --seg-pmi: #6B7F94; --seg-tax: #1C7293; --seg-hoa: #8FB3C4; --seg-ins: #E36414; --seg-fl: #2A9D8F;
+  --band: rgba(28,114,147,0.14); --hatch: rgba(227,100,20,0.28);
+  --font-h: Georgia, "Times New Roman", serif;
+  --font-b: Calibri, Carlito, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #081626; --surface: #0E2236; --sunk: #13304A; --ink: #E3EBF2; --muted: #93A7BA; --hair: #20405E;
+    --marine: #CFE0EE; --teal: #5BB0CF; --coral: #F2873F; --good: #4CC2B3; --bad: #E06A78; --warn: #D9B544;
+    --seg-pi: #CFE0EE; --seg-pmi: #8399AE; --seg-tax: #5BB0CF; --seg-hoa: #2F6A86; --seg-ins: #F2873F; --seg-fl: #4CC2B3;
+    --band: rgba(91,176,207,0.18); --hatch: rgba(242,135,63,0.32);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #081626; --surface: #0E2236; --sunk: #13304A; --ink: #E3EBF2; --muted: #93A7BA; --hair: #20405E;
+  --marine: #CFE0EE; --teal: #5BB0CF; --coral: #F2873F; --good: #4CC2B3; --bad: #E06A78; --warn: #D9B544;
+  --seg-pi: #CFE0EE; --seg-pmi: #8399AE; --seg-tax: #5BB0CF; --seg-hoa: #2F6A86; --seg-ins: #F2873F; --seg-fl: #4CC2B3;
+  --band: rgba(91,176,207,0.18); --hatch: rgba(242,135,63,0.32);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-b); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
+.num { font-variant-numeric: tabular-nums; }
+.eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral); }
+h1 { font-family: var(--font-h); font-size: clamp(24px, 4vw, 34px); line-height: 1.12; margin: 4px 0 2px; color: var(--marine); text-wrap: balance; }
+h2 { font-family: var(--font-h); font-size: 19px; margin: 0; color: var(--marine); }
+.sub { color: var(--muted); font-size: 14px; }
+.small { font-size: 12.5px; color: var(--muted); }
+
+.tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.tile { background: var(--surface); border: 1px solid var(--hair); border-radius: 10px; padding: 14px 16px; display: grid; gap: 2px; align-content: start; }
+.tile .k { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.tile .v { font-family: var(--font-h); font-size: 28px; font-weight: 700; color: var(--marine); line-height: 1.1; }
+.tile .s { font-size: 13px; color: var(--muted); }
+.tile.missing .v { color: var(--muted); font-size: 18px; font-family: var(--font-b); }
+
+.panels { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 980px) { .panels { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } .span2 { grid-column: 1 / -1; } }
+.panel { background: var(--surface); border: 1px solid var(--hair); border-radius: 10px; padding: 18px; min-width: 0; display: grid; gap: 14px; align-content: start; }
+.panel-h { display: grid; gap: 2px; }
+.notice { color: var(--muted); font-size: 14px; padding: 14px; background: var(--sunk); border-radius: 8px; }
+
+/* controls */
+.controls { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.ctl { display: grid; gap: 4px; min-width: 0; }
+.ctl label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.ctl select, .ctl input[type=number] {
+  font: inherit; font-size: 15px; padding: 7px 9px; border: 1px solid var(--hair); border-radius: 7px; background: var(--surface); color: var(--ink); width: 100%;
+}
+.price-row { display: grid; gap: 6px; }
+.price-row .top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.price-row .pv { font-family: var(--font-h); font-size: 26px; font-weight: 700; color: var(--marine); }
+input[type=range] { width: 100%; accent-color: var(--teal); margin: 4px 0; }
+.ticks { position: relative; height: 56px; font-size: 11.5px; color: var(--muted); }
+.ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; text-align: center; line-height: 1.2; }
+.ticks span b { display: block; color: var(--ink); font-weight: 700; }
+.ticks span.l { transform: none; text-align: left; } .ticks span.r { transform: translateX(-100%); text-align: right; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.presets button {
+  font: inherit; font-size: 13px; font-weight: 700; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--teal);
+  background: transparent; color: var(--teal); cursor: pointer;
+}
+.presets button[aria-pressed="true"] { background: var(--teal); color: var(--surface); }
+
+.total { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--hair); padding-top: 12px; }
+.total .tv { font-family: var(--font-h); font-size: 30px; font-weight: 700; color: var(--marine); }
+.bar { display: flex; height: 18px; border-radius: 5px; overflow: hidden; background: var(--sunk); }
+.bar i { display: block; height: 100%; }
+.bar .hatch { background: repeating-linear-gradient(135deg, var(--hatch) 0 5px, transparent 5px 9px); }
+.lines { display: grid; gap: 6px; font-size: 14px; }
+.lines div { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 8px; align-items: baseline; }
+.lines .sw { width: 10px; height: 10px; border-radius: 2px; align-self: center; }
+.lines .src { grid-column: 2 / -1; font-size: 12px; color: var(--muted); margin-top: -4px; }
+.delta { font-size: 14px; background: var(--sunk); border-radius: 8px; padding: 10px 12px; }
+
+/* deductible */
+.dopts { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.dopt { border: 1px solid var(--hair); border-radius: 9px; padding: 12px; display: grid; gap: 4px; align-content: start; }
+.dopt.chosen { border-color: var(--coral); box-shadow: 0 0 0 1px var(--coral); }
+.dopt .pct { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); display: flex; justify-content: space-between; gap: 6px; }
+.dopt .pill { color: var(--coral); }
+.dopt .d { font-family: var(--font-h); font-size: 24px; font-weight: 700; color: var(--marine); }
+.dopt input { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var(--hair); border-radius: 6px; width: 100%; background: var(--surface); color: var(--ink); }
+.dopt .be { font-size: 13px; color: var(--ink); min-height: 1.4em; }
+.dopt .be.bad { color: var(--bad); font-weight: 700; }
+.reserve { display: grid; gap: 6px; }
+.reserve-out { font-size: 14px; }
+.reserve-out.ok { color: var(--good); } .reserve-out.short { color: var(--bad); font-weight: 700; }
+
+/* value vs rebuild */
+.vtrack { display: grid; gap: 4px; }
+.vtrack .lab { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; flex-wrap: wrap; }
+.vtrack .lab b { color: var(--ink); }
+.track { position: relative; height: 26px; background: var(--sunk); border-radius: 5px; }
+.track .rng { position: absolute; top: 0; bottom: 0; background: var(--band); border-left: 2px solid var(--teal); border-right: 2px solid var(--teal); }
+.track .mk { position: absolute; top: -3px; bottom: -3px; width: 3px; border-radius: 2px; transform: translateX(-50%); }
+.track .fill { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 5px 0 0 5px; }
+.axis { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); }
+#val-body, #ded-body { display: grid; gap: 16px; }
+.explain { font-size: 14px; border-left: 3px solid var(--teal); padding-left: 10px; color: var(--ink); max-width: 68ch; }
+
+details.src summary { cursor: pointer; font-weight: 700; color: var(--teal); }
+details.src ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--muted); display: grid; gap: 3px; }
+footer { color: var(--muted); font-size: 12.5px; display: grid; gap: 4px; }
+:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .bar i, .track .mk { transition: all 140ms ease; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Buyer's Dossier</div>
+    <h1 id="addr"></h1>
+    <div class="sub" id="meta"></div>
+  </header>
+
+  <section class="tiles num" id="tiles" aria-live="polite"></section>
+
+  <div class="panels">
+    <section class="panel span2" id="carry-panel">
+      <div class="panel-h">
+        <h2>What you'd pay each month</h2>
+        <span class="sub">Move the offer price. Insurance shows as a range because it is one until three real quotes come back.</span>
+      </div>
+      <div class="price-row">
+        <div class="top"><label class="small" for="price">Offer price</label><span class="pv num" id="price-out"></span></div>
+        <input type="range" id="price" step="1000">
+        <div class="ticks num" id="ticks"></div>
+      </div>
+      <div class="controls">
+        <div class="ctl"><label for="down">Down payment</label>
+          <select id="down"><option value="3.5">3.5%</option><option value="5">5%</option><option value="10">10%</option><option value="20" selected>20%</option><option value="25">25%</option><option value="cash">All cash</option></select></div>
+        <div class="ctl"><label for="rate">Rate (30-yr fixed)</label><input type="number" id="rate" step="0.05" min="0" max="20"></div>
+        <div class="ctl"><label for="term">Term</label><select id="term"><option value="30" selected>30 years</option><option value="15">15 years</option></select></div>
+      </div>
+      <div class="total num"><span class="sub">Estimated monthly total</span><span class="tv" id="total-out"></span></div>
+      <div class="bar" id="bar" aria-hidden="true"></div>
+      <div class="lines num" id="lines"></div>
+      <div class="delta num" id="delta"></div>
+    </section>
+
+    <section class="panel" id="ded-panel">
+      <div class="panel-h">
+        <h2>Storm-day cash</h2>
+        <span class="sub" id="ded-sub"></span>
+      </div>
+      <div id="ded-body"></div>
+    </section>
+
+    <section class="panel" id="val-panel">
+      <div class="panel-h">
+        <h2>Market value vs rebuild cost</h2>
+        <span class="sub">Two different numbers that get confused at closing.</span>
+      </div>
+      <div id="val-body"></div>
+    </section>
+  </div>
+
+  <details class="src panel"><summary>Where each number came from</summary><ul id="sources"></ul></details>
+
+  <footer>
+    <div>Decision support, not a licensed appraisal, insurance advice, or a loan estimate. Get a lender's Loan Estimate and three insurance quotes before you sign.</div>
+    <div id="foot"></div>
+  </footer>
+</div>
+
+<script>
+var F = /*__DATA__*/null;
+/*__MATH__*/
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var money = function (n) { return (n < 0 ? "−$" : "$") + Math.abs(Math.round(n)).toLocaleString("en-US"); };
+  var kShort = function (n) { return "$" + (Math.abs(n) >= 1e6 ? (n / 1e6).toFixed(2) + "M" : Math.round(n / 1000) + "K"); };
+  var mo = function (n) { return money(n) + "/mo"; };
+  var rangeMo = function (a, b) { return Math.round(a) === Math.round(b) ? mo(a) : money(a) + "–" + money(b) + "/mo"; };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+
+  $("addr").textContent = F.address;
+  $("meta").textContent = [F.city_state_zip, F.report_date ? "Prepared " + F.report_date : null].filter(Boolean).join(" · ");
+  $("foot").textContent = "Value comes from the appraisal brief, premiums and deductibles from the insurance brief, tax from the intel report. This page does arithmetic on those numbers and adds none of its own.";
+
+  var V = F.value || null;
+  var list = F.list_price || null;
+
+  // ---------- price slider ----------
+  var pMin = Math.min(V ? V.low : list * 0.85, list || Infinity);
+  var pMax = Math.max(V ? V.high : list, list || 0);
+  pMin = Math.floor(pMin * 0.97 / 5000) * 5000;
+  pMax = Math.ceil(pMax * 1.02 / 5000) * 5000;
+  var pDefault = V ? V.point : list;
+  var price = $("price");
+  price.min = pMin; price.max = pMax; price.value = pDefault;
+  $("rate").value = F.rate_pct != null ? F.rate_pct : "";
+
+  var marks = [];
+  if (V) { marks.push([V.low, "Walk-away"]); marks.push([V.point, "Fair value"]); }
+  if (list) marks.push([list, "List"]);
+  function drawTicks() {
+    var span = pMax - pMin;
+    var lastPct = -100, row = 0;
+    $("ticks").innerHTML = marks.map(function (m) {
+      var pct = (m[0] - pMin) / span * 100;
+      row = pct - lastPct < 22 ? 1 - row : 0; // drop a label to the second row when it would collide
+      lastPct = pct;
+      var cls = pct < 12 ? "l" : pct > 88 ? "r" : "";
+      return "<span class=\"" + cls + "\" style=\"left:" + pct.toFixed(2) + "%;top:" + (row * 26) + "px\"><b>" + kShort(m[0]) + "</b>" + m[1] + "</span>";
+    }).join("");
+  }
+  // keep labels apart when two marks sit close together
+  marks.sort(function (a, b) { return a[0] - b[0]; });
+
+  function state() {
+    var d = $("down").value;
+    return { price: +price.value, downPct: d === "cash" ? 100 : +d, cash: d === "cash", ratePct: parseFloat($("rate").value) || 0, years: +$("term").value };
+  }
+
+  // ---------- carry ----------
+  var SEG = [
+    ["pi", "Principal & interest", "--seg-pi"], ["pmi", "PMI", "--seg-pmi"], ["tax", "Property tax", "--seg-tax"],
+    ["hoa", "HOA", "--seg-hoa"], ["ins", "Homeowners insurance", "--seg-ins"], ["fl", "Flood insurance", "--seg-fl"]
+  ];
+  function drawCarry() {
+    var s = state();
+    var c = computeCarry(F, s);
+    $("price-out").textContent = money(s.price);
+    $("total-out").textContent = rangeMo(c.low, c.high);
+    var scaleMax = computeCarry(F, { price: pMax, downPct: s.downPct, cash: s.cash, ratePct: s.ratePct, years: s.years }).high || 1;
+    var segs = [
+      ["pi", c.pi, 0], ["pmi", c.pmi, 0], ["tax", c.tax || 0, 0], ["hoa", c.hoa, 0],
+      ["ins", c.insLo || 0, (c.insHi || 0) - (c.insLo || 0)], ["fl", c.flLo || 0, (c.flHi || 0) - (c.flLo || 0)]
+    ];
+    var bar = "";
+    segs.forEach(function (g) {
+      var col = SEG.filter(function (x) { return x[0] === g[0]; })[0][2];
+      if (g[1] > 0) bar += "<i style=\"width:" + (g[1] / scaleMax * 100).toFixed(2) + "%;background:var(" + col + ")\"></i>";
+      if (g[2] > 0) bar += "<i class=\"hatch\" style=\"width:" + (g[2] / scaleMax * 100).toFixed(2) + "%\"></i>";
+    });
+    $("bar").innerHTML = bar;
+
+    var rows = [];
+    var row = function (key, label, val, src) {
+      var col = SEG.filter(function (x) { return x[0] === key; })[0][2];
+      rows.push("<div><span class=\"sw\" style=\"background:var(" + col + ")\"></span><span>" + label + "</span><b>" + val + "</b>" + (src ? "<span class=\"src\">" + esc(src) + "</span>" : "") + "</div>");
+    };
+    row("pi", "Principal & interest", c.loan ? mo(c.pi) : "$0 (cash)", c.loan ? money(c.loan) + " loan at " + s.ratePct.toFixed(2) + "%, " + s.years + " yrs. Rate: " + (F.rate_source || "entered") + (F.rate_date ? ", " + F.rate_date : "") : null);
+    if (c.pmi > 0) row("pmi", "PMI", mo(c.pmi), (F.pmi_rate * 100).toFixed(2) + "%/yr of loan while LTV is above 80% (intel report anchor, as of " + F.pmi_as_of + "). Drops off at 78% LTV.");
+    row("tax", "Property tax", c.tax != null ? mo(c.tax) : "not researched", c.tax != null ? "Post-sale estimate from the intel report; seller exemptions reset at sale. Held fixed across offer prices." : "Run property-intel-report to add it. The total excludes tax.");
+    if (c.hoa) row("hoa", "HOA", mo(c.hoa), "From the listing.");
+    row("ins", "Homeowners insurance", c.insLo != null ? rangeMo(c.insLo, c.insHi) : "not researched", c.insLo != null ? "Insurance brief range (" + money(F.premium_low) + "–" + money(F.premium_high) + "/yr), excl. flood. Not a quote." : "Run property-insurance-brief to add it. The total excludes insurance.");
+    if (c.flLo != null) row("fl", "Flood insurance", rangeMo(c.flLo, c.flHi), "Separate policy. Insurance brief range (" + money(F.flood_premium_low) + "–" + money(F.flood_premium_high) + "/yr)" + (F.flood_required ? ", lender-required." : ", optional in this zone."));
+    $("lines").innerHTML = rows.join("");
+
+    var notes = [];
+    if (list && s.price !== list) {
+      var cl = computeCarry(F, { price: list, downPct: s.downPct, cash: s.cash, ratePct: s.ratePct, years: s.years });
+      var dm = cl.low - c.low;
+      notes.push("This offer is " + money(Math.abs(list - s.price)) + (s.price < list ? " below" : " above") + " list (" + kShort(list) + "): <b>" + (dm >= 0 ? money(dm) + "/mo less" : money(-dm) + "/mo more") + "</b> than paying list" + (s.cash ? "." : ", and " + money(Math.abs(cl.down - c.down)) + (dm >= 0 ? " less" : " more") + " down payment."));
+    }
+    if (!s.cash) {
+      var per10 = pmt(10000 * (1 - s.downPct / 100), s.ratePct, s.years);
+      notes.push("Each $10K off the price saves about <b>" + money(per10) + "/mo</b> in principal and interest at this rate.");
+      notes.push("Down payment " + money(c.down) + (c.pmi > 0 ? "; PMI applies below 20% down." : "."));
+    } else notes.push("All cash: carry is tax and insurance only.");
+    if (c.missing.length) notes.push("Missing from the total: " + c.missing.join(" and ") + ".");
+    $("delta").innerHTML = notes.join(" ");
+  }
+
+  // ---------- tiles ----------
+  function drawTiles() {
+    var c = computeCarry(F, state());
+    var t = [];
+    t.push(V ? tile("Indicated value", money(V.point), kShort(V.low) + "–" + kShort(V.high) + " · " + V.confidence + " confidence" + (list ? " · list " + kShort(list) : ""))
+      : tile("Indicated value", "Not run", "Run property-appraisal for the value number", true));
+    t.push(tile("Monthly at " + money(+price.value), rangeMo(c.low, c.high).replace("/mo", ""), (c.missing.length ? "Excludes " + c.missing.join(" and ") + " · " : "") + "per month, " + ($("down").value === "cash" ? "all cash" : $("down").value + "% down")));
+    if (F.cov_a_est && F.wind_deductible_pct) t.push(tile("Wind deductible chosen", money(F.cov_a_est * F.wind_deductible_pct / 100), F.wind_deductible_pct + "% of " + kShort(F.cov_a_est) + " dwelling coverage" + (F.wind_deductible_default ? " · default, not chosen" : "")));
+    else if (F.aop_deductible) t.push(tile("Deductible", money(F.aop_deductible), "Flat, all other perils"));
+    else t.push(tile("Storm-day cash", "Not run", "Run property-insurance-brief for deductibles", true));
+    $("tiles").innerHTML = t.join("");
+  }
+  function tile(k, v, s, missing) { return "<div class=\"tile" + (missing ? " missing" : "") + "\"><div class=\"k\">" + esc(k) + "</div><div class=\"v\">" + esc(v) + "</div><div class=\"s\">" + esc(s) + "</div></div>"; }
+
+  // ---------- deductible ----------
+  var quotes = {};
+  function drawDeductible(rebuild) {
+    var body = $("ded-body");
+    if (!F.cov_a_est) {
+      $("ded-sub").textContent = "";
+      body.innerHTML = "<div class=\"notice\">No insurance brief in this dossier. Run property-insurance-brief to see the deductible in dollars.</div>";
+      return;
+    }
+    if (!(F.wind_deductible_options_pct || []).length) {
+      $("ded-sub").textContent = "Inland profile: no percentage wind deductible.";
+      body.innerHTML = "<div class=\"notice\">The insurance brief priced a flat deductible" + (F.aop_deductible ? " of <b>" + money(F.aop_deductible) + "</b>" : "") + " for all perils. Hail or wind endorsements, if any, are on the spec sheet.</div>";
+      return;
+    }
+    $("ded-sub").textContent = "A percentage deductible is a percentage of dwelling coverage (" + money(F.cov_a_est) + "), not of the damage. Type premiums from real quotes to see the trade.";
+    var tbl = deductibleTable(F, quotes);
+    if (rebuild) {
+      body.innerHTML = "<div class=\"dopts num\" id=\"dopts\"></div>" +
+        "<div class=\"reserve\"><div class=\"ctl\"><label for=\"reserve\">Cash you'll have after closing</label><input type=\"number\" id=\"reserve\" min=\"0\" step=\"1000\" placeholder=\"e.g. 25000\"></div><div class=\"reserve-out\" id=\"reserve-out\"></div></div>" +
+        (F.wind_note ? "<div class=\"small\">" + esc(F.wind_note) + "</div>" : "");
+      $("dopts").innerHTML = tbl.options.map(function (o) {
+        return "<div class=\"dopt" + (o.chosen ? " chosen" : "") + "\"><div class=\"pct\"><span>" + o.pct + "% WIND</span>" + (o.chosen ? "<span class=\"pill\">" + (F.wind_deductible_default ? "DEFAULT" : "YOUR PICK") + "</span>" : "") + "</div>" +
+          "<div class=\"d\">" + money(o.dollars) + "</div><div class=\"small\">out of pocket per named-storm claim</div>" +
+          "<label class=\"small\" for=\"q-" + o.pct + "\">Quoted premium, $/yr</label><input type=\"number\" id=\"q-" + o.pct + "\" data-p=\"" + o.pct + "\" min=\"0\" step=\"50\" placeholder=\"from a quote\">" +
+          "<div class=\"be\" id=\"be-" + o.pct + "\"></div></div>";
+      }).join("");
+      $("dopts").querySelectorAll("input").forEach(function (inp) {
+        inp.addEventListener("input", function () { var v = parseFloat(inp.value); quotes[+inp.getAttribute("data-p")] = v > 0 ? v : undefined; drawDeductible(false); });
+      });
+      $("reserve").addEventListener("input", function () { drawDeductible(false); });
+    }
+    tbl.options.forEach(function (o) {
+      var el = $("be-" + o.pct); if (!el) return;
+      el.className = "be";
+      if (tbl.base && o === tbl.base && o.premium != null) el.textContent = "Baseline for comparison.";
+      else if (o.savings == null) el.textContent = "";
+      else if (o.savings <= 0) { el.textContent = "Costs more than " + tbl.base.pct + "% and covers less. Skip it."; el.className = "be bad"; }
+      else {
+        var yrs = o.breakevenYrs;
+        el.textContent = "Saves " + money(o.savings) + "/yr vs " + tbl.base.pct + "%, adds " + money(o.extraExposure) + " exposure. One claim erases " + (yrs >= 10 ? Math.round(yrs) : yrs.toFixed(1)) + " years of savings.";
+        if (yrs > 10) el.className = "be bad";
+      }
+    });
+    var r = parseFloat(($("reserve") || {}).value);
+    var out = $("reserve-out");
+    if (out) {
+      var chosen = tbl.options.filter(function (o) { return o.chosen; })[0];
+      if (!(r >= 0) || !chosen) { out.textContent = ""; out.className = "reserve-out"; }
+      else if (r >= chosen.dollars) { out.textContent = "Covers the " + chosen.pct + "% deductible with " + money(r - chosen.dollars) + " left."; out.className = "reserve-out ok"; }
+      else { out.textContent = money(chosen.dollars - r) + " short of the " + chosen.pct + "% deductible. Pick a lower deductible or plan to rebuild reserves."; out.className = "reserve-out short"; }
+    }
+  }
+
+  // ---------- value vs rebuild ----------
+  function drawValue() {
+    var body = $("val-body");
+    if (!V && !F.cov_a_est) { body.innerHTML = "<div class=\"notice\">Needs the appraisal brief and the insurance brief.</div>"; return; }
+    var top = Math.max(V ? V.high : 0, F.cov_a_est || 0, list || 0) * 1.08;
+    var x = function (n) { return (n / top * 100).toFixed(2) + "%"; };
+    var html = "";
+    if (V) {
+      html += "<div class=\"vtrack num\"><div class=\"lab\"><span>Market value <b>" + money(V.point) + "</b></span><span class=\"small\">" + money(V.low) + "–" + money(V.high) + "</span></div>" +
+        "<div class=\"track\"><span class=\"rng\" style=\"left:" + x(V.low) + ";width:calc(" + x(V.high) + " - " + x(V.low) + ")\"></span>" +
+        "<span class=\"mk\" style=\"left:" + x(V.point) + ";background:var(--marine)\" title=\"Point value\"></span>" +
+        (list ? "<span class=\"mk\" style=\"left:" + x(list) + ";background:var(--coral)\" title=\"List price\"></span>" : "") + "</div>" +
+        "<div class=\"small\">Appraisal brief: what a buyer pays for house and land together." + (list ? " Orange mark is list, " + money(list) + "." : "") + "</div></div>";
+    }
+    if (F.cov_a_est) {
+      html += "<div class=\"vtrack num\"><div class=\"lab\"><span>Dwelling coverage (Cov A) <b>" + money(F.cov_a_est) + "</b></span><span class=\"small\">rebuild cost est.</span></div>" +
+        "<div class=\"track\"><span class=\"fill\" style=\"width:" + x(F.cov_a_est) + ";background:var(--seg-ins)\"></span></div>" +
+        "<div class=\"small\">Insurance brief: what it costs to rebuild the structure. Land never burns, so it is not insured.</div></div>";
+    }
+    html += "<div class=\"axis num\"><span>$0</span><span>" + kShort(top) + "</span></div>";
+    if (V && F.cov_a_est) {
+      var gap = F.cov_a_est - V.point;
+      html += "<div class=\"explain\">" + (gap < 0
+        ? "Coverage is " + money(-gap) + " below market value. That is expected: market value includes the lot and location. Insure to rebuild cost, and ask each agent for extended replacement cost in case rebuild prices jump after a storm."
+        : "Coverage is " + money(gap) + " above market value. Rebuild cost can exceed resale value when construction costs run high. Confirm the carrier's replacement-cost estimate supports it rather than cutting coverage to match the price.") + "</div>";
+    }
+    body.innerHTML = html;
+  }
+
+  // ---------- sources ----------
+  $("sources").innerHTML = (F.sources || []).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") || "<li>No provenance recorded.</li>";
+
+  function render() { drawCarry(); drawTiles(); }
+  price.addEventListener("input", render);
+  ["down", "rate", "term"].forEach(function (id) { $(id).addEventListener("input", render); $(id).addEventListener("change", render); });
+  drawTicks();
+  render();
+  drawDeductible(true);
+  drawValue();
+})();
+</script>
