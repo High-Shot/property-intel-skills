@@ -45,9 +45,11 @@ County portal quirks (which assessor and GIS sites resist automated fetch, and w
 Ask the buyer ONE batch of questions before synthesizing. Never drip-feed. The full question set, phrasing guidance, and the answer-to-dollar-adjustment mapping are in `references/interview.md`.
 
 Rules:
-- 5 questions max, usually fewer. Assume the buyer has not walked the house: every question must be answerable from the listing. Cut any question research already answered, and say so ("permits show the roof was replaced in 2021, so I'm skipping that one").
+- First question is always: "Have you walked it, or going off the listing?" This sets the condition-input confidence and picks the question set. No answer means photos-only. If the conversation already says the buyer walked it, skip Q0 and go straight to the walkthrough set.
+- **Not walked (listing set):** 5 questions max, usually fewer, every one answerable from the listing photos and remarks.
+- **Walked (walkthrough set):** the buyer has seen things no listing shows, so ask for them by area: what needs repair or replacement, how many, and how much of it (which floors, which walls, how many panes or boards). Up to 6 questions. A walked buyer's repair list is the most valuable condition input this skill gets; never skip it to save a turn. See `references/interview.md` § Walkthrough set.
+- Cut any question research or the conversation already answered, and say so ("you said the roof is 5 years old, so I'm skipping that one").
 - Reference research facts in the questions where possible.
-- First question is always: "Have you walked it, or going off the listing?" This sets the condition-input confidence. No answer means photos-only.
 - If the buyer answers "I don't know" to something, proceed with the neutral assumption from interview.md and label the resulting adjustment as assumed.
 - If the buyer skips the interview entirely, proceed with all-neutral assumptions, drop confidence one level, and say so on the caveats slide.
 

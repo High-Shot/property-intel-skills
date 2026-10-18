@@ -43,6 +43,11 @@ Full mapping in `interview.md`. **Vintage 2025-Q4, calibrated to a $250-600K sin
 | Workshop / outbuilding | +$8-25K | 2025-Q4 |
 | Whole-house generator | +$5-10K | 2025-Q4 |
 | Dock (waterfront) | +$15-40K | 2025-Q4 — regional, and permit-dependent |
+| Insulated window pane (walked) | −$300-600 each | 2026-10 est. — re-verify locally |
+| Exterior door and frame (walked) | −$1,500-3,500 installed | 2026-10 est. — re-verify locally |
+| Carpet, installed (walked) | −$3.50-6.00 /sq ft | 2026-10 est. — re-verify locally |
+| Porch boards / fence sections / siding pieces (walked) | −$300-800 / −$150-300 per section / −$500-1,500 | 2026-10 est. — re-verify locally |
+| Minor rot at slab or sills (walked) | −(cure × 1.25), cure $1-3K | 2026-10 est. — moisture defect multiplier per methodology §4 |
 
 **Cap.** Total condition adjustments are capped at ±20% of the base indicated value. Past that, the comps are wrong, not the condition.
 

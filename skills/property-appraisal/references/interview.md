@@ -1,6 +1,6 @@
 # The Buyer Interview (one batch)
 
-Asked after research, before synthesis. One message, all questions at once, numbered so the buyer can answer inline. **5 questions max, usually fewer.** Most buyers have not walked the house yet, so every question must be answerable from the listing photos and remarks. Cut anything research already answered and say which ones you cut and why ("the listing says new HVAC — skipping that question").
+Asked after research, before synthesis. One message, all questions at once, numbered so the buyer can answer inline. Q0 decides the set: buyers who have **not** walked it get the listing set (5 questions max, all answerable from listing photos and remarks); buyers who **have** walked it get the walkthrough set (up to 6, repairs by area with counts). Cut anything research or the conversation already answered and say which ones you cut and why ("the listing says new HVAC — skipping that question").
 
 ## Phrasing rules
 
@@ -17,6 +17,23 @@ Asked after research, before synthesis. One message, all questions at once, numb
 **Q2. Flooring in the main living areas — type, and any visible wear?**
 **Q3. Anything that gave you pause — defects in the photos or remarks, a busy road, neighbors, drainage?**
 **Q4 (only if research did not answer it): Roof, HVAC, or water heater age, if you know it?**
+
+### Walkthrough set (buyer has walked it)
+
+Replaces Q1-Q4 when Q0 comes back "walked." Ask by area, and ask for **count and extent**, not just yes/no, because cure cost scales with both. One message, numbered, up to 6 questions:
+
+**W1. Doors and windows: any broken or fogged panes, sticking or damaged doors, damaged frames? How many?**
+**W2. Floors: what needs replacing, and where? Which floors or rooms, and what's the minimum you'd do vs. what you'd want?**
+**W3. Exterior wood and siding: porch or deck boards, siding pieces, trim, fence sections. Roughly how many, and which sides?**
+**W4. Signs of water: rot, soft spots, stains, or smell anywhere? Garage walls at the slab, window sills, around tubs and toilets, ceilings.**
+**W5. Kitchen and baths: original, partly updated, or remodeled? What would you change first?**
+**W6 (only if not already known): Ages you saw on labels: roof, HVAC, water heater. Panel brand.**
+
+Close with: "Rough counts are fine. Skip any you didn't notice. I'll price what you saw at cure cost and label the estimates."
+
+**Scope rule.** When the buyer gives a minimum and a fuller scope ("downstairs carpet at least, ideally all of it"), the minimum goes into the point value and the fuller scope goes into the low sensitivity case. Say which is which on the condition slide.
+
+**Grouping rule.** The condition slide holds 8 rows. Group by trade (doors and windows together; porch, fence, and siding together) and keep each moisture finding on its own row, because moisture items carry the 1.25 defect multiplier and need their own inspection line.
 
 Not asked, handled by research or neutral defaults: renovation spend, extras (pool, outbuilding, generator, solar, dock — read from the listing), lot size and garage (public record). If the buyer volunteers any of these, use them.
 
@@ -44,6 +61,13 @@ All dollar figures below are calibrated to a $250-600K single-family home in a G
 | Defects | Foundation movement confirmed | −(cure cost × 1.25); unknown cure → −$15-40K est., flag for structural engineer, confidence drops a level |
 | | Moisture/drainage issues | −(cure × 1.25); typical −$5-20K est. |
 | | Active pest / prior termite w/ repair | −$3-15K est. depending on scope |
+| Windows (walked) | Broken or fogged insulated pane | −$300-600 per pane (glass unit only; full window replacement $800-1,500) |
+| Exterior door (walked) | Slab only / door and frame | −$600-1,200 / −$1,500-3,500 installed |
+| Carpet (walked) | Replace, area known | −$3.50-6.00 per sq ft installed; minimum scope in the point, full scope in the low case |
+| Porch / deck boards (walked) | A few boards | −$300-800; more than ~25% of boards, price the deck surface |
+| Fence (walked) | A few sections | −$150-300 per section; whole runs at linear-foot replacement |
+| Siding (walked) | A few pieces | −$500-1,500; matching discontinued profiles can double it |
+| Wood rot at slab, sills, or bottom plates (walked) | Minor, localized | −(cure × 1.25), typical cure $1-3K. Moisture defect: add a termite/WDO and sill-plate probe to the inspector script |
 | Renovations | Documented with spend | Depreciated contribution per methodology §4 |
 | Location negatives | Busy road / power lines / backs commercial | −3-8% of value (skip if already comp-adjusted at the comp level — never double count) |
 | Pool (in-ground, good condition) | | +3-6% of value (Gulf Coast) |
