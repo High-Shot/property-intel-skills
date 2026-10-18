@@ -28,7 +28,8 @@ Start a conversation and give Claude an address with intent:
 - "Should I buy 123 Main St, Anytown TX? Full property report."
 - "What would 123 Main St appraise for?"
 - "What will insurance run on 123 Main St? Build the quote spec."
-- "Give me everything on this house" → full dossier: all three documents, an interactive dashboard (monthly carry by offer price, storm-day deductible cash, value vs rebuild cost), and a reconciliation note.
+- "Give me everything on this house" → full dossier: all three documents and an interactive dashboard with the reconciliation note on top, monthly carry by offer price (conventional or FHA), the repair budget from your walkthrough with a 203(k) check, storm-day deductible cash, and value vs rebuild cost.
+- "Compare these two houses" → a side-by-side page for 2-4 houses that each have a dossier, on one set of financing terms.
 
 Each skill asks a short interview (condition details for the appraisal, coverage preferences for insurance). Skip it and the skill builds on documented defaults, labels every assumption, and lowers its stated confidence.
 
@@ -57,3 +58,7 @@ These skills produce decision-support documents, not professional services. The 
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Verification
+
+`python3 tests/verify.py` builds every example, checks layout and arithmetic contracts, and injects known defects to prove each validator still catches them. GitHub Actions runs it on every push and pull request (`.github/workflows/verify.yml`).

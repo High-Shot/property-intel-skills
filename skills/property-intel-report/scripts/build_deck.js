@@ -79,7 +79,9 @@ const D = JSON.parse(fs.readFileSync(inputPath, "utf8"));
   }
   // 5. Monthly carry totals must equal their components.
   (D.monthly_carry?.scenarios || []).forEach(s => {
-    const sum = (s.pi || 0) + (s.pmi || 0) + (s.tax || 0) + (s.ins || 0) + (s.wind || 0) + (s.flood || 0);
+    // "—" marks a line that doesn't apply; count it as 0, never concatenate it into the sum.
+    const n = v => (typeof v === "number" ? v : 0);
+    const sum = n(s.pi) + n(s.pmi) + n(s.tax) + n(s.ins) + n(s.wind) + n(s.flood);
     if (s.total && Math.abs(s.total - sum) > 2)
       warn(`carry scenario "${s.label}" total ${s.total} != components ${sum}`);
   });

@@ -157,6 +157,23 @@ Keep the note under 200 words. The decks carry the detail.
 
 If a sibling skill fails or is unavailable, deliver what you have, say which piece is missing and why, and give the user the one-line command to run it separately. Never hold a finished deck hostage to an unfinished one.
 
+## Compare mode
+
+Use when the buyer asks which of two to four houses to pick ("compare these," "Gayfer vs Thompson Hall," "which one should I buy") and each house has a `property_facts.json` from a dossier or a partial run. A house with no cache gets the dossier first; never fill a compare column from memory or from another house's numbers.
+
+```bash
+node <skill_path>/scripts/build_compare.js facts_A.json facts_B.json [facts_C.json facts_D.json] \
+  -o <A>_vs_<B>.html [--today YYYY-MM-DD] [--fragment] [--strict]
+```
+
+The page puts the houses side by side under one set of financing controls (price basis: each house's fair value, list, or the buyer's own numbers; loan type; down payment; rate; term; financed repairs) so carry, cash needed, and $/sq ft compare on identical terms. It reads only the caches and shows "not in dossier" for anything a cache lacks. "Best" marks the lowest cost or biggest discount in a row, never the better house; the recommendation is yours to write, in one or two sentences, and should name the trade-off rather than add up the chips.
+
+The builder warns when two caches are the same address, when a house has no value, tax, or insurance (its carry is incomplete), and when the houses' rate dates span more than 7 days. Refresh the stale dossier before leaning on carry differences. Publish with `--fragment` through an Artifact tool, like the dashboard.
+
+## Verification
+
+`tests/verify.py` at the repo root builds every shipped example, checks slide counts, canvas bounds, the one-page PDF and page scripts, and injects known defects to prove each validator still fires. Run it after changing any builder or schema. CI runs it on every push.
+
 ## Output Standards
 
 The deck must always be 16 slides in this order:
@@ -215,7 +232,7 @@ The schema specifies counts so slides lay out cleanly. Treat them as ceilings wi
 
 ## Worked Example
 
-`examples/willow_bend/property_data.json` is a complete, arithmetically verified input file for a 1986 fixer-upper on a synthetic address. Every number in it recomputes from its own inputs. Use it as a reference for field structure, tone, and level of detail — and copy its habit of showing the arithmetic, not just the result.
+`examples/dossier_sample/` is one synthetic house across all three skills (intel, appraisal, and insurance data plus the facts cache with repairs, buyer financing, and a reconciliation note); every dashboard cross-check fires clean against it. `examples/willow_bend/property_data.json` is a complete, arithmetically verified input file for a 1986 fixer-upper on a synthetic address. Every number in it recomputes from its own inputs. Use it as a reference for field structure, tone, and level of detail — and copy its habit of showing the arithmetic, not just the result.
 
 It is synthetic on purpose. Do not ship a worked example containing a real parcel ID, MLS number, phone number, or a neighbor's records.
 

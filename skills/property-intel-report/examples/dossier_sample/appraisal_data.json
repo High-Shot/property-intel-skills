@@ -1,0 +1,420 @@
+{
+  "_note": "SYNTHETIC worked example. Address, parcel, comps, and coordinates are fabricated (pins shifted 0.10 deg west into Mobile Bay on purpose). Numbers come from a real Fairhope-area run and every one recomputes from its own inputs. One house across all three skills, so every dashboard cross-check fires.",
+  "property": {
+    "address": "4400 Example Pecan Rd",
+    "city_state_zip": "Fairhope, AL 36532",
+    "list_price": 539000,
+    "beds": 5,
+    "baths": 3,
+    "sqft": 3135,
+    "lot_acres": 0.71,
+    "year_built": 1992,
+    "parcel_id": "SYNTHETIC-EXAMPLE",
+    "lat": 30.53127,
+    "lng": -87.96823,
+    "geo_source": "Redfin listing page geo data (Tier 2)",
+    "report_date": "October 18, 2026"
+  },
+  "value_conclusion": {
+    "point_value": 452000,
+    "range_low": 420000,
+    "range_high": 484000,
+    "confidence": "Medium",
+    "confidence_reason": "5 comps, all Tier 1 MLS sales; one is 11.6 months old and one is 2.5 mi out. You walked it and confirmed the systems; repair costs are estimates until bids.",
+    "vs_list_verdict": "Significantly overpriced",
+    "vs_list_detail": "Point value is $87K (16.1%) below the $539K list. Even the range high of $484K is $55K under list."
+  },
+  "subject_profile": {
+    "walked": true,
+    "public_facts": [
+      {
+        "label": "Square feet",
+        "value": "3,135 (public record); listing says 3,200"
+      },
+      {
+        "label": "Year built",
+        "value": "1992 · 2 stories · 5 bed / 3 full bath"
+      },
+      {
+        "label": "Lot",
+        "value": "0.71 ac, 150 × 200 ft, zoned R-2"
+      },
+      {
+        "label": "Garage",
+        "value": "2-car attached"
+      },
+      {
+        "label": "Last sale",
+        "value": "$185,000 — Sep 2017"
+      },
+      {
+        "label": "Listing",
+        "value": "Listed Oct 6, 2026 at $539K, as-is, cash/conv only"
+      },
+      {
+        "label": "Hazard",
+        "value": "Outside flood zone (you); First Street flood 1/10, wind 9/10"
+      },
+      {
+        "label": "Tax (2025)",
+        "value": "$2,009"
+      }
+    ],
+    "interview_inputs": [
+      {
+        "label": "Roof",
+        "value": "5 yrs (you confirmed)",
+        "impact": "positive"
+      },
+      {
+        "label": "HVAC",
+        "value": "Both systems, inside and out, 2 yrs",
+        "impact": "positive"
+      },
+      {
+        "label": "Plumbing",
+        "value": "Replumbed throughout",
+        "impact": "positive"
+      },
+      {
+        "label": "Primary bath",
+        "value": "Upgraded",
+        "impact": "positive"
+      },
+      {
+        "label": "Kitchen",
+        "value": "Appliances 5 yrs; finishes not upgraded",
+        "impact": "negative"
+      },
+      {
+        "label": "Flooring",
+        "value": "Carpet: downstairs at minimum, ideally all",
+        "impact": "negative"
+      },
+      {
+        "label": "Doors/windows",
+        "value": "Front door and frame; 3 window panes",
+        "impact": "negative"
+      },
+      {
+        "label": "Exterior",
+        "value": "Porch boards, fence both sides, siding, rot at garage wall base",
+        "impact": "negative"
+      }
+    ]
+  },
+  "comps": [
+    {
+      "address": "112 Sample Magnolia Ct",
+      "sold_date": "Apr 2026",
+      "sold_price": 475000,
+      "sqft": 2894,
+      "ppsf": 164,
+      "distance_mi": 0.55,
+      "lat": 30.53325,
+      "lng": -87.95921,
+      "source": "Redfin sold page",
+      "source_tier": 1,
+      "key_diffs": "2013 · 241 sf smaller · sold as-is",
+      "net_adjustment": -10700,
+      "adjusted_value": 464300,
+      "weight": 0.3
+    },
+    {
+      "address": "305 Sample Magnolia Ct",
+      "sold_date": "May 2026",
+      "sold_price": 501500,
+      "sqft": 3298,
+      "ppsf": 152,
+      "distance_mi": 0.69,
+      "lat": 30.53424,
+      "lng": -87.9571,
+      "source": "Redfin sold page",
+      "source_tier": 1,
+      "key_diffs": "2013 · larger · kitchen 2023, en-suite 2024",
+      "net_adjustment": -68000,
+      "adjusted_value": 433500,
+      "weight": 0.2
+    },
+    {
+      "address": "48 Placeholder Royal Way",
+      "sold_date": "Jun 2026",
+      "sold_price": 535000,
+      "sqft": 3060,
+      "ppsf": 175,
+      "distance_mi": 1.15,
+      "lat": 30.51804,
+      "lng": -87.95653,
+      "source": "Redfin sold page",
+      "source_tier": 1,
+      "key_diffs": "2010 · updated finishes · generator",
+      "net_adjustment": -40200,
+      "adjusted_value": 494800,
+      "weight": 0.25
+    },
+    {
+      "address": "21 Placeholder Royal Way",
+      "sold_date": "Oct 2025",
+      "sold_price": 550000,
+      "sqft": 3002,
+      "ppsf": 183,
+      "distance_mi": 0.83,
+      "lat": 30.52315,
+      "lng": -87.95799,
+      "source": "Redfin sold page",
+      "source_tier": 1,
+      "key_diffs": "2003 · 3-car · bonus room · 11.6 mo old",
+      "net_adjustment": -21500,
+      "adjusted_value": 528500,
+      "weight": 0.15
+    },
+    {
+      "address": "900 Example Links Dr",
+      "sold_date": "Mar 2026",
+      "sold_price": 493000,
+      "sqft": 3135,
+      "ppsf": 157,
+      "distance_mi": 2.52,
+      "lat": 30.50683,
+      "lng": -87.93692,
+      "source": "Redfin sold page",
+      "source_tier": 1,
+      "key_diffs": "2010 · same size · 3 bed · generator",
+      "net_adjustment": -20200,
+      "adjusted_value": 472800,
+      "weight": 0.1
+    }
+  ],
+  "screened_out": [
+    {
+      "address": "940 Example Links Dr",
+      "sold_price": 540000,
+      "sold_date": "Jun 2026",
+      "sqft": 3025,
+      "distance_mi": 2.4,
+      "lat": 30.51012,
+      "lng": -87.93634,
+      "reason": "Listing says 3,025 sq ft, public record says 2,520; a 20% size conflict makes the GLA adjustment unreliable"
+    },
+    {
+      "address": "4510 Example Pecan Rd",
+      "sold_price": 425000,
+      "sold_date": "May 2026",
+      "sqft": 2001,
+      "distance_mi": null,
+      "reason": "2,001 sq ft is 36% below the subject; outside the ±25% size screen"
+    },
+    {
+      "address": "26 Demo Hemlock Ln",
+      "sold_price": 760000,
+      "sold_date": "Jun 2026",
+      "sqft": 3238,
+      "distance_mi": null,
+      "reason": "Built 2019, 27 years newer than the subject; outside the ±15-year age screen"
+    },
+    {
+      "address": "800 Demo Champion Rd",
+      "sold_price": 350000,
+      "sold_date": "Oct 2025",
+      "sqft": 2600,
+      "distance_mi": null,
+      "reason": "Built 1976, 2,600 sq ft, condition unknown, and nearly 12 months old; weaker on every axis than the five kept"
+    }
+  ],
+  "adjustment_schedule": [
+    {
+      "item": "Market/time",
+      "rate": "+0.15%/month",
+      "basis": "Fairhope ZHVI +1.7% YoY (Zillow, Sep 2026); Baldwin +1.9% (ACRE, Jul 2026)",
+      "applied_to": "All comps by months since sale"
+    },
+    {
+      "item": "GLA (sqft)",
+      "rate": "$66/sqft",
+      "basis": "40% of the comps' $166/sqft average",
+      "applied_to": "Comps 1, 2, 3, 4"
+    },
+    {
+      "item": "Effective age",
+      "rate": "0.5%/yr",
+      "basis": "Subject effective year 2000: 1992 shell; roof 5 yrs, HVAC 2 yrs, replumbed (you confirmed)",
+      "applied_to": "Comps 1, 2, 3, 4, 5"
+    },
+    {
+      "item": "Bathrooms",
+      "rate": "-0.75% per half bath",
+      "basis": "Half of 1.5%/full bath",
+      "applied_to": "Comps 2, 4"
+    },
+    {
+      "item": "Garage",
+      "rate": "-2% per bay",
+      "basis": "Midpoint of 1.5-3%",
+      "applied_to": "Comp 4 (3-car)"
+    },
+    {
+      "item": "Comp condition",
+      "rate": "-3% to -5%",
+      "basis": "Listing remarks: recent kitchen, bath, finish updates",
+      "applied_to": "Comps 2 (-5%), 3, 4 (-3%)"
+    },
+    {
+      "item": "Generator",
+      "rate": "-$6,000",
+      "basis": "Depreciated contribution, $5-10K band",
+      "applied_to": "Comps 3, 5"
+    },
+    {
+      "item": "Bedrooms",
+      "rate": "+$5,000",
+      "basis": "3 vs 5 beds changes family utility",
+      "applied_to": "Comp 5"
+    }
+  ],
+  "condition_adjustments": [
+    {
+      "item": "Roof (5 yrs)",
+      "finding": "You confirmed; permit not yet seen",
+      "amount": 0,
+      "tag": "verified",
+      "note": "Credited through effective age 2000"
+    },
+    {
+      "item": "HVAC (2 yrs) + replumb",
+      "finding": "Both systems in and out; full replumb",
+      "amount": 0,
+      "tag": "verified",
+      "note": "Credited through effective age 2000"
+    },
+    {
+      "item": "Primary bath",
+      "finding": "Upgraded",
+      "amount": 5000,
+      "tag": "verified",
+      "note": "+1% of value, full weight"
+    },
+    {
+      "item": "Kitchen",
+      "finding": "Appliances 5 yrs; cabinets and counters not upgraded",
+      "amount": -14000,
+      "tag": "est.",
+      "note": "-3% of value; newer appliances keep it at the low end"
+    },
+    {
+      "item": "Carpet (downstairs)",
+      "finding": "Minimum scope; all carpet is the fuller scope",
+      "amount": -6000,
+      "tag": "est.",
+      "note": "$3.50-6.00/sf installed; full scope in low case"
+    },
+    {
+      "item": "Front door + 3 panes",
+      "finding": "Door and frame replace; 3 insulated panes",
+      "amount": -4000,
+      "tag": "est.",
+      "note": "Door/frame $1.5-3.5K; panes $300-600 each"
+    },
+    {
+      "item": "Porch, fence, siding",
+      "finding": "A few porch boards, fence both sides, a few siding pieces",
+      "amount": -2500,
+      "tag": "est.",
+      "note": "Cure-cost midpoints"
+    },
+    {
+      "item": "Garage wall rot",
+      "finding": "Minor rot at base of garage walls",
+      "amount": -2500,
+      "tag": "est.",
+      "note": "Cure ~$2K x 1.25 moisture multiplier; probe sill plate"
+    }
+  ],
+  "condition_total": -24000,
+  "reconciliation": {
+    "base_indicated_value": 476000,
+    "narrative": "112 Sample Mag. and 48 Placeholder carry 55% of the weight: closest, recent, lowest gross adjustment. Age uses an effective year of 2000 because the roof, both HVAC systems, and plumbing are recent; that credit is why no separate system bonus appears. The maintenance is done but the finishes are not, so the kitchen and repair list come off the base. 21 Placeholder (11.6 mo) and Example Links (2.5 mi) carry low weight.",
+    "avm_checks": [
+      {
+        "source": "Redfin Estimate",
+        "value": "Not published"
+      },
+      {
+        "source": "Zestimate",
+        "value": "Not retrievable"
+      },
+      {
+        "source": "Tax-implied county value (est.)",
+        "value": 446000
+      }
+    ],
+    "sensitivity": {
+      "low_case": 423000,
+      "low_note": "All carpet replaced, kitchen at -5%, rot and door at the high end, oldest comp (21 Placeholder) removed",
+      "high_case": 490000,
+      "high_note": "Kitchen at -2%, repairs low, ZIP's +4.8% trend, plus up to $20K for the 0.71-acre lot"
+    }
+  },
+  "value_vs_price": {
+    "list_price": 539000,
+    "point_value": 452000,
+    "delta": -87000,
+    "delta_pct": -16.1,
+    "verdict_headline": "Significantly overpriced",
+    "anchor_points": [
+      {
+        "label": "Walk-away ceiling",
+        "value": 484000,
+        "note": "Range high. Above this you pay for the seller's equity"
+      },
+      {
+        "label": "Fair value",
+        "value": 452000,
+        "note": "Point value, with your repair list priced in"
+      },
+      {
+        "label": "Seller's premium",
+        "value": 539000,
+        "note": "List. $87K above indicated value"
+      }
+    ],
+    "bottom_line": "The maintenance is done and the upgrades are not: worth about $452K, so your planned $475K pays $23K over fair before you touch the kitchen."
+  },
+  "sources": [
+    {
+      "category": "Sold comps",
+      "detail": "Redfin sold pages, MLS-fed, pulled Oct 18, 2026"
+    },
+    {
+      "category": "Subject record",
+      "detail": "MLS and public record via Redfin"
+    },
+    {
+      "category": "Market trend",
+      "detail": "Zillow ZHVI Fairhope (Sep 30, 2026); ACRE Baldwin County (Jul 2026); TopHap 36532 (Aug 2026)"
+    },
+    {
+      "category": "Condition",
+      "detail": "Buyer's walkthrough; listing remarks for systems claims"
+    },
+    {
+      "category": "Tax-implied value",
+      "detail": "2025 tax $2,009 at 46.0 mills (ADOR Oct 2025), derived, est."
+    },
+    {
+      "category": "Coordinates",
+      "detail": "Redfin page geo data for subject and comps"
+    },
+    {
+      "category": "Lot check",
+      "detail": "Redfin sold pages: one disputed same-subdivision pair and three larger-lot sales (synthetic)"
+    }
+  ],
+  "caveats": [
+    "This is a valuation estimate, not a USPAP licensed appraisal.",
+    "Systems are buyer-confirmed but no permits are in hand yet; get them before closing.",
+    "No condition inputs assumed. Repair and kitchen figures are estimates until contractor bids.",
+    "Lot: Fairhope sales give no reliable premium for 0.71 vs 0.4 acre (one disputed pair; three larger lots sold at comp $/sf). Up to ~$25K upside, not in the point.",
+    "Exterior repair costs are estimates until contractor bids arrive.",
+    "Baldwin County Revenue Commission and GIS do not respond to fetch; tax and parcel data are from Redfin public record."
+  ]
+}

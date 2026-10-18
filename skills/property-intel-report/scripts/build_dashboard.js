@@ -20,15 +20,7 @@ const fs = require("fs");
 const path = require("path");
 const { pmt, fhaAnnualMip, computeCarry, repairBudget, deductibleTable } = require("./dashboard_math.js");
 
-// PMI anchor, mirrored from references/rates_and_anchors.md. Update both together.
-const PMI_RATE = 0.007, PMI_AS_OF = "2026-08";
-// FHA and 203(k) anchors, mirrored from references/rates_and_anchors.md §1a. Update both together.
-const FHA = {
-  as_of: "2026-10", min_down_pct: 3.5, ufmip_rate: 0.0175, mip_high_balance: 726200,
-  mip30_gt95: 0.0055, mip30_le95: 0.0050, mip30_high_gt95: 0.0075, mip30_high_le95: 0.0070,
-  mip15_gt90: 0.0040, mip15_le90: 0.0015, mip15_high_gt90: 0.0065, mip15_high_le90: 0.0040
-};
-const K203 = { as_of: "2026-10", limited_cap: 75000, contingency_pct: 10 };
+const { PMI_RATE, PMI_AS_OF, FHA, K203 } = require("./anchors.js");
 
 // ===== args =====
 const argv = process.argv.slice(2);
@@ -52,40 +44,8 @@ const warnings = [];
 const warn = m => { warnings.push(m); console.warn("WARN: " + m); };
 
 // ===== map facts -> page data =====
-const A = PF.address || {}, M = PF.market || {}, VAL = PF.value || null, INS = PF.insurance || null;
-const fmtDate = s => {
-  if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return s || null;
-  return new Date(s + "T12:00:00Z").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
-};
-const num = v => (typeof v === "number" && isFinite(v) ? v : null);
-
-const F = {
-  address: A.street || "Subject property",
-  city_state_zip: [A.city, [A.state, A.zip].filter(Boolean).join(" ")].filter(Boolean).join(", "),
-  report_date: fmtDate(opt.today || PF.last_updated),
-  list_price: num(M.list_price),
-  value: VAL && num(VAL.point) ? { point: VAL.point, low: VAL.low, high: VAL.high, confidence: VAL.confidence || "Unrated" } : null,
-  rate_pct: num(M.mortgage_rate_pct), rate_source: M.rate_source || null, rate_date: fmtDate(M.rate_date),
-  tax_annual: num(M.tax_annual_post_sale), hoa_monthly: num(M.hoa_monthly) || 0,
-  pmi_rate: PMI_RATE, pmi_as_of: PMI_AS_OF,
-  cov_a_est: INS ? num(INS.cov_a_est) : null,
-  premium_low: INS ? num(INS.premium_low) : null, premium_high: INS ? num(INS.premium_high) : null,
-  flood_premium_low: INS ? num(INS.flood_premium_low) : null, flood_premium_high: INS ? num(INS.flood_premium_high) : null,
-  flood_required: INS ? !!INS.flood_required : false,
-  wind_deductible_pct: INS ? num(INS.wind_deductible_pct) : null,
-  wind_deductible_default: INS ? INS.wind_deductible_chosen === "default" : false,
-  wind_deductible_options_pct: INS && Array.isArray(INS.wind_deductible_options_pct) ? INS.wind_deductible_options_pct : [],
-  aop_deductible: INS ? num(INS.aop_deductible) : null,
-  wind_note: INS ? INS.wind_note || null : null,
-  fha: Object.assign({}, FHA, { loan_limit: num(M.fha_loan_limit) }),
-  k203: K203,
-  repairs: PF.repairs && Array.isArray(PF.repairs.items) && PF.repairs.items.length ? PF.repairs : null,
-  buyer: PF.buyer && PF.buyer.financing ? PF.buyer.financing : null,
-  note: PF.dossier && PF.dossier.note && PF.dossier.note.headline ? PF.dossier.note : null,
-  sources: Object.entries(PF.provenance || {}).map(([k, v]) =>
-    `${k}: ${v.source}${v.tier ? ` (Tier ${v.tier})` : ""}${v.retrieved ? `, retrieved ${v.retrieved}` : ""}`)
-};
-
+const { mapFacts } = require("./facts_map.js");
+const { F, A, M, VAL, INS } = mapFacts(PF, opt);
 // ===== validation: completeness =====
 if (!F.value) warn("value block missing: run property-appraisal first; the value tile and value-vs-rebuild panel show a notice");
 else {
@@ -111,7 +71,8 @@ else {
 
 // ===== validation: staleness =====
 const daysOld = s => (s && /^\d{4}-\d{2}-\d{2}/.test(s)) ? (today - new Date(s.slice(0, 10) + "T12:00:00Z")) / 864e5 : null;
-const rateRetrieved = (PF.provenance || {})["market.mortgage_rate_pct"]?.retrieved || M.rate_date;
+// The rate's own survey date governs. A stale weekly rate pulled today is still stale.
+const rateRetrieved = M.rate_date || (PF.provenance || {})["market.mortgage_rate_pct"]?.retrieved;
 const rAge = daysOld(rateRetrieved);
 // ===== validation: repairs, FHA, reconciliation note =====
 if (F.repairs) {

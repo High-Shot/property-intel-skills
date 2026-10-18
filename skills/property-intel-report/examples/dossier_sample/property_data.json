@@ -1,0 +1,688 @@
+{
+  "_note": "SYNTHETIC worked example. Address, parcel, comps, and coordinates are fabricated (pins shifted 0.10 deg west into Mobile Bay on purpose). Numbers come from a real Fairhope-area run and every one recomputes from its own inputs. One house across all three skills, so every dashboard cross-check fires.",
+  "property": {
+    "address": "4400 Example Pecan Rd",
+    "city": "Fairhope",
+    "state": "AL",
+    "zip": "36532",
+    "mls": "",
+    "parcel": "SYNTHETIC-EXAMPLE"
+  },
+  "title": {
+    "eyebrow": "PROPERTY INTELLIGENCE REPORT",
+    "tagline": "A buyer's diligence brief on a 1992 five-bedroom on 0.71 acres, 0.6 mi from Fairhope East Elementary. Vacant, sold as-is, listed cash or conventional only. The all-in monthly cost, what it is worth, and a script for the negotiation. SYNTHETIC EXAMPLE: address, parcel, MLS, and comps are fabricated.",
+    "status_tag": "STATUS: ACTIVE · 12 DAYS ON MARKET",
+    "prepared_label": "PREPARED OCTOBER 2026"
+  },
+  "exec_summary": {
+    "headline": "The Good. The Bad. The Ugly.",
+    "good": [
+      "3,135 sq ft (public record), 5 bed / 3 full bath, 0.71 acre, no HOA. Most space per dollar in its price band.",
+      "Assigned schools all rate 10/10 on GreatSchools: Fairhope East Elementary (0.6 mi), Fairhope Middle, Fairhope High.",
+      "Roof 5 yrs, both HVAC systems 2 yrs, full replumb, appliances 5 yrs, upgraded primary bath (you confirmed).",
+      "Outside the flood zone, on city sewer, inside Fairhope city limits (you confirmed). First Street flood and fire both 1/10.",
+      "Built 1992: no federal lead-paint disclosure; replumb claim, if true, closes the polybutylene question.",
+      "Vacant: sellers moved out, so carrying costs sit on them while it is listed."
+    ],
+    "bad": [
+      "Listed at $539K. The appraisal sibling puts value at $452K (range $420K-$484K). List is 19% above the point.",
+      "Sold as-is. Listing accepts cash or conventional only, which conflicts with an FHA plan.",
+      "Maintenance is done; upgrades are not. Before move-in: front door and frame, 3 panes, carpet, porch boards, fence, siding, rot at the garage wall base.",
+      "Kitchen has 5-yr appliances but no finish upgrades. No permits in hand yet for the roof, HVAC, or replumb.",
+      "Public record says 3,135 sq ft; the listing says 3,200."
+    ],
+    "ugly": [
+      "First Street wind factor 9/10, about 2.4 mi from Mobile Bay. Insurance est. $5,000-$9,500/yr is the widest swing in carry.",
+      "At 7.40% PMMS, all-in carry at $475K with FHA is about $4,221/mo before maintenance.",
+      "Tax grew 10.1%/yr from 2020 to 2025 on this parcel. Carry rises about $271/mo by year 5.",
+      "Seller paid $185,000 in Sept 2017. Asking is 2.9x that, so expect them to anchor on equity, not comps.",
+      "City-limits taxes: 46.0 mills total, so the post-sale reset hits harder than a county address would."
+    ]
+  },
+  "at_a_glance": {
+    "title": "The Property in Numbers",
+    "stats": [
+      {
+        "big": "$539,000",
+        "label": "LIST PRICE",
+        "sub": "Listed Oct 6, 2026 · no reductions",
+        "color": "coral"
+      },
+      {
+        "big": "3,135",
+        "label": "LIVING SQ FT (PUBLIC RECORD)",
+        "sub": "$172 / sqft at list · listing claims 3,200",
+        "color": "teal"
+      },
+      {
+        "big": "0.71",
+        "label": "ACRES",
+        "sub": "150 × 200 ft · zoned R-2",
+        "color": "green"
+      },
+      {
+        "big": "5 / 3",
+        "label": "BEDROOMS / FULL BATHS",
+        "sub": "2 stories, two staircases, 2-car garage",
+        "color": "teal"
+      },
+      {
+        "big": "1992",
+        "label": "YEAR BUILT",
+        "sub": "Roof 5 yrs, HVAC 2 yrs, replumbed (confirmed)",
+        "color": "green"
+      },
+      {
+        "big": "$2,009",
+        "label": "ANNUAL TAX (2025)",
+        "sub": "Post-sale est. $2,140 with your homestead",
+        "color": "coral"
+      }
+    ],
+    "source_note": "Sources: MLS via Redfin; public record via Redfin; Baldwin County tax history. Revenue Commission portal does not respond to fetch; verify there."
+  },
+  "monthly_carry": {
+    "title": "What You Actually Pay Each Month",
+    "subtitle": "At a $475,000 purchase (your planned offer), Freddie Mac PMMS 30-yr rate of 7.40% (Oct 15, 2026). FHA card replaces the standard 25% card because FHA is your stated plan. Insurance is the brief's sourced range midpoint.",
+    "scenarios": [
+      {
+        "label": "FHA 3.5%",
+        "color": "crimson",
+        "down": 16625,
+        "loan": 466397,
+        "pi": 3229,
+        "pmi": 210,
+        "tax": 178,
+        "ins": 604,
+        "wind": "—",
+        "flood": "—",
+        "total": 4221,
+        "note": "Loan includes 1.75% upfront MIP. Annual MIP 0.55% for life of loan."
+      },
+      {
+        "label": "CONV 5%",
+        "color": "coral",
+        "down": 23750,
+        "loan": 451250,
+        "pi": 3124,
+        "pmi": 263,
+        "tax": 178,
+        "ins": 604,
+        "wind": "—",
+        "flood": "—",
+        "total": 4169,
+        "note": "PMI at 0.70% anchor; drops at 78% LTV."
+      },
+      {
+        "label": "CONV 10%",
+        "color": "amber",
+        "down": 47500,
+        "loan": 427500,
+        "pi": 2960,
+        "pmi": 249,
+        "tax": 178,
+        "ins": 604,
+        "wind": "—",
+        "flood": "—",
+        "total": 3991,
+        "note": "PMI at 0.70% anchor; drops at 78% LTV."
+      },
+      {
+        "label": "CONV 20%",
+        "color": "green",
+        "down": 95000,
+        "loan": 380000,
+        "pi": 2631,
+        "pmi": "—",
+        "tax": 178,
+        "ins": 604,
+        "wind": "—",
+        "flood": "—",
+        "total": 3413,
+        "note": "No PMI. Reference case."
+      }
+    ],
+    "source_note": "Tax: $475K x 10% assessment x 46.0 mills (ADOR Oct 2025 Fairhope total) less homestead, est.; inside city limits (confirmed). Insurance $604/mo = midpoint of the insurance brief's $5,000-$9,500/yr, wind included; outside the flood zone, so flood is not required."
+  },
+  "price_history": {
+    "title": "Bought for $185K in 2017, Asking $539K Today",
+    "subtitle": "Public sale record since 2001, then this listing. No reductions yet and 12 days on market against a 73-day area average to pending. The seller's leverage comes from equity, not from a hot market.",
+    "points": [
+      {
+        "label": "Jul\n2001",
+        "price": 222500
+      },
+      {
+        "label": "Oct 2012\nlisted",
+        "price": 189000
+      },
+      {
+        "label": "Jun 2013\nsold",
+        "price": 195250
+      },
+      {
+        "label": "Feb 2017\nlisted",
+        "price": 199900
+      },
+      {
+        "label": "Sep 2017\nsold",
+        "price": 185000
+      },
+      {
+        "label": "Oct 2026\nlisted",
+        "price": 539000
+      }
+    ],
+    "callouts_label": "THE NUMBERS",
+    "callouts": [
+      {
+        "big": "+$354,000",
+        "label": "Ask vs 2017 purchase"
+      },
+      {
+        "big": "+191%",
+        "label": "Ask vs 2017 purchase"
+      },
+      {
+        "big": "0",
+        "label": "Reductions this cycle"
+      },
+      {
+        "big": "12 days",
+        "label": "On market (Oct 6 to Oct 18)"
+      },
+      {
+        "big": "73 days",
+        "label": "Area avg to pending (Redfin)"
+      }
+    ],
+    "source_note": "Sources: Redfin price history (MLS; public records). 2013 shows MLS $195,000 and recorded $195,250 a week apart; the recorded figure is used."
+  },
+  "comps": {
+    "title": "What the Subject Should Cost",
+    "subtitle": "Five recorded 2025-26 sales within 2.5 mi, all 2,894-3,298 sq ft. They are 11-21 years newer than the subject, so the screen strips a newer-build premium, then applies a cosmetic discount for the walkthrough repair list. This is a screen; the appraisal deck carries the value.",
+    "chart_title": "$ per sqft  ·  closed sales, 36532",
+    "entries": [
+      {
+        "label": "112 Sample Mag.\n(2013)",
+        "psf": 164
+      },
+      {
+        "label": "305 Sample Mag.\n(2013)",
+        "psf": 152
+      },
+      {
+        "label": "48 Placeholder\n(2010)",
+        "psf": 175
+      },
+      {
+        "label": "21 Placeholder\n(2003)",
+        "psf": 183
+      },
+      {
+        "label": "900 Example Links\n(2010)",
+        "psf": 157
+      },
+      {
+        "label": "Subject\nat list",
+        "psf": 172
+      }
+    ],
+    "fair_value_walk": [
+      {
+        "label": "Comp average (5 sales)",
+        "value": "$166 / sqft"
+      },
+      {
+        "label": "Strip newer-build premium (~18 yrs)",
+        "value": "-6%"
+      },
+      {
+        "label": "Adjusted base (1992 build)",
+        "value": "$156 / sqft"
+      },
+      {
+        "label": "Apply cosmetic discount (-10%)",
+        "value": "$140 / sqft"
+      }
+    ],
+    "implied_range": "$439K – $489K",
+    "implied_takeaway": "Screen: $439K-$489K at 3,135 sq ft. The appraisal's $452K point sits inside it (3% below the screen midpoint). List at $539K is $50K above the screen's top.",
+    "source_note": "All five are recorded closed sales from Redfin sold pages (MLS). No AVM is used as a comp. Average: (164+152+175+183+157)/5 = 166. Strips compound: 166 x 0.94 = 156; 156 x 0.90 = 140."
+  },
+  "projection": {
+    "title": "What This Property Costs Over Time",
+    "subtitle": "This parcel's tax rose 10.1%/yr from 2020 to 2025, above the 6% default, so the parcel rate is used. Insurance grows 7%/yr. P&I is the FHA case, held fixed.",
+    "chart_title": "Monthly carry by component  ·  $/month",
+    "years": [
+      {
+        "label": "Year 1\n2027",
+        "pi": 3229,
+        "tax": 178,
+        "ins": 604
+      },
+      {
+        "label": "Year 2",
+        "pi": 3229,
+        "tax": 196,
+        "ins": 646
+      },
+      {
+        "label": "Year 3",
+        "pi": 3229,
+        "tax": 216,
+        "ins": 692
+      },
+      {
+        "label": "Year 4",
+        "pi": 3229,
+        "tax": 237,
+        "ins": 740
+      },
+      {
+        "label": "Year 5\n2031",
+        "pi": 3229,
+        "tax": 261,
+        "ins": 792
+      }
+    ],
+    "year1_carry": 4011,
+    "year5_carry": 4282,
+    "delta_label": "+$271/mo",
+    "delta_sub": "by year 5  ·  +6.8% nominal",
+    "cumulative_note": "Cumulative 5-yr extra cost over a flat baseline: $7,824 (sum of the four year-over-year deltas x 12). Excludes FHA MIP.",
+    "source_note": "Assumes 10% annual tax growth (parcel trailing 2020-2025: $1,242 to $2,009) and 7% insurance growth. P&I fixed at 7.40% on the FHA loan."
+  },
+  "schools": {
+    "title": "School Assignments",
+    "subtitle": "All three assigned schools rate 10/10 on GreatSchools. This is the resale floor. Fairhope is studying a city-run system separate from Baldwin County; watch that, since it could change taxes and assignments.",
+    "list": [
+      {
+        "name": "Fairhope East Elementary",
+        "grades": "PK – 6",
+        "rating": "10",
+        "rating_sub": "/10 GreatSchools",
+        "distance": "0.6 mi",
+        "facts": "16:1 ratio  ·  85% reading, 62% math proficient",
+        "tagline": "A− on Niche",
+        "color": "green"
+      },
+      {
+        "name": "Fairhope Middle School",
+        "grades": "7 – 8",
+        "rating": "10",
+        "rating_sub": "/10 GreatSchools",
+        "distance": "2.6 mi",
+        "facts": "Assigned school per Redfin / GreatSchools",
+        "tagline": "Top-rated",
+        "color": "coral"
+      },
+      {
+        "name": "Fairhope High School",
+        "grades": "9 – 12",
+        "rating": "10",
+        "rating_sub": "/10 GreatSchools",
+        "distance": "2.5 mi",
+        "facts": "Assigned school per Redfin / GreatSchools",
+        "tagline": "Top-rated",
+        "color": "teal"
+      }
+    ],
+    "source_note": "Sources: GreatSchools via Redfin; Niche K-12; NBC15 reporting on the Fairhope city-schools study. Confirm zoning with Baldwin County Public Schools."
+  },
+  "climate": {
+    "title": "Climate & Hazard Exposure",
+    "subtitle": "Wind and heat are the real exposures; flood and fire score minimal. Wind drives what insurance costs here. The insurance brief carries the sourced premium range and quote spec.",
+    "risks": [
+      {
+        "icon": "FaWind",
+        "label": "WIND / HURRICANE",
+        "level": "9 / 10  ·  SEVERE",
+        "color": "crimson",
+        "body": "First Street Wind Factor 9/10: 99% chance of strong winds in 30 years. About 2.4 mi from Mobile Bay. Expect a 2% named-storm deductible ($10,000 on a $500K Cov A)."
+      },
+      {
+        "icon": "FaSun",
+        "label": "HEAT",
+        "level": "10 / 10  ·  EXTREME",
+        "color": "amber",
+        "body": "First Street Heat Factor 10/10. Two new HVAC systems matter here; verify serials and sizing at inspection."
+      },
+      {
+        "icon": "FaWater",
+        "label": "FLOOD",
+        "level": "1 / 10  ·  MINIMAL",
+        "color": "green",
+        "body": "Outside the FEMA flood zone (you confirmed); First Street Flood Factor 1/10. Flood is not lender-required. The lender's flood cert will confirm."
+      },
+      {
+        "icon": "FaTree",
+        "label": "WILDFIRE",
+        "level": "1 / 10  ·  MINIMAL",
+        "color": "green",
+        "body": "First Street Fire Factor 1/10. Non-issue for diligence."
+      },
+      {
+        "icon": "FaCloud",
+        "label": "AIR QUALITY",
+        "level": "4 / 10  ·  MODERATE",
+        "color": "teal",
+        "body": "First Street Air Factor 4/10: about 4 unhealthy air days this year."
+      },
+      {
+        "icon": "FaHome",
+        "label": "BUILD ERA (1992)",
+        "level": "LOW",
+        "color": "green",
+        "body": "Post-1978, so no lead-paint disclosure. 1978-96 is the polybutylene window; the listing claims a full replumb. Confirm no poly-B remains at the water heater."
+      }
+    ],
+    "source_note": "Sources: First Street Foundation factors via Redfin; flood zone status per buyer. Earthquake and radon are not material here and are omitted."
+  },
+  "diligence": {
+    "title": "Itemized Pre-Closing Costs",
+    "subtitle": "What you spend before close. The exterior wood repairs make the inspection and the contractor bids the two lines that matter. Template vintage 2025-Q4.",
+    "groups": [
+      {
+        "category": "INSPECTIONS",
+        "color": "coral",
+        "rows": [
+          {
+            "item": "General home inspection",
+            "note": "3,135 sq ft, two stories. Ask for moisture meter on siding and trim.",
+            "low": 450,
+            "high": 700
+          },
+          {
+            "item": "Termite / WDO inspection",
+            "note": "Required at sale in AL. Porch and trim rot raise the stakes.",
+            "low": 100,
+            "high": 200
+          },
+          {
+            "item": "Sewer scope",
+            "note": "City sewer. Camera the lateral to the main.",
+            "low": 250,
+            "high": 500
+          },
+          {
+            "item": "Radon test",
+            "note": "DIY kit is enough here.",
+            "low": 50,
+            "high": 150
+          }
+        ]
+      },
+      {
+        "category": "STRUCTURAL & INSURANCE",
+        "color": "teal",
+        "rows": [
+          {
+            "item": "4-point insurance inspection",
+            "note": "Common carrier ask on a 34-yr-old home.",
+            "low": 150,
+            "high": 300
+          },
+          {
+            "item": "Wind mitigation inspection",
+            "note": "Discounts on the wind premium in AL.",
+            "low": 75,
+            "high": 150
+          },
+          {
+            "item": "FORTIFIED roof evaluation",
+            "note": "5-yr roof; check eligibility for credit.",
+            "low": 200,
+            "high": 400
+          },
+          {
+            "item": "Boundary survey",
+            "note": "150 x 200 lot; confirm fence line.",
+            "low": 500,
+            "high": 1200
+          }
+        ]
+      },
+      {
+        "category": "LENDER & TITLE",
+        "color": "green",
+        "rows": [
+          {
+            "item": "FHA appraisal",
+            "note": "Paid through lender. 203(k) adds an as-completed value.",
+            "low": 550,
+            "high": 800
+          },
+          {
+            "item": "Contractor bids for 203(k)",
+            "note": "Siding, porch, trim, windows, fence, carpet. Often free.",
+            "low": 0,
+            "high": 300
+          },
+          {
+            "item": "Title search & insurance",
+            "note": "Rolled into closing costs.",
+            "low": 1500,
+            "high": 2500
+          }
+        ]
+      }
+    ],
+    "total_low": 3825,
+    "total_high": 7200,
+    "source_note": "Line items from the skill's 2025-Q4 template, adjusted for this property. Plan for the high end; the exterior wood is the unknown."
+  },
+  "inventory": {
+    "title": "What Else $458K-$620K Buys in 36532",
+    "subtitle": "Active listings within ±15% of list in the same ZIP with 2,300+ sq ft. Four met the band. None offers this much space per dollar; all are smaller.",
+    "subject": {
+      "address": "4400 Example Pecan Rd",
+      "price": "$539,000",
+      "bed_bath": "5 / 3",
+      "sqft": "3,135",
+      "lot": "0.71 ac",
+      "year": "1992",
+      "psf": "$172",
+      "note": "As-is. Exterior repairs. No HOA. Top schools. Cash/conv only."
+    },
+    "alternatives": [
+      {
+        "address": "60 Sample Norman Ln",
+        "price": "$575,000",
+        "bed_bath": "5 / 3.5",
+        "sqft": "3,000",
+        "psf": "$192",
+        "note": "Closest match on size and beds. $36K more at list."
+      },
+      {
+        "address": "81 Sample Onyx Ln",
+        "price": "$540,000",
+        "bed_bath": "5 / 3",
+        "sqft": "2,543",
+        "psf": "$212",
+        "note": "Same price, same beds, 592 fewer sq ft."
+      },
+      {
+        "address": "1080 Demo County Rd",
+        "price": "$555,000",
+        "bed_bath": "3 / 2.5",
+        "sqft": "2,532",
+        "psf": "$219",
+        "note": "Fewer beds. Rural road setting."
+      },
+      {
+        "address": "190 Sample Fairfield Dr",
+        "price": "$590,000",
+        "bed_bath": "5 / 2.5",
+        "sqft": "2,391",
+        "psf": "$247",
+        "note": "Most per sq ft of the set. Smallest."
+      }
+    ],
+    "source_note": "Sources: Homes.com and Redfin active listings for 36532, pulled Oct 18, 2026. Subject $/sqft uses the 3,135 public-record figure."
+  },
+  "red_flags": {
+    "title": "What to Resolve Before You Sign",
+    "items": [
+      {
+        "title": "List is 19% above value",
+        "body": "Appraisal point $452K, range $420K-$484K, Medium confidence. List $539K. Anchor on the comp grid, not the seller's 2017 basis."
+      },
+      {
+        "title": "Cash or conventional only",
+        "body": "Your plan is FHA. FHA appraisers flag rotted siding, porch, and trim as minimum-property-standard items. Ask whether FHA 203(k) Limited is acceptable before writing."
+      },
+      {
+        "title": "Repairs before move-in",
+        "body": "Front door and frame, 3 panes, carpet, porch boards, fence, siding, and rot at the garage wall base. Est. $15K before move-in; the rot needs a sill-plate and termite probe."
+      },
+      {
+        "title": "Permits not in hand",
+        "body": "Roof (5 yrs), both HVAC systems (2 yrs), and the replumb are confirmed but unpermitted on paper so far. Carriers and appraisers want the City of Fairhope records."
+      },
+      {
+        "title": "Insurance is the big swing",
+        "body": "Wind Factor 9/10, ~2.4 mi from the bay. Est. $5,000-$9,500/yr. Bind a real quote before the inspection contingency ends."
+      },
+      {
+        "title": "Square footage gap",
+        "body": "Public record says 3,135 sq ft; the listing says 3,200. Value and insurance here use 3,135. Ask where the extra 65 sq ft comes from."
+      }
+    ],
+    "footer_note": "These are the items that change the number. Nothing here substitutes for the inspection."
+  },
+  "scripts": {
+    "title": "Bring These Into the Negotiation",
+    "subtitle": "Three audiences, three lists. Every question ties to something in the listing, the record, or your walkthrough.",
+    "agent": [
+      "Cash or conventional only: is that the seller's rule or a default? Would they take FHA 203(k) Limited with repairs financed?",
+      "The roof is 5 years old. Who installed it, is it permitted, and is there a FORTIFIED certificate?",
+      "Both HVAC systems are 2 years old and the house was replumbed. Permits and receipts?",
+      "Appliances are 5 years old. Any warranties that transfer?",
+      "Any sewer backups or line repairs since 2017? Where is the cleanout?",
+      "Public record shows 3,135 sq ft; the listing says 3,200. Where is the difference?",
+      "Since the Sept 2017 purchase at $185,000, what work was done, with receipts?",
+      "Any insurance claims since 2017, including Hurricane Sally in 2020? Will they share the CLUE report?",
+      "The sellers have moved out. What is their timeline, and would they take a repair credit over repairs?"
+    ],
+    "neighbors": [
+      "How busy is Example Pecan Rd at school drop-off and pickup?",
+      "What did Hurricane Sally do on this stretch in 2020?",
+      "Does water stand anywhere after a heavy rain?",
+      "Any sewer backups or main repairs on this stretch?",
+      "How long has 9055 been empty? Any issues while vacant?",
+      "Any building or road projects planned nearby?"
+    ],
+    "inspector": [
+      "Garage wall base: probe bottom plate and sheathing for rot depth.",
+      "Siding and 540 sq ft porch: rot extent in boards, joists, and ledger.",
+      "Windows: 3 failed Andersen panes noted; check the rest for seal failure.",
+      "Roof: confirm age, deck nailing, and secondary water barrier for FORTIFIED.",
+      "HVAC: confirm both systems' 2-yr serials and sizing for two stories.",
+      "Plumbing: confirm the full replumb; no poly-B at water heater or main.",
+      "Electrical: 1992 panel brand, capacity, and any double taps.",
+      "Termite: active activity or damage in porch, trim, or door frames."
+    ],
+    "footer_note": "Print this slide. The questions you don't ask in writing are the issues you find at closing."
+  },
+  "action": {
+    "title": "A Phased Diligence Plan",
+    "phases": [
+      {
+        "title": "PRE-OFFER",
+        "time": "Under 24 hours",
+        "color": "teal",
+        "items": [
+          "Ask the listing agent whether the seller will accept FHA 203(k) Limited.",
+          "Pull roof, HVAC, and plumbing permits from the City of Fairhope.",
+          "Ask for receipts on the HVAC and replumb.",
+          "Get one insurance quote on the attached spec sheet."
+        ]
+      },
+      {
+        "title": "AT OFFER",
+        "time": "1–3 days",
+        "color": "coral",
+        "items": [
+          "Offer with the repair list attached as the basis for price.",
+          "Ask for seller-paid closing costs; keep the 10-14 day inspection window.",
+          "Request the Alabama disclosure and the CLUE report.",
+          "Line up two contractor bids for the 203(k) repair scope."
+        ]
+      },
+      {
+        "title": "INSPECTION",
+        "time": "10–14 days",
+        "color": "amber",
+        "items": [
+          "General inspection with moisture readings on siding and trim.",
+          "WDO, 4-point, and wind mitigation inspections.",
+          "Sewer scope of the lateral to the city main.",
+          "FORTIFIED roof evaluation if the roof is under 10 years."
+        ]
+      },
+      {
+        "title": "PRE-CLOSING",
+        "time": "Final week",
+        "color": "green",
+        "items": [
+          "Bind insurance on the spec; confirm wind deductible in dollars.",
+          "Confirm the 203(k) repair escrow and contractor schedule.",
+          "File homestead with the Revenue Commission after closing.",
+          "Final walkthrough of the vacant house day-of-closing."
+        ]
+      }
+    ]
+  },
+  "offer": {
+    "title": "The Number, The Walk-Away, The Upside",
+    "opening": "$440K – $460K",
+    "rationale_lines": [
+      "Screen high $489K x 0.90 to x 0.94 = $440K-$460K.",
+      "Appraisal point $452K sits inside that band.",
+      "Pre-move-in repairs (est. $15K) are the justification."
+    ],
+    "walk_away": [
+      "Garage-wall rot runs into the sill plate or framing.",
+      "Seller refuses FHA and conventional terms do not work for you.",
+      "Bound insurance quote lands above $9,500/yr on the spec.",
+      "Price ends above $484K, the top of the appraisal range."
+    ],
+    "reduce_further": [
+      "Roof or HVAC is older than claimed, or unpermitted.",
+      "Sewer scope finds a cracked or root-bound lateral.",
+      "Window seal failures beyond the 3 panes you saw.",
+      "Termite damage in porch, trim, or door frames."
+    ],
+    "go_to_ask": [
+      "Roof, HVAC, and plumbing permits all in hand.",
+      "Seller accepts FHA 203(k) and pays closing costs.",
+      "Inspection confirms the repair list is cosmetic only.",
+      "A competing offer is verified, not just claimed."
+    ],
+    "bottom_line": "Worth about $452K, not $539K. Systems are done; finishes are not. Pay for the space and schools, not the seller's 2017 equity."
+  },
+  "sources": {
+    "title": "Show Your Work",
+    "list": [
+      "Freddie Mac PMMS, week of Oct 15, 2026 (30-yr 7.40%)",
+      "MLS via Redfin: listing, price and tax history, public record",
+      "Alabama Dept. of Revenue, Oct 2025 millage rates (Baldwin, Fairhope)",
+      "Redfin sold pages for all five comps (MLS)",
+      "First Street Foundation factors via Redfin",
+      "GreatSchools via Redfin; Niche K-12",
+      "Homes.com and Redfin active listings, 36532",
+      "Zillow ZHVI and Alabama Center for Real Estate market data",
+      "Bankrate (FHA MIP), Lower.com (2026 FHA limit, Baldwin $541,287)"
+    ],
+    "caveats": [
+      "Carry uses PMMS; your rate will differ by credit, lender, and points.",
+      "Insurance figures come from the insurance brief's sourced range, not quotes.",
+      "Post-sale tax assumes homestead filed and appraisal reset to $475K; city limits confirmed. Revenue Commission portal could not be fetched.",
+      "Flood zone status is per the buyer; the lender's flood cert is the determination.",
+      "Comp screen is a screen. property-appraisal owns the value ($452K, Medium confidence).",
+      "Systems ages are buyer-confirmed; permits not yet in hand. Repair costs are estimates until bids.",
+      "Decision support only. Not a substitute for inspection, survey, title, or an insurance binder."
+    ]
+  }
+}

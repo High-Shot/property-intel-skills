@@ -1,46 +1,344 @@
 {
-  "_note": "SYNTHETIC example for the dossier dashboard. Same fictional house as property-appraisal/examples/sample_appraisal_data.json. Insurance, tax and rate figures are illustrative, not sourced.",
-  "schema_version": "1.1",
-  "normalized_address": "1234 sample creek dr daphne al 36526",
-  "written_by": ["property-intel-report", "property-appraisal", "property-insurance-brief"],
-  "last_updated": "2026-07-08",
+  "_note": "SYNTHETIC worked example. Address, parcel, comps, and coordinates are fabricated (pins shifted 0.10 deg west into Mobile Bay on purpose). Numbers come from a real Fairhope-area run and every one recomputes from its own inputs. One house across all three skills, so every dashboard cross-check fires.",
+  "schema_version": "1.2",
+  "normalized_address": "4400 example pecan rd fairhope al 36532",
+  "written_by": [
+    "property-appraisal",
+    "property-insurance-brief",
+    "property-intel-report"
+  ],
+  "last_updated": "2026-10-18",
   "address": {
-    "street": "1234 Sample Creek Dr", "city": "Daphne", "state": "AL", "zip": "36526",
-    "county": "Baldwin", "parcel_id": "05-46-03-00-000-000.000", "mls": "",
-    "lat": 30.6, "lng": -87.95
+    "street": "4400 Example Pecan Rd",
+    "city": "Fairhope",
+    "state": "AL",
+    "zip": "36532",
+    "county": "Baldwin",
+    "parcel_id": "SYNTHETIC-EXAMPLE",
+    "mls": "",
+    "lat": 30.53127,
+    "lng": -87.96823
   },
   "structure": {
-    "year_built": 1998, "sqft": 2350, "beds": 4, "baths": 2.5, "stories": 1,
-    "lot_acres": 0.42, "garage_bays": 2, "pool": false
+    "year_built": 1992,
+    "sqft": 3135,
+    "beds": 5,
+    "baths": 3,
+    "stories": 2,
+    "exterior": "Siding (type unconfirmed)",
+    "roof_age_yrs": 5,
+    "roof_source": "listing",
+    "hvac_age_yrs": 2,
+    "lot_acres": 0.71,
+    "garage_bays": 2,
+    "pool": false,
+    "sewer": "municipal"
   },
-  "hazard": { "fema_zone": "X", "bfe_ft": null },
+  "hazard": {
+    "fema_zone": "X",
+    "bfe_ft": null,
+    "distance_to_coast_mi": 2.4,
+    "first_street": {
+      "flood": 1,
+      "fire": 1,
+      "wind": 9,
+      "heat": 10
+    }
+  },
   "market": {
-    "list_price": 425000,
-    "mortgage_rate_pct": 6.3, "rate_source": "Freddie Mac PMMS (illustrative)", "rate_date": "2026-07-02",
-    "tax_annual_post_sale": 2900,
-    "hoa_monthly": 0
+    "list_price": 539000,
+    "original_list_price": 539000,
+    "price_cuts": 0,
+    "days_on_market": 12,
+    "last_sale_price": 185000,
+    "last_sale_date": "2017-09-25",
+    "psf_yoy_pct": 1.7,
+    "months_inventory": 4.9,
+    "mortgage_rate_pct": 7.4,
+    "rate_source": "Freddie Mac PMMS 30-yr fixed",
+    "rate_date": "2026-10-15",
+    "tax_annual_post_sale": 2140,
+    "hoa_monthly": 0,
+    "fha_loan_limit": 541287
   },
+  "comps": [
+    {
+      "address": "112 Sample Magnolia Ct",
+      "sold_price": 475000,
+      "sold_date": "2026-04-17",
+      "sqft": 2894,
+      "psf": 164,
+      "lot_acres": 0.37,
+      "year_built": 2013,
+      "beds": 4,
+      "baths": 3,
+      "distance_mi": 0.55,
+      "lat": 30.53325,
+      "lng": -87.95921,
+      "source": "Redfin sold page",
+      "tier": 1,
+      "notes": "Sample Sample Magnolias; sold as-is"
+    },
+    {
+      "address": "305 Sample Magnolia Ct",
+      "sold_price": 501500,
+      "sold_date": "2026-05-01",
+      "sqft": 3298,
+      "psf": 152,
+      "lot_acres": 0.46,
+      "year_built": 2013,
+      "beds": 4,
+      "baths": 3.5,
+      "distance_mi": 0.69,
+      "lat": 30.53424,
+      "lng": -87.9571,
+      "source": "Redfin sold page",
+      "tier": 1,
+      "notes": "Sample Sample Magnolias; kitchen 2023, en-suite 2024"
+    },
+    {
+      "address": "48 Placeholder Royal Way",
+      "sold_price": 535000,
+      "sold_date": "2026-06-04",
+      "sqft": 3060,
+      "psf": 175,
+      "lot_acres": 0.35,
+      "year_built": 2010,
+      "beds": 4,
+      "baths": 3,
+      "distance_mi": 1.15,
+      "lat": 30.51804,
+      "lng": -87.95653,
+      "source": "Redfin sold page",
+      "tier": 1,
+      "notes": "Placeholder Royal; generator, updated finishes"
+    },
+    {
+      "address": "21 Placeholder Royal Way",
+      "sold_price": 550000,
+      "sold_date": "2025-10-30",
+      "sqft": 3002,
+      "psf": 183,
+      "lot_acres": 0.47,
+      "year_built": 2003,
+      "beds": 4,
+      "baths": 3.5,
+      "distance_mi": 0.83,
+      "lat": 30.52315,
+      "lng": -87.95799,
+      "source": "Redfin sold page",
+      "tier": 1,
+      "notes": "Placeholder Royal; 3-car, finished bonus room"
+    },
+    {
+      "address": "900 Example Links Dr",
+      "sold_price": 493000,
+      "sold_date": "2026-03-06",
+      "sqft": 3135,
+      "psf": 157,
+      "lot_acres": 0.39,
+      "year_built": 2010,
+      "beds": 3,
+      "baths": 3,
+      "distance_mi": 2.52,
+      "lat": 30.50683,
+      "lng": -87.93692,
+      "source": "Redfin sold page",
+      "tier": 1,
+      "notes": "Example Links Estates; generator"
+    }
+  ],
   "value": {
-    "point": 411000, "low": 382000, "high": 440000, "confidence": "Medium",
-    "from_skill": "property-appraisal", "method": "sales comparison, 4 comps", "as_of": "2026-07-08"
+    "point": 452000,
+    "low": 420000,
+    "high": 484000,
+    "confidence": "Medium",
+    "from_skill": "property-appraisal",
+    "method": "sales comparison, 5 comps, effective-age adjusted",
+    "as_of": "2026-10-18"
   },
   "insurance": {
     "market_profile": "coastal",
-    "cov_a_est": 385000,
-    "premium_low": 3200, "premium_high": 6500,
-    "wind_deductible_options_pct": [1, 2, 5],
-    "wind_deductible_pct": 2, "wind_deductible_chosen": true,
+    "cov_a_est": 500000,
+    "premium_low": 5000,
+    "premium_high": 9500,
+    "wind_deductible_options_pct": [
+      1,
+      2,
+      5
+    ],
+    "wind_deductible_pct": 2,
+    "wind_deductible_chosen": "default",
     "aop_deductible": 2500,
-    "flood_premium_low": 500, "flood_premium_high": 900, "flood_required": false,
+    "flood_premium_low": null,
+    "flood_premium_high": null,
+    "flood_required": null,
     "wind_note": "Named-storm, hurricane and wind/hail triggers differ by carrier. The spec sheet makes each quote state which one applies.",
-    "from_skill": "property-insurance-brief", "as_of": "2026-07-08"
+    "from_skill": "property-insurance-brief",
+    "as_of": "2026-10-18"
   },
   "provenance": {
-    "market.list_price": { "source": "Listing (illustrative)", "tier": 2, "retrieved": "2026-07-08" },
-    "market.mortgage_rate_pct": { "source": "Freddie Mac PMMS (illustrative value)", "tier": 1, "retrieved": "2026-07-02" },
-    "market.tax_annual_post_sale": { "source": "property-intel-report post-sale projection (illustrative)", "tier": 2, "retrieved": "2026-07-08" },
-    "value.point": { "source": "property-appraisal sales comparison", "tier": 1, "retrieved": "2026-07-08" },
-    "insurance.premium_low": { "source": "property-insurance-brief range (illustrative)", "tier": 2, "retrieved": "2026-07-08" },
-    "insurance.cov_a_est": { "source": "property-insurance-brief replacement-cost estimate (illustrative)", "tier": 2, "retrieved": "2026-07-08" }
+    "structure.sqft": {
+      "source": "Public record via Redfin (listing claims 3,200)",
+      "tier": 1,
+      "retrieved": "2026-10-18"
+    },
+    "structure.year_built": {
+      "source": "Public record via Redfin",
+      "tier": 1,
+      "retrieved": "2026-10-18"
+    },
+    "structure.roof_age_yrs": {
+      "source": "Buyer-confirmed age; permit not confirmed",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "hazard.first_street": {
+      "source": "First Street via Redfin",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "hazard.fema_zone": {
+      "source": "Buyer-stated: not in a flood zone",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "market.list_price": {
+      "source": "MLS via Redfin",
+      "tier": 1,
+      "retrieved": "2026-10-18"
+    },
+    "market.mortgage_rate_pct": {
+      "source": "Freddie Mac PMMS, week of Oct 15 2026",
+      "tier": 1,
+      "retrieved": "2026-10-18"
+    },
+    "market.tax_annual_post_sale": {
+      "source": "property-intel-report: $475K x 10% x 46.0 mills (ADOR Oct 2025 Fairhope total) less homestead, est.",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "value.point": {
+      "source": "property-appraisal sales comparison",
+      "tier": 1,
+      "retrieved": "2026-10-18"
+    },
+    "insurance.premium_low": {
+      "source": "property-insurance-brief range (ValuePenguin Sep 2026, 1-800-Insurance Nov 2025)",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "insurance.cov_a_est": {
+      "source": "property-insurance-brief: 3,135 sf x $160/sf rebuild, est.",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "structure.sewer": {
+      "source": "Buyer-stated: city sewer, inside Fairhope city limits",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "structure.hvac_age_yrs": {
+      "source": "Buyer-confirmed: both systems 2 yrs",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "market.fha_loan_limit": {
+      "source": "2026 FHA limit, Baldwin County (Lower.com, HUD-published)",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    }
+  },
+  "buyer": {
+    "financing": {
+      "loan_type": "fha",
+      "down_pct": 3.5,
+      "planned_offer": 475000
+    }
+  },
+  "repairs": {
+    "from_skill": "property-appraisal",
+    "as_of": "2026-10-18",
+    "basis": "From the buyer's walkthrough, priced at cure cost (2026-10 anchors).",
+    "items": [
+      {
+        "item": "Front door and frame",
+        "detail": "Replace, installed",
+        "low": 1500,
+        "high": 3500
+      },
+      {
+        "item": "Window panes",
+        "detail": "3 insulated glass units, Andersen",
+        "low": 900,
+        "high": 1800
+      },
+      {
+        "item": "Carpet",
+        "detail": "Downstairs only (minimum); area not measured",
+        "low": 4000,
+        "high": 8000,
+        "full_low": 8000,
+        "full_high": 14000,
+        "full_detail": "All carpet, up and down; area not measured"
+      },
+      {
+        "item": "Porch boards",
+        "detail": "A few broken planks, 540 sq ft porch",
+        "low": 300,
+        "high": 800
+      },
+      {
+        "item": "Fence",
+        "detail": "A few sections, both sides",
+        "low": 500,
+        "high": 1500
+      },
+      {
+        "item": "Siding",
+        "detail": "A few pieces",
+        "low": 500,
+        "high": 1500
+      },
+      {
+        "item": "Garage wall base rot",
+        "detail": "Minor; probe bottom plate and sheathing",
+        "low": 1000,
+        "high": 3000,
+        "moisture": true
+      },
+      {
+        "item": "Kitchen refresh",
+        "detail": "Cabinets and counters; appliances are 5 yrs",
+        "low": 15000,
+        "high": 30000,
+        "category": "upgrade"
+      }
+    ]
+  },
+  "dossier": {
+    "note": {
+      "as_of": "2026-10-18",
+      "headline": "Worth about $452K as it sits. The systems are done, the finishes are not, and list is $87K over.",
+      "items": [
+        {
+          "label": "Carry vs premium",
+          "body": "Insurance is the swing: $5,000-$9,500/yr. At $475K with FHA that puts carry at $4,034-$4,409/mo. Plan on the high end until three quotes come back."
+        },
+        {
+          "label": "List vs value",
+          "body": "The intel comp screen ($439K-$489K) brackets the appraisal's $452K, so the two agree. Fairhope lot sales show no reliable premium for 0.71 acre: up to ~$25K of upside, not in the number."
+        },
+        {
+          "label": "Value vs rebuild",
+          "body": "Insure to the $500K rebuild estimate, not the price. Rebuilding 3,135 sq ft to today's wind code costs more than the house and lot sell for."
+        },
+        {
+          "label": "The one thing",
+          "body": "The listing says cash or conventional only. Ask whether the seller takes FHA 203(k) Limited before you write. Your $9K-$20K repair list fits easily under the $75K cap.",
+          "key": true
+        }
+      ]
+    }
   }
 }

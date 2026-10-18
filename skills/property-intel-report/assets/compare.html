@@ -1,0 +1,209 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one set of financing controls, then a house-per-column table grouped by
+   price, monthly, cash, and the house itself. Best value per row gets a chip.
+   Same locked palette as the dossier dashboard. */
+:root {
+  --bg: #F3F6F8; --surface: #FFFFFF; --sunk: #EAF0F4; --ink: #132235; --muted: #586A7D; --hair: #D3DCE3;
+  --marine: #0A2540; --teal: #1C7293; --coral: #E36414; --good: #2A9D8F; --bad: #B23A48;
+  --good-bg: rgba(42,157,143,0.12);
+  --font-h: Georgia, "Times New Roman", serif;
+  --font-b: Calibri, Carlito, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #081626; --surface: #0E2236; --sunk: #13304A; --ink: #E3EBF2; --muted: #93A7BA; --hair: #20405E;
+    --marine: #CFE0EE; --teal: #5BB0CF; --coral: #F2873F; --good: #4CC2B3; --bad: #E06A78;
+    --good-bg: rgba(76,194,179,0.14);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #081626; --surface: #0E2236; --sunk: #13304A; --ink: #E3EBF2; --muted: #93A7BA; --hair: #20405E;
+  --marine: #CFE0EE; --teal: #5BB0CF; --coral: #F2873F; --good: #4CC2B3; --bad: #E06A78;
+  --good-bg: rgba(76,194,179,0.14);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-b); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 18px; }
+.num { font-variant-numeric: tabular-nums; }
+.eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral); }
+h1 { font-family: var(--font-h); font-size: clamp(22px, 3.6vw, 32px); line-height: 1.15; margin: 4px 0 2px; color: var(--marine); text-wrap: balance; }
+.sub { color: var(--muted); font-size: 14px; }
+.small { font-size: 12.5px; color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--hair); border-radius: 10px; padding: 16px; min-width: 0; display: grid; gap: 12px; }
+.controls { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.ctl { display: grid; gap: 4px; min-width: 0; }
+.ctl label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+select, input[type=number] { font: inherit; font-size: 15px; padding: 7px 9px; border: 1px solid var(--hair); border-radius: 7px; background: var(--surface); color: var(--ink); width: 100%; }
+.check { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+.check input { width: 17px; height: 17px; accent-color: var(--teal); }
+
+.tw { overflow-x: auto; border: 1px solid var(--hair); border-radius: 10px; background: var(--surface); }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 14px; }
+th, td { min-width: 150px; }
+th, td { padding: 9px 12px; border-bottom: 1px solid var(--hair); text-align: right; vertical-align: top; }
+th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); z-index: 1; width: 26%; min-width: 118px; max-width: 200px; color: var(--muted); font-weight: 400; }
+thead th { vertical-align: bottom; border-bottom: 2px solid var(--marine); }
+thead th .h { font-family: var(--font-h); font-size: 16px; font-weight: 700; color: var(--marine); display: block; text-wrap: balance; }
+thead th .c { font-size: 12px; color: var(--muted); font-weight: 400; }
+tr.grp td { background: var(--sunk); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding-block: 6px; }
+tr.grp td:first-child { background: var(--sunk); }
+td b { color: var(--ink); }
+td .d { display: block; font-size: 12px; color: var(--muted); }
+td.best { background: var(--good-bg); }
+@media (max-width: 520px) { th, td { padding: 8px 10px; } th:first-child, td:first-child { min-width: 112px; font-size: 13px; } }
+.chip { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--good); margin-left: 6px; }
+.neg { color: var(--bad); }
+td input[type=number] { max-width: 130px; text-align: right; margin-left: auto; display: block; }
+.na { color: var(--muted); font-style: italic; }
+footer { color: var(--muted); font-size: 12.5px; display: grid; gap: 4px; }
+:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">House comparison</div>
+    <h1 id="title"></h1>
+    <div class="sub" id="meta"></div>
+  </header>
+
+  <section class="panel">
+    <div class="controls">
+      <div class="ctl"><label for="basis">Price to compare at</label>
+        <select id="basis"><option value="value" selected>Each house's fair value</option><option value="list">Each house's list price</option><option value="custom">Your own numbers</option></select></div>
+      <div class="ctl"><label for="loan">Loan type</label>
+        <select id="loan"><option value="conv">Conventional</option><option value="fha">FHA</option></select></div>
+      <div class="ctl"><label for="down">Down payment</label>
+        <select id="down"><option value="3.5">3.5%</option><option value="5">5%</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="cash">All cash</option></select></div>
+      <div class="ctl"><label for="rate">Rate (30-yr fixed)</label><input type="number" id="rate" step="0.05" min="0" max="20"></div>
+      <div class="ctl"><label for="term">Term</label><select id="term"><option value="30" selected>30 years</option><option value="15">15 years</option></select></div>
+    </div>
+    <label class="check"><input type="checkbox" id="fin"> Add each house's minimum repairs to its loan</label>
+    <div class="small" id="rate-src"></div>
+  </section>
+
+  <div class="tw"><table class="num" id="tbl"></table></div>
+
+  <footer>
+    <div>Every number comes from each house's dossier cache; this page only does arithmetic on them, with one set of financing terms for all houses. "Best" marks the lowest cost or biggest discount in a row, not the better house.</div>
+    <div>Decision support, not a loan estimate, appraisal, or insurance quote.</div>
+  </footer>
+</div>
+
+<script>
+var D = /*__DATA__*/null;
+/*__MATH__*/
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var money = function (n) { return (n < 0 ? "−$" : "$") + Math.abs(Math.round(n)).toLocaleString("en-US"); };
+  var k = function (n) { return "$" + Math.round(n / 1000) + "K"; };
+  var rng = function (a, b) { return Math.round(a) === Math.round(b) ? money(a) : money(a) + "–" + money(b); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var H = D.houses;
+
+  $("title").textContent = H.map(function (h) { return h.address; }).join(" vs ");
+  $("meta").textContent = H.length + " houses · " + (D.shared.report_date ? "Prepared " + D.shared.report_date : "");
+  $("rate").value = D.shared.rate_pct != null ? D.shared.rate_pct : "";
+  $("loan").value = D.shared.loan_type === "fha" ? "fha" : "conv";
+  var dp = String(D.shared.down_pct);
+  $("down").value = [].some.call($("down").options, function (o) { return o.value === dp; }) ? dp : "20";
+  $("rate-src").textContent = "Rate default: " + (D.shared.rate_source || "most recent dossier") + (D.shared.rate_date ? ", " + D.shared.rate_date : "") + ". Change it and every column updates.";
+
+  var custom = H.map(function (h) { return h.value ? h.value.point : h.list_price; });
+
+  function priceFor(i) {
+    var b = $("basis").value, h = H[i];
+    if (b === "list") return h.list_price || (h.value && h.value.point) || 0;
+    if (b === "custom") return custom[i] || 0;
+    return (h.value && h.value.point) || h.list_price || 0;
+  }
+
+  function compute() {
+    var d = $("down").value, cash = d === "cash";
+    return H.map(function (h, i) {
+      var price = priceFor(i);
+      var rb = h.repairs ? repairBudget(h, "min", false) : null;
+      var fin = $("fin").checked && rb ? rb.mid : 0;
+      var c = computeCarry(h, { price: price, downPct: cash ? 100 : +d, cash: cash, ratePct: parseFloat($("rate").value) || 0, years: +$("term").value, loanType: $("loan").value, financed: fin });
+      var cashNeed = c.down + (rb && !fin ? rb.mid : 0);
+      var ded = h.cov_a_est && h.wind_deductible_pct ? h.cov_a_est * h.wind_deductible_pct / 100 : (h.aop_deductible || null);
+      return { h: h, price: price, c: c, rb: rb, cashNeed: cashNeed, ded: ded,
+        psf: h.house.sqft ? price / h.house.sqft : null,
+        gap: h.value && h.list_price ? (h.list_price - h.value.point) / h.list_price * 100 : null };
+    });
+  }
+
+  function bestIdx(rows, f, dir) {
+    var vals = rows.map(f), idx = -1, bv = null, n = 0;
+    vals.forEach(function (v, i) { if (v == null || isNaN(v)) return; n++; if (bv == null || (dir < 0 ? v < bv : v > bv)) { bv = v; idx = i; } });
+    var ties = vals.filter(function (v) { return v === bv; }).length;
+    return n > 1 && ties === 1 ? idx : -1;
+  }
+
+  function render() {
+    var R = compute();
+    var head = "<thead><tr><th></th>" + R.map(function (r) {
+      return "<th><span class=\"h\">" + esc(r.h.address) + "</span><span class=\"c\">" + esc(r.h.city_state_zip) + "</span></th>";
+    }).join("") + "</tr></thead>";
+    var body = "";
+    var grp = function (label) { body += "<tr class=\"grp\"><td>" + label + "</td>" + R.map(function () { return "<td></td>"; }).join("") + "</tr>"; };
+    var row = function (label, cell, best) {
+      body += "<tr><td>" + label + "</td>" + R.map(function (r, i) {
+        var html = cell(r, i);
+        return "<td" + (i === best ? " class=\"best\"" : "") + ">" + (html == null ? "<span class=\"na\">not in dossier</span>" : html) + (i === best ? "<span class=\"chip\">best</span>" : "") + "</td>";
+      }).join("") + "</tr>";
+    };
+
+    grp("Price");
+    row("List price", function (r) { return r.h.list_price ? money(r.h.list_price) : null; });
+    row("Indicated value", function (r) { return r.h.value ? "<b>" + money(r.h.value.point) + "</b><span class=\"d\">" + k(r.h.value.low) + "–" + k(r.h.value.high) + " · " + esc(r.h.value.confidence) + "</span>" : null; });
+    row("List above value", function (r) { return r.gap == null ? null : "<span class=\"" + (r.gap > 3 ? "neg" : "") + "\">" + (r.gap >= 0 ? r.gap.toFixed(1) + "% over" : (-r.gap).toFixed(1) + "% under") + "</span>"; }, bestIdx(R, function (r) { return r.gap; }, -1));
+    row("Price compared", function (r, i) {
+      return $("basis").value === "custom"
+        ? "<input type=\"number\" step=\"1000\" min=\"0\" id=\"p-" + i + "\" data-i=\"" + i + "\" value=\"" + Math.round(r.price) + "\" aria-label=\"Price for " + esc(r.h.address) + "\">"
+        : "<b>" + money(r.price) + "</b>";
+    });
+
+    grp("Monthly");
+    row("All-in carry", function (r) { return "<b>" + rng(r.c.low, r.c.high) + "</b><span class=\"d\">" + (r.c.missing.length ? "excludes " + r.c.missing.join(" and ") : "insurance as a range") + "</span>"; }, bestIdx(R, function (r) { return r.c.missing.length ? null : r.c.high; }, -1));
+    row("Principal, interest, mortgage ins.", function (r) { return money(r.c.pi + r.c.pmi) + (r.c.overLimit ? "<span class=\"d neg\">over county FHA limit</span>" : ""); });
+    row("Property tax", function (r) { return r.c.tax != null ? money(r.c.tax) : null; });
+    row("Insurance", function (r) { return r.c.insLo != null ? rng(r.c.insLo, r.c.insHi) + (r.c.flLo != null ? "<span class=\"d\">+ flood " + rng(r.c.flLo, r.c.flHi) + "</span>" : "") : null; });
+
+    grp("Cash");
+    row("Down payment", function (r) { return money(r.c.down); });
+    row("Repairs before move-in", function (r) { return r.rb ? rng(r.rb.low, r.rb.high) + "<span class=\"d\">minimum scope" + ($("fin").checked ? ", financed" : "") + "</span>" : "<span class=\"na\">no walkthrough list</span>"; });
+    row("Cash needed (est.)", function (r) { return "<b>" + money(r.cashNeed) + "</b><span class=\"d\">down" + (r.rb && !$("fin").checked ? " + repairs midpoint" : "") + "; excludes closing costs</span>"; }, bestIdx(R, function (r) { return r.cashNeed; }, -1));
+    row("Storm-day deductible", function (r) { return r.ded ? money(r.ded) + "<span class=\"d\">" + (r.h.wind_deductible_pct ? r.h.wind_deductible_pct + "% wind" : "flat AOP") + "</span>" : null; });
+
+    grp("House");
+    row("Size", function (r) { return r.h.house.sqft ? r.h.house.sqft.toLocaleString("en-US") + " sq ft" + (r.h.house.beds != null ? "<span class=\"d\">" + r.h.house.beds + " bed / " + r.h.house.baths + " bath</span>" : "") : null; });
+    row("$ per sq ft at price", function (r) { return r.psf ? money(r.psf) : null; }, bestIdx(R, function (r) { return r.psf; }, -1));
+    row("Year built", function (r) { return r.h.house.year || null; });
+    row("Lot", function (r) { return r.h.house.lot != null ? r.h.house.lot + " ac" + (r.h.house.pool ? "<span class=\"d\">pool</span>" : "") : null; });
+    row("Flood zone", function (r) { return r.h.house.fema === undefined ? null : (r.h.house.fema || "not determined"); });
+    row("Wind factor", function (r) { return r.h.house.wind != null ? r.h.house.wind + " / 10" : null; });
+
+    grp("Bottom line");
+    row("Dossier note", function (r) { return r.h.note ? "<span style=\"display:block;text-align:left\">" + esc(r.h.note.headline) + "</span>" : null; });
+
+    $("tbl").innerHTML = head + "<tbody>" + body + "</tbody>";
+    if ($("basis").value === "custom") {
+      $("tbl").querySelectorAll("input[data-i]").forEach(function (inp) {
+        inp.addEventListener("change", function () { custom[+inp.getAttribute("data-i")] = parseFloat(inp.value) || 0; render(); });
+      });
+    }
+  }
+
+  ["basis", "loan", "down", "rate", "term", "fin"].forEach(function (id) { $(id).addEventListener("change", render); $(id).addEventListener("input", function () { if (id === "rate") render(); }); });
+  render();
+})();
+</script>

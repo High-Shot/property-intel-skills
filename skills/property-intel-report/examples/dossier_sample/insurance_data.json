@@ -1,0 +1,412 @@
+{
+  "_note": "SYNTHETIC worked example. Address, parcel, comps, and coordinates are fabricated (pins shifted 0.10 deg west into Mobile Bay on purpose). Numbers come from a real Fairhope-area run and every one recomputes from its own inputs. One house across all three skills, so every dashboard cross-check fires.",
+  "property": {
+    "address": "4400 Example Pecan Rd",
+    "city": "Fairhope",
+    "state": "AL",
+    "zip": "36532",
+    "year_built": "1992",
+    "sqft": "3,135",
+    "construction": "Frame, siding exterior (type to confirm)",
+    "roof": "5 yrs (buyer-confirmed); permit to follow",
+    "distance_to_coast": "~2.4 mi to Mobile Bay (straight line)",
+    "fema_zone": "X (outside SFHA, per buyer)",
+    "bfe_note": "Outside the SFHA per buyer; First Street Flood Factor 1/10. Lender flood cert confirms."
+  },
+  "market_profile": "coastal",
+  "title": {
+    "eyebrow": "HOMEOWNERS INSURANCE BRIEF",
+    "tagline": "A coverage decision brief and quote-request package for a 1992 two-story, 2.4 mi from Mobile Bay. Wind is most of the premium here.",
+    "status_tag": "PART OF FULL DOSSIER · 9055 GAYFER RD EXT",
+    "prepared_label": "PREPARED OCTOBER 2026"
+  },
+  "primer": {
+    "title": "Why Coastal Quotes Vary So Much",
+    "subtitle": "Fairhope's average premium runs more than double Alabama's on the same $350K dwelling (ValuePenguin, Sep 2026).",
+    "cards": [
+      {
+        "icon": "FaWind",
+        "label": "WIND VS NON-WIND",
+        "color": "crimson",
+        "body": "Coastal policies split wind/hurricane from all other perils. Wind is most of the premium here and carries its own percentage deductible."
+      },
+      {
+        "icon": "FaShieldAlt",
+        "label": "THREE MARKETS, ONE HOUSE",
+        "color": "amber",
+        "body": "Baldwin risks place three ways: admitted carriers, surplus lines, or the AIUA wind pool. Surplus lines adds 6% AL tax, ~25% minimum earned premium, and no guaranty fund."
+      },
+      {
+        "icon": "FaHome",
+        "label": "MITIGATION IS THE LEVER",
+        "color": "green",
+        "body": "Alabama law requires insurers to discount FORTIFIED-certified homes. A 5-yr roof may qualify for a FORTIFIED Roof evaluation. Ask for the credit in dollars."
+      },
+      {
+        "icon": "FaDollarSign",
+        "label": "DEFAULTS ARE EXPENSIVE",
+        "color": "teal",
+        "body": "Agents quote conservative defaults when you specify nothing. This brief makes every quote come back on the same spec."
+      }
+    ],
+    "source_note": "Sources: ValuePenguin Alabama homeowners study (Sep 2026); ALDOI; Strengthen Alabama Homes rules 482-1-159 (eff. Jan 2026)."
+  },
+  "coverage_spec": {
+    "title": "Your Coverage Spec at a Glance",
+    "subtitle": "Built on the standard defaults. No interview answers yet; every line below is a default you can change.",
+    "stats": [
+      {
+        "big": "$500,000",
+        "label": "DWELLING (COV A)",
+        "sub": "Rebuild cost, 3,135 sf x $160/sf, est.",
+        "color": "marine"
+      },
+      {
+        "big": "2%",
+        "label": "WIND DEDUCTIBLE",
+        "sub": "= $10,000 out of pocket",
+        "color": "crimson"
+      },
+      {
+        "big": "$2,500",
+        "label": "AOP DEDUCTIBLE",
+        "sub": "All other perils",
+        "color": "coral"
+      },
+      {
+        "big": "50%",
+        "label": "PERSONAL PROPERTY",
+        "sub": "Of Cov A, replacement cost",
+        "color": "teal"
+      },
+      {
+        "big": "$300K",
+        "label": "LIABILITY",
+        "sub": "Default; raise with net worth",
+        "color": "green"
+      },
+      {
+        "big": "NO",
+        "label": "FLOOD (SEPARATE)",
+        "sub": "Outside flood zone; not lender-required",
+        "color": "amber"
+      }
+    ],
+    "source_note": "Dwelling basis is an estimate until a carrier replacement-cost estimator runs. It is rebuild cost, not the $452K market value."
+  },
+  "coverage_lines": {
+    "title": "Every Line, Explained",
+    "subtitle": "What each coverage does and the level on this spec.",
+    "rows": [
+      {
+        "line": "Dwelling (Cov A)",
+        "chosen": "$500,000 est. replacement cost",
+        "what": "Rebuild cost of the structure. Not the price; land doesn't burn."
+      },
+      {
+        "line": "Other structures (Cov B)",
+        "chosen": "10% of Cov A (default)",
+        "what": "Fence and any detached structure. Your fence needs repair; note it."
+      },
+      {
+        "line": "Personal property (Cov C)",
+        "chosen": "50% of Cov A, replacement cost endorsement",
+        "what": "Your stuff. Replacement cost pays new-for-old; ACV deducts depreciation."
+      },
+      {
+        "line": "Loss of use (Cov D)",
+        "chosen": "20% of Cov A (default)",
+        "what": "Rent and living costs if the house is uninhabitable after a covered loss."
+      },
+      {
+        "line": "Liability (Cov E)",
+        "chosen": "$300,000 (default)",
+        "what": "Lawsuits for injury or damage you cause. Cheapest protection per dollar."
+      },
+      {
+        "line": "Medical payments (Cov F)",
+        "chosen": "$5,000",
+        "what": "Small no-fault medical bills for guests."
+      },
+      {
+        "line": "Water backup",
+        "chosen": "Add: $10,000",
+        "what": "Sewer and drain backup. Excluded by default on most policies."
+      },
+      {
+        "line": "Ordinance or law",
+        "chosen": "Add: 25% of Cov A",
+        "what": "Cost of rebuilding to current code. A 1992 home predates today's wind code."
+      }
+    ],
+    "source_note": ""
+  },
+  "wind_deductible": {
+    "title": "The Wind Deductible, In Dollars",
+    "subtitle": "Percentage deductibles hide the real number. Here it is against $500K dwelling coverage.",
+    "options": [
+      {
+        "pct": "1%",
+        "dollars": "$5,000",
+        "chosen": false,
+        "color": "green",
+        "note": "Lowest storm-day exposure, highest premium."
+      },
+      {
+        "pct": "2%",
+        "dollars": "$10,000",
+        "chosen": "default",
+        "color": "coral",
+        "note": "Standard spec on every property. Meaningful premium relief vs 1%."
+      },
+      {
+        "pct": "5%",
+        "dollars": "$25,000",
+        "chosen": false,
+        "color": "crimson",
+        "note": "Cheapest premium. One named-storm claim costs more than years of savings."
+      }
+    ],
+    "framing": "Every spec carries the standard 2% wind deductible: $10,000 out of pocket on this house after a named storm. 1% and 5% are quoted beside it.",
+    "detail_note": "Named-storm vs hurricane vs wind/hail triggers differ by carrier. The spec sheet makes each quote state its trigger.",
+    "source_note": ""
+  },
+  "flood": {
+    "title": "Flood Is Always a Separate Policy",
+    "subtitle": "No homeowners policy covers rising water. Here is this property's picture.",
+    "facts": [
+      {
+        "big": "Zone X",
+        "label": "FEMA FLOOD ZONE",
+        "sub": "Outside SFHA (per buyer); not lender-required",
+        "color": "green"
+      },
+      {
+        "big": "1 / 10",
+        "label": "FIRST STREET FLOOD",
+        "sub": "Minimal modeled risk over 30 years",
+        "color": "green"
+      },
+      {
+        "big": "Not quoted",
+        "label": "FLOOD POLICY",
+        "sub": "Unless the lender's flood cert requires it",
+        "color": "teal"
+      }
+    ],
+    "body": "Outside the Special Flood Hazard Area, so the lender does not require flood coverage, and First Street models minimal risk. Rain-driven flooding does not respect zone lines; the facts are here so you can decide.",
+    "recommendation": "Not quoting flood: outside the flood zone, so the lender does not require it. An NFIP quote is one call away if you want it.",
+    "source_note": "Zone status per buyer; lender flood cert confirms. First Street via Redfin. NFIP prices per structure under Risk Rating 2.0."
+  },
+  "levers": {
+    "title": "What Actually Moves the Premium",
+    "subtitle": "Ranked by impact for this property. Direction is sourced; magnitudes are ranges, not promises.",
+    "items": [
+      {
+        "rank": "1",
+        "lever": "FORTIFIED certification",
+        "status": "Not certified. Roof is 5 yrs; evaluate for FORTIFIED Roof.",
+        "impact": "Largest single wind-premium discount in AL; credits are state-mandated. Strengthen Alabama Homes grants may offset a re-roof.",
+        "color": "green"
+      },
+      {
+        "rank": "2",
+        "lever": "Roof age proof",
+        "status": "Roof age confirmed at 5 yrs. Permit not yet in hand.",
+        "impact": "Carriers price on documented roof age. Without a permit or receipt, some will rate the roof at year built (1992).",
+        "color": "teal"
+      },
+      {
+        "rank": "3",
+        "lever": "Wind deductible choice",
+        "status": "2% standard spec (default).",
+        "impact": "Each step 1% to 2% to 5% trades premium for storm-day cash. Quoted three ways on the spec sheet.",
+        "color": "coral"
+      },
+      {
+        "rank": "4",
+        "lever": "Wind mitigation & 4-point",
+        "status": "Not yet inspected.",
+        "impact": "Documents roof-to-wall attachment and system ages. Cheap inspections that carriers credit.",
+        "color": "amber"
+      },
+      {
+        "rank": "5",
+        "lever": "Bundling & claims history",
+        "status": "Not asked yet; carrier will run CLUE.",
+        "impact": "Multi-policy, paid-in-full, and claims-free discounts are routine asks.",
+        "color": "marine"
+      }
+    ],
+    "source_note": "Sources: ALDOI; Strengthen Alabama Homes (482-1-159); IBHS FORTIFIED."
+  },
+  "premium_range": {
+    "title": "A Rough Range, Honestly Labeled",
+    "subtitle": "Context for quote-shopping, not a quote. Coastal spreads are wide by nature.",
+    "range_low": "$5,000",
+    "range_high": "$9,500",
+    "range_label": "EST. ANNUAL PREMIUM, HOMEOWNERS INCL. WIND, EXCL. FLOOD",
+    "basis_lines": [
+      {
+        "label": "Fairhope avg, $350K dwelling (ValuePenguin, Sep 2026)",
+        "value": "$7,386/yr"
+      },
+      {
+        "label": "Fairhope typical range (1-800-Insurance, Nov 2025)",
+        "value": "$3,000-$5,500/yr"
+      },
+      {
+        "label": "Alabama avg, $350K dwelling (ValuePenguin, Sep 2026)",
+        "value": "$3,254/yr"
+      },
+      {
+        "label": "Cov A $500K vs $350K study basis (this brief)",
+        "value": "direction: up"
+      },
+      {
+        "label": "5-yr roof, once permit-documented (ALDOI FORTIFIED rules)",
+        "value": "direction: down"
+      }
+    ],
+    "caveat": "Real quotes on this spec may land inside or outside this range. That is the point of getting three of them on identical assumptions.",
+    "source_note": "Sources: ValuePenguin Alabama homeowners rates (updated Sep 25, 2026); 1-800-Insurance Fairhope guide (Nov 30, 2025). All figures est."
+  },
+  "spec_sheet": {
+    "headline": "Quote Request & Comparison Worksheet",
+    "instruction": "Give one copy to each of three agents. Every quote must price THIS spec. Differences go in the deviations row, not silently into the price.",
+    "property_block": [
+      {
+        "label": "Address",
+        "value": "4400 Example Pecan Rd, Fairhope, AL 36532"
+      },
+      {
+        "label": "Year built / sqft",
+        "value": "1992 / 3,135 sqft, 2 stories"
+      },
+      {
+        "label": "Construction",
+        "value": "Frame, siding exterior (confirm type)"
+      },
+      {
+        "label": "Roof",
+        "value": "5 yrs; HVAC 2 yrs; replumbed"
+      },
+      {
+        "label": "Distance to coast",
+        "value": "~2.4 mi to Mobile Bay"
+      },
+      {
+        "label": "FEMA flood zone",
+        "value": "X, outside SFHA (flood not requested)"
+      },
+      {
+        "label": "Occupancy",
+        "value": "Primary residence"
+      },
+      {
+        "label": "Claims / lapses",
+        "value": "Unknown; carrier will run CLUE"
+      }
+    ],
+    "coverage_block": [
+      {
+        "label": "Dwelling (Cov A)",
+        "value": "$500,000 est. RC; run your estimator, show it"
+      },
+      {
+        "label": "Wind/hurricane ded.",
+        "value": "2%; ALSO quote 1% and 5%"
+      },
+      {
+        "label": "AOP deductible",
+        "value": "$2,500"
+      },
+      {
+        "label": "Personal property",
+        "value": "50% Cov A, replacement cost"
+      },
+      {
+        "label": "Liability / MedPay",
+        "value": "$300,000 / $5,000"
+      },
+      {
+        "label": "Water backup",
+        "value": "$10,000"
+      },
+      {
+        "label": "Ordinance or law",
+        "value": "25% Cov A"
+      },
+      {
+        "label": "Roof settlement",
+        "value": "Replacement cost; state if ACV or schedule"
+      },
+      {
+        "label": "FORTIFIED credit",
+        "value": "State the credit if roof qualifies"
+      }
+    ],
+    "quote_columns": {
+      "column_headers": [
+        "QUOTE 1",
+        "QUOTE 2",
+        "QUOTE 3"
+      ],
+      "rows": [
+        "Carrier & channel (admitted / surplus)",
+        "Total cost ($ premium + all fees + taxes)",
+        "Wind deductible ($ and trigger)",
+        "AOP deductible ($)",
+        "Roof settlement (RCV or age-ACV form?)",
+        "Min. earned premium %",
+        "FORTIFIED credit applied?",
+        "Notable exclusions",
+        "Deviations from spec"
+      ]
+    },
+    "footer": "Estimates in this packet are labeled and sourced. Quotes entered above are the real numbers. Prepared with the buyer's coverage brief, October 2026."
+  },
+  "agent_script": {
+    "title": "Work the Script",
+    "subtitle": "Questions that separate a good policy from a cheap-looking one.",
+    "questions": [
+      "Is the wind deductible triggered by 'named storm,' 'hurricane,' or 'wind/hail'? Show me the definition page.",
+      "What roof age did you rate? I'll send the permit; requote if you used 1992.",
+      "Is roof settlement replacement cost, ACV, or a payment schedule by age?",
+      "What FORTIFIED credit applies if I certify the roof, in dollars on THIS quote?",
+      "Admitted or surplus lines? If surplus: minimum earned premium, fully earned fees, guaranty-fund status?",
+      "What is the total walk-out cost: premium plus every fee plus surplus lines tax?",
+      "What does the same policy cost with 1% and 5% wind deductibles?",
+      "Will the exterior wood repairs (siding, porch, trim) affect binding? What do you need documented?"
+    ],
+    "red_flags_label": "RED FLAGS IN A QUOTE",
+    "red_flags": [
+      "Dwelling coverage well below the $500K estimate. Underinsurance disguised as savings.",
+      "RCV roof on the summary page but an age-triggered ACV roof form in the endorsements. Read the forms schedule.",
+      "Roof rated at 1992 because no permit was supplied.",
+      "No wind deductible dollar figure shown, only a percentage.",
+      "Flood 'included' claims. Homeowners policies exclude flood.",
+      "A quote delivered without a single question asked about the property."
+    ],
+    "footer_note": "A quote you can't compare is a quote you can't trust."
+  },
+  "sources": {
+    "title": "Show Your Work",
+    "list": [
+      "ValuePenguin, Alabama homeowners insurance rates (updated Sep 25, 2026)",
+      "1-800-Insurance, Fairhope home insurance guide (Nov 30, 2025)",
+      "ALDOI; Surplus lines tax and minimum earned premium (skill anchors, 2025-Q4)",
+      "Strengthen Alabama Homes rules 482-1-159 (effective Jan 1, 2026)",
+      "First Street Foundation factors via Redfin",
+      "property-intel-report and property-appraisal research for this address"
+    ],
+    "caveats": [
+      "All premium figures are estimates for orientation, not quotes. Only a carrier can quote.",
+      "Educational decision support, not insurance advice; you select coverage.",
+      "Cov A of $500K is provisional until a carrier estimator runs. Rebuild $/sqft ($160) is an est. inside the stale $150-250 anchor.",
+      "Defaults used, no interview answers: claims history, liability ($300K), Cov C 50%. Change any of them before quoting.",
+      "Flood zone per buyer: outside the SFHA. Flood stays off the spec unless the lender's flood cert says otherwise.",
+      "SYNTHETIC EXAMPLE. Wind deductible set at the standard 2% default; 1% and 5% quoted for comparison."
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: |
+          npm install -g pptxgenjs react react-dom react-icons sharp
+          pip install reportlab pypdf python-pptx
+
+      - name: Build every example and run contract, regression, and negative tests
+        run: python3 tests/verify.py

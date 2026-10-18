@@ -1,0 +1,105 @@
+{
+  "_note": "SYNTHETIC second house for compare mode and the legacy-cache dashboard test (schema 1.1: no repairs, buyer, or dossier note). Fictional address. Figures illustrative, not sourced.",
+  "schema_version": "1.1",
+  "normalized_address": "1234 sample creek dr daphne al 36526",
+  "written_by": [
+    "property-intel-report",
+    "property-appraisal",
+    "property-insurance-brief"
+  ],
+  "last_updated": "2026-10-18",
+  "address": {
+    "street": "1234 Sample Creek Dr",
+    "city": "Daphne",
+    "state": "AL",
+    "zip": "36526",
+    "county": "Baldwin",
+    "parcel_id": "05-46-03-00-000-000.000",
+    "mls": "",
+    "lat": 30.6,
+    "lng": -87.95
+  },
+  "structure": {
+    "year_built": 1998,
+    "sqft": 2350,
+    "beds": 4,
+    "baths": 2.5,
+    "stories": 1,
+    "lot_acres": 0.42,
+    "garage_bays": 2,
+    "pool": false
+  },
+  "hazard": {
+    "fema_zone": "X",
+    "bfe_ft": null
+  },
+  "market": {
+    "list_price": 425000,
+    "mortgage_rate_pct": 7.4,
+    "rate_source": "Freddie Mac PMMS (illustrative)",
+    "rate_date": "2026-10-15",
+    "tax_annual_post_sale": 2900,
+    "hoa_monthly": 0
+  },
+  "value": {
+    "point": 411000,
+    "low": 382000,
+    "high": 440000,
+    "confidence": "Medium",
+    "from_skill": "property-appraisal",
+    "method": "sales comparison, 4 comps",
+    "as_of": "2026-07-08"
+  },
+  "insurance": {
+    "market_profile": "coastal",
+    "cov_a_est": 385000,
+    "premium_low": 3200,
+    "premium_high": 6500,
+    "wind_deductible_options_pct": [
+      1,
+      2,
+      5
+    ],
+    "wind_deductible_pct": 2,
+    "wind_deductible_chosen": true,
+    "aop_deductible": 2500,
+    "flood_premium_low": 500,
+    "flood_premium_high": 900,
+    "flood_required": false,
+    "wind_note": "Named-storm, hurricane and wind/hail triggers differ by carrier. The spec sheet makes each quote state which one applies.",
+    "from_skill": "property-insurance-brief",
+    "as_of": "2026-07-08"
+  },
+  "provenance": {
+    "market.list_price": {
+      "source": "Listing (illustrative)",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "market.mortgage_rate_pct": {
+      "source": "Freddie Mac PMMS (illustrative value)",
+      "tier": 1,
+      "retrieved": "2026-10-15"
+    },
+    "market.tax_annual_post_sale": {
+      "source": "property-intel-report post-sale projection (illustrative)",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "value.point": {
+      "source": "property-appraisal sales comparison",
+      "tier": 1,
+      "retrieved": "2026-10-18"
+    },
+    "insurance.premium_low": {
+      "source": "property-insurance-brief range (illustrative)",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    },
+    "insurance.cov_a_est": {
+      "source": "property-insurance-brief replacement-cost estimate (illustrative)",
+      "tier": 2,
+      "retrieved": "2026-10-18"
+    }
+  }
+}
