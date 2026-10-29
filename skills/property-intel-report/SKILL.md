@@ -172,7 +172,7 @@ The builder warns when two caches are the same address, when a house has no valu
 
 ## Verification
 
-`tests/verify.py` at the repo root builds every shipped example, checks slide counts, canvas bounds, the one-page PDF and page scripts, and injects known defects to prove each validator still fires. Run it after changing any builder or schema. CI runs it on every push.
+`tests/verify.py` at the repo root builds every shipped example, checks slide counts, canvas bounds, the spec sheet page count (1, or 2 with carrier intake) and page scripts, and injects known defects to prove each validator still fires. Run it after changing any builder or schema. CI runs it on every push.
 
 ## Output Standards
 

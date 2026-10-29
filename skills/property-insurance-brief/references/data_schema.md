@@ -3,7 +3,7 @@
 The build pipeline consumes a single JSON file and produces TWO outputs:
 
 1. `output.pptx` — the 11-slide coverage decision brief
-2. `spec_sheet.pdf` — the standalone one-page quote request / comparison worksheet
+2. `spec_sheet.pdf` — page 1 is the quote request / comparison worksheet; page 2 (when `spec_sheet.carrier_intake` is present) is the carrier intake answer sheet
 
 One interview, one JSON, two files. The `spec_sheet` section feeds both the PDF and the slide 9 preview.
 
@@ -118,6 +118,11 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
         "note": "Standard spec on every property. Meaningful premium relief vs 1%." },   // standing rule: 2% is never asked
       { "pct": "5%", "dollars": "$19,250", "chosen": false, "color": "crimson",
         "note": "Cheapest premium. One named storm claim costs more than years of savings." }
+      // FLAT-DOLLAR VARIANT. When a real quote states the hurricane deductible as a fixed
+      // dollar figure, that option carries "flat" (number), "dollars" equal to it, and "pct"
+      // as the effective percent of Cov A to two decimals. The card leads with "FLAT".
+      // { "pct": "4.65%", "flat": 20000, "dollars": "$20,000", "chosen": "default", "color": "crimson",
+      //   "note": "Carrier's quoted hurricane deductible, fixed in dollars." }
     ],
     "framing": "Every spec carries the standard 2% wind deductible: $7,700 out of pocket on this house after a named storm. 1% and 5% are quoted beside it.",
     "detail_note": "Named-storm vs hurricane vs wind/hail deductible triggers differ by carrier. The spec sheet forces each quote to state its trigger.",
@@ -207,13 +212,55 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
       "rows": [
         "Carrier & channel (admitted / surplus)",
         "Total cost ($ premium + all fees + taxes)",
-        "Wind deductible ($ and trigger)",
+        "Wind deductible ($, flat or %, trigger)",
         "AOP deductible ($)",
-        "Roof settlement (RCV or age-ACV form?)",
+        "Roof terms (RCV/ACV, roof sublimit $)",
+        "Water damage / water backup limits",
         "Min. earned premium %",
         "FORTIFIED credit applied?",
-        "Notable exclusions",
+        "Endorsements added ($ each)",
         "Deviations from spec"
+      ]
+    },
+    "carrier_intake": {
+      // OPTIONAL. Renders as page 2 of the PDF. Sections and rows follow the order of the
+      // carrier intake form the agent actually uses (example below follows a common
+      // Indio-style home quote sheet). 4-6 sections, 30-40 rows total.
+      // status: "verified" (tier-1 record or inspection), "listing" (MLS / listing copy),
+      //         "buyer" (buyer stated it), "unconfirmed" (renders CONFIRM; carrier must not rate on it yet).
+      // NEVER include SSN, driver's license number, or date of birth. The builder exits non-zero.
+      "headline": "Answers for the Carrier's Intake Form",
+      "instruction": "Key these into the carrier's form in this order. CONFIRM rows are not yet verified; ask before rating on them.",
+      "sections": [
+        { "title": "Occupancy & use", "rows": [
+          { "label": "Policy type", "value": "Home, HO-3", "status": "buyer" },
+          { "label": "Residence", "value": "Primary, not a rental", "status": "buyer" },
+          { "label": "Effective date", "value": "At closing", "status": "buyer" } ] },
+        { "title": "Dwelling", "rows": [
+          { "label": "Year built", "value": "1998", "status": "verified" },
+          { "label": "Total sqft / stories", "value": "2,400 / 1", "status": "verified" },
+          { "label": "Acres / pond", "value": "0.4 / none", "status": "verified" },
+          { "label": "Garage / carport", "value": "Attached 2-car", "status": "listing" },
+          { "label": "Pool / trampoline / dogs", "value": "No / no / no", "status": "buyer" } ] },
+        { "title": "Construction & roof", "rows": [
+          { "label": "Construction", "value": "Masonry veneer", "status": "verified" },
+          { "label": "Foundation", "value": "Slab", "status": "listing" },
+          { "label": "Roof type / shape", "value": "Arch. shingle / hip", "status": "unconfirmed" },
+          { "label": "Year of roof", "value": "2019 (permit)", "status": "verified" },
+          { "label": "Wind mitigation", "value": "None (no FORTIFIED cert)", "status": "verified" },
+          { "label": "Hurricane shutters", "value": "No", "status": "unconfirmed" } ] },
+        { "title": "Systems", "rows": [
+          { "label": "Heat / AC", "value": "Central heat pump, 2017", "status": "listing" },
+          { "label": "Plumbing material", "value": "PEX / CPVC", "status": "unconfirmed" },
+          { "label": "Wiring", "value": "Copper", "status": "unconfirmed" },
+          { "label": "Electrical panel", "value": "Brand not yet seen", "status": "unconfirmed" },
+          { "label": "Water heater", "value": "2015, garage, tank", "status": "unconfirmed" },
+          { "label": "Monitored alarm", "value": "No", "status": "buyer" },
+          { "label": "Detached structures", "value": "None", "status": "verified" } ] },
+        { "title": "History & lien", "rows": [
+          { "label": "Prior claims (5 yr)", "value": "None", "status": "buyer" },
+          { "label": "Carrier name (current)", "value": "New purchase", "status": "buyer" },
+          { "label": "Mortgaged", "value": "Yes, lender TBD at closing", "status": "buyer" } ] }
       ]
     },
     "footer": "Estimates in this packet are labeled and sourced. Quotes below are the real numbers. Prepared with the buyer's coverage brief, <Month YYYY>."
@@ -271,7 +318,9 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
 - **`chosen` flag.** Exactly one wind_deductible option must have `chosen: true`.
 - **Every dollar figure the buyer didn't choose is an estimate** and must carry "est." in the string. Chosen coverage levels (deductibles, liability limit) are selections, not estimates — no label.
 - **`premium_range.basis_lines`** must name a source per line. No source, no line.
-- **Spec sheet quote_columns.rows** are fixed labels (9 rows) — do not add rows without checking the PDF fits one page. Quotes compare on TOTAL cost (premium + fees + taxes), never on property premium alone; surplus lines channel and minimum earned premium are grid rows because they change what the number means.
+- **Spec sheet quote_columns.rows** are fixed labels (10 rows) — do not add rows without checking page 1 still fits. Roof terms and water damage limits are mandatory rows: one Fairhope carrier attached a roof coverage endorsement with a $25,000-$30,000 limit, and an additional-water-damage endorsement whose limit ranged from $0 to $50,000 on the same carrier, which makes two "identical" quotes cover different things.
+- **Wind deductible, flat variant.** An option with `flat` must have `dollars` equal to it and `pct` equal to flat / Cov A × 100 within 0.02 points. The builder warns otherwise.
+- **`carrier_intake`** (optional, page 2): rows carry `status`. A row with no tier-1, inspection, or buyer source is `unconfirmed`. Labels asking for SSN, license number, or date of birth make the PDF builder exit non-zero. Quotes compare on TOTAL cost (premium + fees + taxes), never on property premium alone; surplus lines channel and minimum earned premium are grid rows because they change what the number means.
 - **Colors and icons**: named palette tokens and validated FA names only.
 
 ## market_profile

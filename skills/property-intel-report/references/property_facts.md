@@ -23,7 +23,7 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
 
 ```json
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "normalized_address": "1090 willow bend rd fairhope al 36532",
   "written_by": ["property-intel-report"],
   "last_updated": "YYYY-MM-DD",
@@ -40,7 +40,16 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
     "roof_material": "", "roof_age_yrs": 0,
     "roof_source": "permit | listing | assumed",
     "hvac_age_yrs": 0, "water_source": "", "sewer": "",
-    "lot_acres": 0, "garage_bays": 0, "pool": false
+    "lot_acres": 0, "garage_bays": 0, "pool": false,
+
+    "roof_shape": "hip | gable | other", "roof_year": 0,
+    "wind_mitigation": "none | fortified_roof | fortified_silver | fortified_gold",
+    "hurricane_shutters": null,
+    "electrical_panel": "", "panel_ineligible": null,
+    "wiring": "", "plumbing_material": "",
+    "water_heater_year": 0, "water_heater_in_attic": null, "water_heater_tankless": null,
+    "hvac_year": 0, "monitored_alarm": null,
+    "detached_structures": "", "pond": null
   },
 
   "hazard": {
@@ -79,6 +88,18 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
     "aop_deductible": 0,
     "flood_premium_low": null, "flood_premium_high": null, "flood_required": null,
     "wind_note": "",
+    "wind_deductible_flat": null,
+    "quotes": [
+      {"carrier": "", "agency": "", "channel": "admitted | surplus | pool",
+       "quote_date": "YYYY-MM-DD", "form": "HO3", "territory": "", "protection_class": "",
+       "cov_a": 0, "cov_b": 0, "cov_c": 0, "cov_d": 0, "cov_e": 0, "cov_f": 0,
+       "aop_deductible": 0, "wind_deductible_flat": null, "wind_deductible_pct": null,
+       "total_annual": 0, "rate_per_1k_cov_a": 0,
+       "roof_terms": "", "water_damage_limit": null, "water_backup_limit": null,
+       "endorsements": [{"name": "", "limit": null, "premium": 0}],
+       "rated_on": {"year_built": 0, "construction": ""},
+       "flags": [""]}
+    ],
     "from_skill": "", "as_of": ""
   },
 
@@ -93,7 +114,11 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
   },
 
   "buyer": {
-    "financing": {"loan_type": "fha | conv", "down_pct": 0, "planned_offer": null}
+    "financing": {"loan_type": "fha | conv", "down_pct": 0, "planned_offer": null},
+    "insurance_intake": {
+      "occupancy": "primary | secondary | rental", "prior_claims_5yr": null,
+      "dogs": null, "trampoline": null, "mortgaged": null, "home_business": null
+    }
   },
 
   "dossier": {
@@ -131,6 +156,18 @@ The dossier dashboard (`property-intel-report` Stage 5) reads only this cache. E
 A missing field shows as a notice in its panel, never as a guess.
 
 `repairs.items[].low/high` are cure costs before the appraisal's moisture multiplier; the appraisal's condition slide carries the value impact, this block carries the cash the buyer spends. `full_low`/`full_high` hold the fuller scope when the buyer named one ("downstairs carpet at least, ideally all"). `category: "upgrade"` marks optional improvements (a kitchen refresh) that the panel shows only when the buyer ticks "include upgrades."
+
+## Carrier intake fields (schema 1.3)
+
+The `structure` intake fields and `buyer.insurance_intake` mirror the questions a carrier's own intake form asks (roof shape, panel brand, plumbing material, water heater age and location, alarm, detached structures, pond, dogs, trampoline, claims, mortgaged). `property-insurance-brief` writes them and renders them on page 2 of the spec sheet. Record the source in `provenance` like any fact. A field with no tier-1 or inspection source renders as CONFIRM on the sheet; carriers rate on what you write, so a guess must never look verified.
+
+`roof_year` and `hvac_year` are absolute years, preferred over the older `roof_age_yrs` and `hvac_age_yrs` because ages go stale. `panel_ineligible` is `true` for brands carriers decline (Federal Pacific Stab-Lok, Zinsco, Challenger recalls, fuse boxes); `null` until someone has seen the panel label.
+
+Applicant identifiers (SSN, driver's license number, date of birth) are never written to this cache or any file. They go only into the agent's secure portal.
+
+## Real quotes (`insurance.quotes[]`)
+
+Every real carrier quote the buyer receives is recorded here as numbers. Real quotes outrank every published anchor: once one exists for this address, `premium_low`/`premium_high` are set from the quotes (normalized to the spec terms, see the insurance skill), and `rate_per_1k_cov_a` (total annual / Cov A × 1000) becomes a reusable territory anchor for nearby properties. `wind_deductible_flat` is set when the carrier quotes the hurricane deductible as a fixed dollar figure; `wind_deductible_pct` then holds the effective percent of Cov A (flat / Cov A × 100, two decimals) so the dashboard can still place it.
 
 ## Source tiers
 

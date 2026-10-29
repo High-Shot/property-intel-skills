@@ -9,11 +9,23 @@ one-page letter-portrait worksheet: property facts and the requested
 coverage spec on the left, three blank hand-fillable quote columns on
 the right. Design tokens match the deck (marine/teal/coral, serif heads).
 
-Hard constraint: one page. The layout is computed top-down; if content
-would overflow, the script measures both columns against the footer floor and exits non-zero rather than drawing off the page.
+Page 1 is the quote worksheet and is hard-limited to one page: the layout is
+computed top-down, and if content would overflow, the script measures both
+columns against the footer floor and exits non-zero rather than drawing off
+the page.
+
+Page 2 is optional: the carrier intake sheet, rendered only when
+spec_sheet.carrier_intake is present. It lists the property answers in the
+order a carrier's own intake form asks them, so the agent can key them in
+directly. Every row carries a status (verified / listing / buyer / unconfirmed);
+unconfirmed rows are flagged so a carrier never rates on a guess.
+
+Applicant identifiers (SSN, driver's license, date of birth) never belong on
+this sheet. The script exits non-zero if any label asks for one.
 """
 
 import json
+import re
 import sys
 
 from reportlab.lib.pagesizes import letter
@@ -39,6 +51,159 @@ FONT_BI = "Helvetica-Oblique"
 
 PAGE_W, PAGE_H = letter    # 612 x 792 pt
 M = 40                     # page margin
+AMBER = HexColor("#C9A227")
+GREEN = HexColor("#2A9D8F")
+
+# Identifiers that belong only in the agent's secure portal, never on a sheet that gets emailed.
+PII_LABEL = re.compile(r"\bssn\b|social security|driver'?s?\W*licen[cs]e|licen[cs]e\s*(#|no|number)|date of birth|\bdob\b|birth\s*date", re.I)
+
+STATUS_STYLE = {
+    "verified": ("VERIFIED", GREEN),
+    "listing": ("LISTING", STEEL),
+    "buyer": ("BUYER", HexColor("#1C7293")),
+    "unconfirmed": ("CONFIRM", AMBER),
+}
+
+
+def pii_check(ss):
+    labels = [r.get("label", "") for r in ss.get("property_block", []) + ss.get("coverage_block", [])]
+    for sec in ss.get("carrier_intake", {}).get("sections", []):
+        labels += [r.get("label", "") for r in sec.get("rows", [])]
+    bad = [l for l in labels if PII_LABEL.search(l)]
+    if bad:
+        print(
+            "ERROR: spec sheet asks for applicant identifiers (" + "; ".join(bad) + "). SSN, license number and "
+            "date of birth go only into the agent's secure portal, never onto this sheet. Remove those rows.",
+            file=sys.stderr,
+        )
+        sys.exit(3)
+
+
+def draw_footer(c, ss):
+    fy = M + 34
+    c.setStrokeColor(HAIRLINE)
+    c.setLineWidth(0.5)
+    c.line(M, fy + 10, PAGE_W - M, fy + 10)
+    c.setFillColor(GRAPHITE)
+    c.setFont(FONT_BI, 7.5)
+    for ln in simpleSplit(ss.get("footer", ""), FONT_BI, 7.5, PAGE_W - 2 * M):
+        c.drawString(M, fy, ln)
+        fy -= 9.5
+    c.setFillColor(STEEL)
+    c.setFont(FONT_BI, 7)
+    c.drawString(M, M - 14, "Educational decision support — not insurance advice. Only a carrier can quote.")
+
+
+def draw_band(c, eyebrow, headline, addr):
+    band_h = 74
+    c.setFillColor(MARINE)
+    c.rect(0, PAGE_H - band_h, PAGE_W, band_h, fill=1, stroke=0)
+    c.setFillColor(CORAL)
+    c.rect(0, PAGE_H - band_h - 4, PAGE_W, 4, fill=1, stroke=0)
+    c.setFillColor(CORAL)
+    c.setFont(FONT_BB, 8)
+    c.drawString(M, PAGE_H - 24, eyebrow)
+    c.setFillColor(WHITE)
+    c.setFont(FONT_H, 17)
+    c.drawString(M, PAGE_H - 44, headline)
+    c.setFillColor(HexColor("#AFC3D4"))
+    c.setFont(FONT_B, 9)
+    c.drawString(M, PAGE_H - 60, addr)
+    return PAGE_H - band_h - 16
+
+
+def intake_page(c, ss, addr):
+    """Page 2: carrier intake answers in the carrier form's own order, two columns, status per row."""
+    ci = ss["carrier_intake"]
+    y = draw_band(c, "CARRIER INTAKE — PROPERTY ANSWERS", ci.get("headline", "Answers for the Carrier's Intake Form"), addr)
+    c.setFillColor(GRAPHITE)
+    c.setFont(FONT_BI, 8.5)
+    for ln in simpleSplit(ci.get("instruction", ""), FONT_BI, 8.5, PAGE_W - 2 * M):
+        c.drawString(M, y, ln)
+        y -= 11
+    y -= 4
+    # legend
+    lx = M
+    c.setFont(FONT_BB, 6.5)
+    for key in ("verified", "listing", "buyer", "unconfirmed"):
+        tag, col = STATUS_STYLE[key]
+        c.setFillColor(col)
+        c.roundRect(lx, y - 3, 46, 10, 2, fill=1, stroke=0)
+        c.setFillColor(WHITE)
+        c.drawCentredString(lx + 23, y, tag)
+        lx += 50
+    c.setFillColor(STEEL)
+    c.setFont(FONT_B, 7)
+    c.drawString(lx + 4, y, ci.get("legend_note", "CONFIRM = not yet verified. Carrier must not rate on it until confirmed."))
+    y -= 16
+
+    col_gap = 16
+    col_w = (PAGE_W - 2 * M - col_gap) / 2
+    floor = M + 64
+    label_w, tag_w, row_h = 98, 48, 15.5
+
+    def sec_height(sec):
+        h = 16
+        for r in sec.get("rows", []):
+            n = len(simpleSplit(str(r.get("value", "")), FONT_BB, 7.5, col_w - label_w - tag_w - 6))
+            h += max(row_h, 9 * n + 6)
+        return h + 8
+
+    sections = ci.get("sections", [])
+    # Balanced fill, sections kept whole and in form order: the left column takes
+    # sections until it holds about half the total height, the right takes the rest.
+    # Exit non-zero if either column would cross the footer floor.
+    avail = y - floor
+    heights = [sec_height(sec) for sec in sections]
+    total = sum(heights)
+    cols, used = [[], []], 0
+    for sec, h in zip(sections, heights):
+        cur = 0 if not cols[1] and ((used + h / 2) <= total / 2 or not cols[0]) else 1
+        cols[cur].append(sec)
+        if cur == 0:
+            used += h
+    right = total - used
+    if used > avail or right > avail:
+        print("ERROR: carrier_intake does not fit page 2. Trim rows or shorten values.", file=sys.stderr)
+        sys.exit(2)
+
+    for ci_idx, secs in enumerate(cols):
+        x = M + ci_idx * (col_w + col_gap)
+        yy = y
+        for sec in secs:
+            c.setFillColor(TEAL)
+            c.setFont(FONT_BB, 8)
+            c.drawString(x, yy, sec.get("title", "").upper())
+            yy -= 5
+            c.setStrokeColor(TEAL)
+            c.setLineWidth(1)
+            c.line(x, yy, x + col_w, yy)
+            yy -= 3
+            for r in sec.get("rows", []):
+                lines = simpleSplit(str(r.get("value", "")), FONT_BB, 7.5, col_w - label_w - tag_w - 6)
+                need = max(row_h, 9 * len(lines) + 6)
+                c.setFillColor(STEEL)
+                c.setFont(FONT_B, 7.5)
+                c.drawString(x, yy - 10, r.get("label", ""))
+                c.setFillColor(HexColor("#1A1A1A"))
+                c.setFont(FONT_BB, 7.5)
+                vy = yy - 10
+                for vl in lines:
+                    c.drawString(x + label_w, vy, vl)
+                    vy -= 9
+                st = (r.get("status") or "unconfirmed").lower()
+                tag, col = STATUS_STYLE.get(st, STATUS_STYLE["unconfirmed"])
+                c.setFillColor(col)
+                c.roundRect(x + col_w - tag_w + 2, yy - 12, tag_w - 2, 10, 2, fill=1, stroke=0)
+                c.setFillColor(WHITE)
+                c.setFont(FONT_BB, 6.5)
+                c.drawCentredString(x + col_w - tag_w / 2 + 1, yy - 9, tag)
+                yy -= need
+                c.setStrokeColor(HAIRLINE)
+                c.setLineWidth(0.5)
+                c.line(x, yy + 3, x + col_w, yy + 3)
+            yy -= 13
+    draw_footer(c, ss)
 
 
 def main():
@@ -50,26 +215,11 @@ def main():
     ss = data["spec_sheet"]
     prop = data.get("property", {})
 
+    pii_check(ss)
     c = canvas.Canvas(out, pagesize=letter)
 
-    # ---- Header band ----
-    band_h = 74
-    c.setFillColor(MARINE)
-    c.rect(0, PAGE_H - band_h, PAGE_W, band_h, fill=1, stroke=0)
-    c.setFillColor(CORAL)
-    c.rect(0, PAGE_H - band_h - 4, PAGE_W, 4, fill=1, stroke=0)
-    c.setFillColor(CORAL)
-    c.setFont(FONT_BB, 8)
-    c.drawString(M, PAGE_H - 24, "HOMEOWNERS INSURANCE — QUOTE REQUEST")
-    c.setFillColor(WHITE)
-    c.setFont(FONT_H, 17)
-    c.drawString(M, PAGE_H - 44, ss.get("headline", "Quote Request & Comparison Worksheet"))
-    c.setFillColor(HexColor("#AFC3D4"))
-    c.setFont(FONT_B, 9)
     addr = f'{prop.get("address", "")}, {prop.get("city", "")}, {prop.get("state", "")} {prop.get("zip", "")}'
-    c.drawString(M, PAGE_H - 60, addr)
-
-    y = PAGE_H - band_h - 16
+    y = draw_band(c, "HOMEOWNERS INSURANCE — QUOTE REQUEST", ss.get("headline", "Quote Request & Comparison Worksheet"), addr)
 
     # ---- Instruction line ----
     c.setFillColor(GRAPHITE)
@@ -195,27 +345,18 @@ def main():
     c.setLineWidth(1)
     c.rect(right_x, gy, right_w, (top_y - 8) - gy, fill=0, stroke=1)
 
-    # ---- Footer ----
-    fy = M + 34
-    c.setStrokeColor(HAIRLINE)
-    c.setLineWidth(0.5)
-    c.line(M, fy + 10, PAGE_W - M, fy + 10)
-    c.setFillColor(GRAPHITE)
-    c.setFont(FONT_BI, 7.5)
-    for ln in simpleSplit(ss.get("footer", ""), FONT_BI, 7.5, PAGE_W - 2 * M):
-        c.drawString(M, fy, ln)
-        fy -= 9.5
-    c.setFillColor(STEEL)
-    c.setFont(FONT_BI, 7)
-    c.drawString(M, M - 14, "Educational decision support — not insurance advice. Only a carrier can quote.")
-
+    draw_footer(c, ss)
     c.showPage()
+    pages = 1
+    if ss.get("carrier_intake", {}).get("sections"):
+        intake_page(c, ss, addr)
+        c.showPage()
+        pages = 2
     c.save()
 
-    # One page is guaranteed structurally: showPage() is called exactly once, and both
-    # columns are bounds-checked against left_floor before drawing. A page-count check
-    # after the fact can never fail and would read as a guarantee it does not provide.
-    print(f"Wrote {out} (1 page)")
+    # Page 1 is one page structurally: both columns are bounds-checked against
+    # left_floor before drawing. Page 2 is bounds-checked the same way.
+    print(f"Wrote {out} ({pages} page{'s' if pages > 1 else ''})")
 
 
 if __name__ == "__main__":

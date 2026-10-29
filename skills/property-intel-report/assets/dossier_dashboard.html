@@ -353,7 +353,7 @@ var F = /*__DATA__*/null;
       : tile("Indicated value", "Not run", "Run property-appraisal for the value number", true));
     t.push(tile("Monthly at " + money(+price.value), rangeMo(c.low, c.high).replace("/mo", ""), (c.missing.length ? "Excludes " + c.missing.join(" and ") + " · " : "") + "per month, " + ($("down").value === "cash" ? "all cash" : c.downPct + "% down" + (c.fha ? " FHA" : ""))));
     if (F.repairs) { var rb = repairBudget(F, "min", false); t.push(tile("Repairs before move-in", kShort(rb.low) + "–" + kShort(rb.high), "Minimum scope, from your walkthrough")); }
-    if (F.cov_a_est && F.wind_deductible_pct) t.push(tile("Wind deductible chosen", money(F.cov_a_est * F.wind_deductible_pct / 100), F.wind_deductible_pct + "% of " + kShort(F.cov_a_est) + " dwelling coverage" + (F.wind_deductible_default ? " · default, not chosen" : "")));
+    if (F.cov_a_est && F.wind_deductible_pct) t.push(tile("Wind deductible chosen", money(F.wind_deductible_flat > 0 ? F.wind_deductible_flat : F.cov_a_est * F.wind_deductible_pct / 100), (F.wind_deductible_flat > 0 ? "Flat, = " : "") + F.wind_deductible_pct + "% of " + kShort(F.cov_a_est) + " dwelling coverage" + (F.wind_deductible_default ? " · default, not chosen" : "")));
     else if (F.aop_deductible) t.push(tile("Deductible", money(F.aop_deductible), "Flat, all other perils"));
     else t.push(tile("Storm-day cash", "Not run", "Run property-insurance-brief for deductibles", true));
     $("tiles").innerHTML = t.join("");
@@ -381,7 +381,7 @@ var F = /*__DATA__*/null;
         "<div class=\"reserve\"><div class=\"ctl\"><label for=\"reserve\">Cash you'll have after closing</label><input type=\"number\" id=\"reserve\" min=\"0\" step=\"1000\" placeholder=\"e.g. 25000\"></div><div class=\"reserve-out\" id=\"reserve-out\"></div></div>" +
         (F.wind_note ? "<div class=\"small\">" + esc(F.wind_note) + "</div>" : "");
       $("dopts").innerHTML = tbl.options.map(function (o) {
-        return "<div class=\"dopt" + (o.chosen ? " chosen" : "") + "\"><div class=\"pct\"><span>" + o.pct + "% WIND</span>" + (o.chosen ? "<span class=\"pill\">" + (F.wind_deductible_default ? "DEFAULT" : "YOUR PICK") + "</span>" : "") + "</div>" +
+        return "<div class=\"dopt" + (o.chosen ? " chosen" : "") + "\"><div class=\"pct\"><span>" + (o.flat ? "FLAT · " : "") + o.pct + "% WIND</span>" + (o.chosen ? "<span class=\"pill\">" + (F.wind_deductible_default ? "DEFAULT" : "YOUR PICK") + "</span>" : "") + "</div>" +
           "<div class=\"d\">" + money(o.dollars) + "</div><div class=\"small\">out of pocket per named-storm claim</div>" +
           "<label class=\"small\" for=\"q-" + o.pct + "\">Quoted premium, $/yr</label><input type=\"number\" id=\"q-" + o.pct + "\" data-p=\"" + o.pct + "\" min=\"0\" step=\"50\" placeholder=\"from a quote\">" +
           "<div class=\"be\" id=\"be-" + o.pct + "\"></div></div>";
@@ -408,8 +408,8 @@ var F = /*__DATA__*/null;
     if (out) {
       var chosen = tbl.options.filter(function (o) { return o.chosen; })[0];
       if (!(r >= 0) || !chosen) { out.textContent = ""; out.className = "reserve-out"; }
-      else if (r >= chosen.dollars) { out.textContent = "Covers the " + chosen.pct + "% deductible with " + money(r - chosen.dollars) + " left."; out.className = "reserve-out ok"; }
-      else { out.textContent = money(chosen.dollars - r) + " short of the " + chosen.pct + "% deductible. Pick a lower deductible or plan to rebuild reserves."; out.className = "reserve-out short"; }
+      else if (r >= chosen.dollars) { out.textContent = "Covers the " + money(chosen.dollars) + " deductible with " + money(r - chosen.dollars) + " left."; out.className = "reserve-out ok"; }
+      else { out.textContent = money(chosen.dollars - r) + " short of the " + money(chosen.dollars) + " deductible. Pick a lower deductible or plan to rebuild reserves."; out.className = "reserve-out short"; }
     }
   }
 

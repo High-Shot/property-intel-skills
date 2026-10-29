@@ -27,7 +27,7 @@ property-insurance-brief/
 ├── README.md
 ├── scripts/
 │   ├── build_deck.js          # 11-slide PPTX (pptxgenjs)
-│   └── build_spec_sheet.py    # one-page PDF (reportlab)
+│   └── build_spec_sheet.py    # spec sheet PDF: quote worksheet + carrier intake page (reportlab)
 ├── references/
 │   ├── data_schema.md         # JSON schema, slide map, validation contracts
 │   ├── interview.md           # one-batch question set + answer-to-spec mapping

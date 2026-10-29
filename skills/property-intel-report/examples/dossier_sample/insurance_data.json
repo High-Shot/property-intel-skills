@@ -355,12 +355,13 @@
       "rows": [
         "Carrier & channel (admitted / surplus)",
         "Total cost ($ premium + all fees + taxes)",
-        "Wind deductible ($ and trigger)",
+        "Wind deductible ($, flat or %, trigger)",
         "AOP deductible ($)",
-        "Roof settlement (RCV or age-ACV form?)",
+        "Roof terms (RCV/ACV, roof sublimit $)",
+        "Water damage / water backup limits",
         "Min. earned premium %",
         "FORTIFIED credit applied?",
-        "Notable exclusions",
+        "Endorsements added ($ each)",
         "Deviations from spec"
       ]
     },

@@ -4,7 +4,7 @@ Every rate, program name, statutory figure, and dollar anchor this skill applies
 
 **Standing rule.** Any anchor older than six months at run time must be re-verified during Stage 2, or the figure it produces must be labeled stale on the caveats slide. Insurance markets move faster than the other two skills' domains — treat this file as the shortest-lived reference in the family.
 
-Last full review: **2026-08**.
+Last full review: **2026-08**. Real-quote anchors added **2026-10**.
 
 ---
 
@@ -55,6 +55,18 @@ Everything below is **one territory's** detail. Never apply it to another state.
 | Regulator comparison tool | ALDOI ComparePremiums | 2025-Q4 | Tools get retired or relocated |
 | State average, $300K dwelling | Cite the named rate study and its year | — | Annual studies. Never quote a figure without naming the study |
 | Guaranty fund | Does not cover surplus-lines carriers | statutory | Only on a change in state law |
+
+### Real-quote anchors (coastal Alabama)
+
+Real quotes outrank every published anchor in this file. When `property_facts.json` holds `insurance.quotes[]` for the address, the premium range comes from them. When it holds quotes for a nearby property in the same territory and protection class, the rate below is a basis line on slide 8, cited as "carrier quote, <month year>".
+
+| Anchor | Value | as_of | Verify |
+|---|---|---|---|
+| Total annual premium per $1K Cov A, HO-3, Fairhope (Baldwin territory 5, protection class 3), masonry veneer, $20K flat hurricane / $2,500 AOP | $8.62 - $8.81 (2 quotes, one carrier, 1994 and 2007 builds, Cov A $430K-$450K) | 2026-10 | Small sample from one carrier. Add each new quote; re-verify after 6 months |
+| Hurricane deductible form | Some admitted carriers here quote a **flat dollar** hurricane deductible ($20,000 on $430K-$450K Cov A = 4.4-4.7%), not a percentage | 2026-10 | Never assume 2% means 2% of Cov A; read the quote |
+| Carrier-default coverages seen on unspecified quotes | Cov C 25% of Cov A, MedPay $1,000, water backup $5,000, animal liability capped at $5,000, home day care excluded | 2026-10 | These are why the spec sheet exists: the request asks for 50% / $5,000 / $10,000 explicitly |
+| Roof coverage endorsement | $25,000-$30,000 roof limit endorsement on a shingle roof (included on one, +$100 on another) | 2026-10 | Ask whether it caps roof payment; a full re-roof on a larger two-story can exceed it |
+| Rating inputs on the quote | Territory, protection class, construction, year built printed on the declaration | 2026-10 | Check year built and roof year on every quote against the cache |
 
 ---
 

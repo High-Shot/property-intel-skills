@@ -47,6 +47,20 @@ const D = JSON.parse(fs.readFileSync(inputPath, "utf8"));
   } else if (opts.length) {
     warn(`market_profile is "${profile}" but wind_deductible.options is populated; percentage wind deductibles are a coastal construct`);
   }
+  // Flat-dollar hurricane deductibles: some carriers quote "$20,000" rather than "2%".
+  // The option carries flat (number), dollars (display), and pct = effective percent of Cov A.
+  const num = v => { const m = String(v ?? "").replace(/,/g, "").match(/-?\d+(\.\d+)?/); return m ? Number(m[0]) : null; };
+  const covA = num((D.coverage_spec?.stats || []).find(x => /COV A|DWELLING/i.test(x.label || ""))?.big);
+  opts.forEach(o => {
+    if (o.flat == null) return;
+    if (num(o.dollars) !== o.flat) warn(`flat wind deductible ${o.flat} but dollars reads "${o.dollars}"`);
+    if (covA && Math.abs(num(o.pct) - (o.flat / covA) * 100) > 0.02)
+      warn(`flat wind deductible ${o.flat} on Cov A ${covA} is ${((o.flat / covA) * 100).toFixed(2)}%, but pct says "${o.pct}"`);
+  });
+  (D.spec_sheet?.carrier_intake?.sections || []).forEach(sec => (sec.rows || []).forEach(r => {
+    if (/\bssn\b|social security|licen[cs]e\s*(#|no|number)|driver'?s?\W*licen[cs]e|date of birth|\bdob\b/i.test(r.label || ""))
+      warn(`carrier_intake row "${r.label}" asks for an applicant identifier; those go only into the agent's portal`);
+  }));
   const cl = (D.coverage_lines?.rows || []).length;
   if (cl < 7 || cl > 9) warn(`coverage_lines.rows is ${cl}, expected 7-9`);
   const lv = (D.levers?.items || []).length;
@@ -245,9 +259,10 @@ function sourceNote(s, text) {
         // "default" is truthy, so it shares the highlight, but it must never read as the buyer's choice.
         s.addText(o.chosen === "default" ? "DEFAULT" : "YOUR PICK", { x: x + cw - 1.55, y: y0 + 0.2, w: 1.35, h: 0.38, fontFace: FONT_B, fontSize: 9.5, color: C.white, bold: true, charSpacing: 1, align: "center", valign: "middle", margin: 0 });
       }
-      s.addText(o.pct, { x: x + 0.28, y: y0 + 0.18, w: 1.9, h: 0.65, fontFace: FONT_H, fontSize: 34, color: col, bold: true, margin: 0 });
+      // Flat-dollar options lead with "FLAT" and show the effective percent in small type.
+      s.addText(o.flat != null ? "FLAT" : o.pct, { x: x + 0.28, y: y0 + 0.18, w: 1.9, h: 0.65, fontFace: FONT_H, fontSize: 34, color: col, bold: true, margin: 0 });
       s.addText(o.dollars, { x: x + 0.28, y: y0 + 0.88, w: cw - 0.56, h: 0.62, fontFace: FONT_H, fontSize: 26, color: C.marine, bold: true, margin: 0 });
-      s.addText("OUT OF POCKET AT CLAIM", { x: x + 0.28, y: y0 + 1.48, w: cw - 0.56, h: 0.26, fontFace: FONT_B, fontSize: 8.5, color: C.steel, charSpacing: 2, margin: 0 });
+      s.addText(o.flat != null ? `OUT OF POCKET · ${o.pct} OF COV A` : "OUT OF POCKET AT CLAIM", { x: x + 0.28, y: y0 + 1.48, w: cw - 0.56, h: 0.26, fontFace: FONT_B, fontSize: 8.5, color: C.steel, charSpacing: o.flat != null ? 1 : 2, margin: 0 });
       s.addText(o.note || "", { x: x + 0.28, y: y0 + 1.76, w: cw - 0.56, h: 0.62, fontFace: FONT_B, fontSize: 10, color: C.graphite, valign: "top", margin: 0 });
     });
     // Framing band
@@ -382,7 +397,7 @@ function sourceNote(s, text) {
     });
     // Handoff note (positioned below the table, never overlapping)
     const noteY = 2.15 + 0.38 + qRows.length * qRowH + 0.12;
-    s.addText("Printable one-page version ships with this deck as spec_sheet.pdf.", { x: rightX, y: noteY, w: rightW, h: 0.3, fontFace: FONT_B, fontSize: 10, color: C.graphite, italic: true, valign: "middle", margin: 0 });
+    s.addText(SS.carrier_intake ? "Printable version ships as spec_sheet.pdf: page 1 quote worksheet, page 2 carrier intake answers." : "Printable one-page version ships with this deck as spec_sheet.pdf.", { x: rightX, y: noteY, w: rightW, h: 0.3, fontFace: FONT_B, fontSize: 10, color: C.graphite, italic: true, valign: "middle", margin: 0 });
     footerDisclaimer(s);
   }
 

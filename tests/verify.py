@@ -101,14 +101,15 @@ def slide_text(p, idx):
     return [sh.text_frame.text for sh in p.slides[idx].shapes if sh.has_text_frame]
 
 
-def check_pdf_one_page(name, path):
+def check_pdf_pages(name, path, want):
+    """Page 1 is the quote worksheet; page 2 exists only when carrier_intake is present."""
     try:
         from pypdf import PdfReader
         n = len(PdfReader(path).pages)
     except Exception as e:
-        record(name + " one page", False, str(e))
+        record(f"{name} {want} page(s)", False, str(e))
         return
-    record(name + " one page", n == 1, f"{n} pages")
+    record(f"{name} {want} page(s)", n == want, f"{n} pages")
 
 
 def check_page_script(name, path):
@@ -155,9 +156,15 @@ if build_clean("insurance deck: illustrative", node(NB, ISAMPLE, out("i_sample.p
 if build_clean("insurance deck: dossier_sample", node(NB, DI, out("d_ins.pptx"))):
     check_pptx("insurance dossier_sample", out("d_ins.pptx"), 11)
 if build_clean("spec sheet: illustrative", ["python3", NS, ISAMPLE, out("i_sample.pdf")]):
-    check_pdf_one_page("spec sheet illustrative", out("i_sample.pdf"))
+    check_pdf_pages("spec sheet illustrative (worksheet + carrier intake)", out("i_sample.pdf"), 2)
 if build_clean("spec sheet: dossier_sample", ["python3", NS, DI, out("d_spec.pdf")]):
-    check_pdf_one_page("spec sheet dossier_sample", out("d_spec.pdf"))
+    check_pdf_pages("spec sheet dossier_sample (worksheet only)", out("d_spec.pdf"), 1)
+
+# Flat-dollar hurricane deductible: a correct flat option builds clean.
+i = load(ISAMPLE)
+cov = 385000
+i["wind_deductible"]["options"][1].update({"flat": 20000, "dollars": "$20,000", "pct": f"{20000 / cov * 100:.2f}%"})
+build_clean("insurance deck: flat-dollar wind deductible", node(NB, dump(i, "flat_ok.json"), out("flat_ok.pptx")))
 
 if build_clean("dashboard: dossier_sample, all cross-checks (strict)",
                node(ID, DF, out("d_dash.html"), "--appraisal", DA, "--insurance", DI, "--intel", DP, "--strict", "--today", TODAY)):
@@ -205,6 +212,16 @@ for o in i["wind_deductible"]["options"]:
 expect_warn("insurance with three chosen deductibles", node(NB, dump(i, "n7.json"), out("n7.pptx")), r"exactly one wind_deductible")
 i = load(ISAMPLE); i["spec_sheet"]["coverage_block"] = i["spec_sheet"]["coverage_block"] * 4
 expect_warn("spec sheet left column overflow exits non-zero", ["python3", NS, dump(i, "n8.json"), out("n8.pdf")], r"overflow|exceed|does not fit|too long|footer")
+
+i = load(ISAMPLE)
+i["wind_deductible"]["options"][1].update({"flat": 20000, "dollars": "$20,000", "pct": "2%"})
+expect_warn("flat wind deductible whose pct does not match Cov A", node(NB, dump(i, "n15.json"), out("n15.pptx")), r"flat wind deductible")
+i = load(ISAMPLE)
+i["spec_sheet"]["carrier_intake"]["sections"][0]["rows"].append({"label": "Social Security Number", "value": "x", "status": "buyer"})
+expect_warn("spec sheet refuses applicant identifiers", ["python3", NS, dump(i, "n16.json"), out("n16.pdf")], r"applicant identifiers")
+i = load(ISAMPLE)
+i["spec_sheet"]["carrier_intake"]["sections"] = i["spec_sheet"]["carrier_intake"]["sections"] * 4
+expect_warn("carrier intake overflow exits non-zero", ["python3", NS, dump(i, "n17.json"), out("n17.pdf")], r"does not fit")
 
 f = load(DF); f["value"]["point"] += 10000
 expect_warn("dashboard value drift vs appraisal deck",
