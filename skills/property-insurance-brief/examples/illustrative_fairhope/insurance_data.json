@@ -351,16 +351,168 @@
       "rows": [
         "Carrier & channel (admitted / surplus)",
         "Total cost ($ premium + all fees + taxes)",
-        "Wind deductible ($ and trigger)",
+        "Wind deductible ($, flat or %, trigger)",
         "AOP deductible ($)",
-        "Roof settlement (RCV or age-ACV form?)",
+        "Roof terms (RCV/ACV, roof sublimit $)",
+        "Water damage / water backup limits",
         "Min. earned premium %",
         "FORTIFIED credit applied?",
-        "Notable exclusions",
+        "Endorsements added ($ each)",
         "Deviations from spec"
       ]
     },
-    "footer": "Estimates in this packet are labeled and sourced. Quotes entered above are the real numbers. Prepared with the buyer's coverage brief, July 2026."
+    "footer": "Estimates in this packet are labeled and sourced. Quotes entered above are the real numbers. Prepared with the buyer's coverage brief, July 2026.",
+    "carrier_intake": {
+      "headline": "Answers for the Carrier's Intake Form",
+      "instruction": "Key these into the carrier's form in this order. CONFIRM rows are not yet verified; ask before rating on them.",
+      "sections": [
+        {
+          "title": "Occupancy & use",
+          "rows": [
+            {
+              "label": "Policy type",
+              "value": "Home, HO-3",
+              "status": "buyer"
+            },
+            {
+              "label": "Residence",
+              "value": "Primary, not a rental",
+              "status": "buyer"
+            },
+            {
+              "label": "Effective date",
+              "value": "At closing",
+              "status": "buyer"
+            }
+          ]
+        },
+        {
+          "title": "Dwelling",
+          "rows": [
+            {
+              "label": "Year built",
+              "value": "1998",
+              "status": "verified"
+            },
+            {
+              "label": "Total sqft / stories",
+              "value": "2,400 / 1",
+              "status": "verified"
+            },
+            {
+              "label": "Acres / pond",
+              "value": "0.4 / none",
+              "status": "verified"
+            },
+            {
+              "label": "Garage / carport",
+              "value": "Attached 2-car",
+              "status": "listing"
+            },
+            {
+              "label": "Pool / trampoline / dogs",
+              "value": "No / no / no",
+              "status": "buyer"
+            }
+          ]
+        },
+        {
+          "title": "Construction & roof",
+          "rows": [
+            {
+              "label": "Construction",
+              "value": "Masonry veneer",
+              "status": "verified"
+            },
+            {
+              "label": "Foundation",
+              "value": "Slab",
+              "status": "listing"
+            },
+            {
+              "label": "Roof type / shape",
+              "value": "Arch. shingle / hip",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Year of roof",
+              "value": "2019 (permit)",
+              "status": "verified"
+            },
+            {
+              "label": "Wind mitigation",
+              "value": "None (no FORTIFIED cert)",
+              "status": "verified"
+            },
+            {
+              "label": "Hurricane shutters",
+              "value": "No",
+              "status": "unconfirmed"
+            }
+          ]
+        },
+        {
+          "title": "Systems",
+          "rows": [
+            {
+              "label": "Heat / AC",
+              "value": "Central heat pump, 2017",
+              "status": "listing"
+            },
+            {
+              "label": "Plumbing material",
+              "value": "PEX / CPVC",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Wiring",
+              "value": "Copper",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Electrical panel",
+              "value": "Brand not yet seen",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Water heater",
+              "value": "2015, garage, tank",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Monitored alarm",
+              "value": "No",
+              "status": "buyer"
+            },
+            {
+              "label": "Detached structures",
+              "value": "None",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "title": "History & lien",
+          "rows": [
+            {
+              "label": "Prior claims (5 yr)",
+              "value": "None",
+              "status": "buyer"
+            },
+            {
+              "label": "Carrier name (current)",
+              "value": "New purchase",
+              "status": "buyer"
+            },
+            {
+              "label": "Mortgaged",
+              "value": "Yes, lender TBD at closing",
+              "status": "buyer"
+            }
+          ]
+        }
+      ]
+    }
   },
   "agent_script": {
     "title": "Work the Script",

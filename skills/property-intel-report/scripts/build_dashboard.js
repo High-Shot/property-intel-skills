@@ -132,7 +132,7 @@ if (opt.insurance) {
   const covStat = (IN.coverage_spec?.stats || []).find(s => /COV A|DWELLING/i.test(s.label || ""));
   if (covStat && money(covStat.big) !== F.cov_a_est) warn(`insurance deck Cov A ${covStat.big} != facts cov_a_est ${F.cov_a_est}`);
   (IN.wind_deductible?.options || []).forEach(o => {
-    const want = Math.round(F.cov_a_est * money(o.pct) / 100);
+    const want = o.flat != null ? o.flat : Math.round(F.cov_a_est * money(o.pct) / 100);
     if (Math.abs(money(o.dollars) - want) > 50) warn(`insurance deck says ${o.pct} = ${o.dollars}, but ${o.pct} of ${F.cov_a_est} is ${want}`);
   });
 }

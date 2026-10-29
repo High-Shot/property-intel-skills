@@ -18,7 +18,7 @@ Asked after research, before synthesis. One message, all questions at once, numb
 **Q1. Any homeowners or auto claims in the last 5 years, or a gap in coverage?**
 Claims history and lapses are top-tier pricing factors. "None / none" goes on the spec sheet so every quote prices it in.
 
-**Q2. Anything that changes liability or contents — pool, trampoline, certain dog breeds, a home business, or high-value items (jewelry, firearms, art) to schedule?**
+**Q2. Anything that changes liability or contents — pool, trampoline, any dogs (breed matters), a home business, or high-value items (jewelry, firearms, art) to schedule?**
 Any liability exposure → liability up one tier plus an agent-script line. High-value items → Cov C 70% plus a scheduled-property row. Home business → endorsement row plus a script question.
 
 **Q3 (optional, skip-friendly): Net worth ballpark — under $500K, $500K-1M, or above?**
@@ -45,6 +45,27 @@ Not asked, handled by defaults or research: occupancy (primary residence unless 
 **Neutral defaults when unknown:** 2% wind deductible (default), $2,500 AOP, Cov C 50% RC, $300K liability, $5K MedPay, water backup $10K, ordinance/law 25% on homes built before the current local code cycle (verify the adoption year for the jurisdiction rather than assuming 2006), flood quoted only when lender-required. Every defaulted line is identified on the caveats slide.
 
 **Cov A rule:** Cov A is an estimated rebuild cost (local $/sqft × sqft, labeled est.), sanity-checked against the appraisal value when one exists. It is never the purchase price and never presented as final — the spec sheet instructs each agent to run their estimator and show the number.
+
+## Carrier intake answers (not asked; harvested)
+
+Page 2 of the spec sheet answers the carrier's own intake form. Fill it without adding questions:
+
+| Intake field | Where it comes from | If unknown |
+|---|---|---|
+| Year built, sqft, stories, acres, construction, foundation | Cache `structure` (tier 1 beats listing) | CONFIRM |
+| Roof type, roof year, roof shape | Permit for year; listing photos or aerial imagery for shape (hip vs gable) | CONFIRM. Never guess roof shape; it is a major wind rating factor |
+| Wind mitigation level, shutters | FORTIFIED certificate lookup; listing copy | "None" only when a certificate search came back empty; otherwise CONFIRM |
+| Heat/AC year, water heater year and location, tankless | Listing, permits, inspection report | CONFIRM |
+| Plumbing material, wiring, panel brand | Inspection report only | CONFIRM. Flag Federal Pacific, Zinsco, fuse panels, polybutylene, galvanized supply, aluminum branch wiring as rate or eligibility risks |
+| Detached structures, pond, garage | Parcel GIS, aerials, listing | CONFIRM. A detached shop means Cov B at 10% may be low; say so |
+| Pool, trampoline, dogs | Q2 | "Unknown" |
+| Prior claims | Q1 | "Unknown, carrier will run CLUE" |
+| Mortgaged | `buyer.financing` or the conversation | "Yes" for any financed purchase |
+| Occupancy | Conversation | Primary |
+
+If the buyer has walked the house or has an inspection report, read it before building page 2; it answers most CONFIRM rows. After the walkthrough, one optional follow-up is allowed: "Did you see the electrical panel brand, the water heater's age and location, or the pipe material? (skip any)". It does not count against the 3-question cap only because the house has now been seen.
+
+Never put SSN, driver's license number, or date of birth on the sheet or in the cache, even when the carrier form asks for them. Those go into the agent's secure portal.
 
 ## Inland profile
 
