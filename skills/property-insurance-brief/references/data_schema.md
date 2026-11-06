@@ -3,7 +3,7 @@
 The build pipeline consumes a single JSON file and produces TWO outputs:
 
 1. `output.pptx` — the 11-slide coverage decision brief
-2. `spec_sheet.pdf` — the standalone one-page quote request / comparison worksheet
+2. `spec_sheet.pdf` — the printable spec sheet: page 1 is the quote request / comparison worksheet; page 2, when `spec_sheet.carrier_intake` is present, is the carrier intake sheet
 
 One interview, one JSON, two files. The `spec_sheet` section feeds both the PDF and the slide 9 preview.
 
@@ -17,7 +17,7 @@ Design system is locked and shared with property-intel-report and property-appra
 | 2. How Coastal Insurance Is Priced | `primer` | white |
 | 3. Your Coverage Spec at a Glance | `coverage_spec` | white |
 | 4. Coverage Line by Line | `coverage_lines` | white |
-| 5. Wind Deductible Math | `wind_deductible` | white |
+| 5. Wind Deductible Math (coastal) / Deductibles in Dollars (inland) | `wind_deductible` / `deductibles` | white |
 | 6. Flood: The Separate Policy | `flood` | white |
 | 7. Price Levers Ranked | `levers` | white |
 | 8. Estimated Premium Range | `premium_range` | white |
@@ -29,6 +29,9 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
 
 ```jsonc
 {
+  "market_profile": "coastal",          // "coastal" | "inland" (see below)
+  "cov_a": 385000,                      // number: the Cov A the spec requests. The builder checks every
+                                        // deductible's dollars against it.
   "property": {
     "address": "123 Example Lane",      // required
     "city": "Fairhope",                  // required
@@ -123,6 +126,24 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
     "detail_note": "Named-storm vs hurricane vs wind/hail deductible triggers differ by carrier. The spec sheet forces each quote to state its trigger.",
     "source_note": ""
   },
+  // Flat-dollar hurricane deductible (a real quote wrote one). The option carries `flat`
+  // (number), `dollars` equal to it, and `pct` = flat / cov_a x 100 to two decimals. The card
+  // leads with FLAT and shows the effective percent. The builder warns on either mismatch.
+  //   { "pct": "4.65%", "flat": 20000, "dollars": "$20,000", "chosen": "default", "color": "coral",
+  //     "note": "What the quote in hand actually writes. Storm-day cash, not a percentage." }
+
+  // Inland profile: omit wind_deductible and use this block instead. 1-3 cards, no invented percentages.
+  // "deductibles": {
+  //   "title": "Your Deductibles, In Dollars",
+  //   "subtitle": "One flat deductible for all perils here, plus a separate wind/hail deductible where carriers write one.",
+  //   "options": [
+  //     { "label": "ALL OTHER PERILS", "dollars": "$2,500", "chosen": "default", "color": "coral",
+  //       "note": "Standard spec. $1,000 and $5,000 quoted beside it." },
+  //     { "label": "WIND / HAIL", "dollars": "$5,000", "chosen": false, "color": "amber",
+  //       "note": "Only if this territory's carriers write a separate wind/hail deductible." }
+  //   ],
+  //   "framing": "...", "detail_note": "...", "source_note": ""
+  // },
 
   "flood": {
     "title": "Flood Is Always a Separate Policy",
@@ -170,6 +191,15 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
       { "label": "Coastal Baldwin uplift vs state avg", "value": "direction: up" },
       { "label": "Wind mitigation (if FORTIFIED pursued)", "value": "range shifts down materially" }
     ],
+    "ladder": {
+      // Which rung of rates_and_anchors.md §9 the range rests on, with the arithmetic.
+      // rung 1 = quote on this address, 2 = quote in this territory + protection class,
+      // 3 = state DOI comparison, 4 = named state-average study.
+      // For rungs 1-2 also give quote_total and quote_cov_a: the builder recomputes
+      // rate_per_1k and checks rate x cov_a lands inside the range.
+      "rung": 2, "rate_per_1k": 8.81, "quote_total": 3790, "quote_cov_a": 430000,
+      "math": "$8.81 per $1K Cov A (Oct 2026 territory quote) x $385K = $3,392 est."
+    },
     "caveat": "Real quotes on this spec will land inside OR outside this range. That's the point of getting three of them on identical assumptions.",
     "source_note": "Sources: ALDOI ComparePremiums (HO-3 profiles), Insurify AL rate data. All figures est."
   },
@@ -191,7 +221,8 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
     ],
     "coverage_block": [
       // Left column, bottom: the requested spec. Label/value pairs, 8-10 rows.
-      { "label": "Dwelling (Cov A)",   "value": "$385,000 est. RC — run your estimator, show the number" },
+      { "label": "Dwelling (Cov A)",   "value": "$385,000 est. (2,400 sf x $160/sf local rebuild); run your estimator, show it" },
+      // The dwelling row shows its basis (sqft x local $/sf) or the carrier's figure. The builder warns otherwise.
       { "label": "Wind/hurricane ded.","value": "2% — ALSO quote 1% and 5%" },
       { "label": "AOP deductible",     "value": "$2,500" },
       { "label": "Personal property",  "value": "50% Cov A, replacement cost" },
@@ -205,15 +236,33 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
       // Right side: 3 blank columns the agent/buyer fills in by hand.
       "column_headers": ["QUOTE 1", "QUOTE 2", "QUOTE 3"],
       "rows": [
+        // Fixed 10-row set. The builder warns on any other count.
         "Carrier & channel (admitted / surplus)",
         "Total cost ($ premium + all fees + taxes)",
-        "Wind deductible ($ and trigger)",
+        "Wind deductible ($, flat or %, trigger)",
         "AOP deductible ($)",
-        "Roof settlement (RCV or age-ACV form?)",
+        "Roof terms (RCV/ACV, roof sublimit $)",
+        "Water damage / water backup limits",
         "Min. earned premium %",
         "FORTIFIED credit applied?",
-        "Notable exclusions",
+        "Endorsements added ($ each)",
         "Deviations from spec"
+      ]
+    },
+    "carrier_intake": {
+      // Optional. Renders page 2 of the PDF. Follow the carrier form's own field order when
+      // one was shared. 4-6 sections, 30-40 rows. status: verified (tier-1 record or inspection),
+      // listing, buyer, or unconfirmed (prints CONFIRM). Never an identifier row: the PDF
+      // builder exits 3 on SSN, driver's license, or date of birth.
+      "headline": "Carrier Intake: Property Answers",
+      "instruction": "Answers in the order the carrier's form asks them. CONFIRM rows are not verified.",
+      "sections": [
+        { "title": "Occupancy & use", "rows": [
+          { "label": "Occupancy", "value": "Primary residence", "status": "buyer" } ] },
+        { "title": "Construction & roof", "rows": [
+          { "label": "Roof year", "value": "2019 (county permit)", "status": "verified" },
+          { "label": "Roof shape", "value": "Not recorded", "status": "unconfirmed" } ] }
+        // ... Dwelling, Systems, History & lien
       ]
     },
     "footer": "Estimates in this packet are labeled and sourced. Quotes below are the real numbers. Prepared with the buyer's coverage brief, <Month YYYY>."
@@ -266,12 +315,14 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
 
 ## Validation rules
 
-- **Array lengths are layout contracts.** Exactly 4 primer cards, exactly 6 coverage_spec stats, exactly 3 wind_deductible options, 7-9 coverage_lines rows, 5-6 lever items, 6-8 script questions, 4-6 red flags. Overflow pushes content off the slide.
+- **Array lengths are layout contracts.** Exactly 4 primer cards, exactly 6 coverage_spec stats, exactly 3 wind_deductible options on a coastal profile (1-3 `deductibles` options inland), 7-9 coverage_lines rows, 4-6 lever items, 6-8 script questions, 4-6 red flags, exactly 10 quote grid rows. Overflow pushes content off the slide.
+- **Deductible arithmetic.** `cov_a` is a number. A percentage option's `dollars` equals pct x cov_a (within $1). A flat option's `dollars` equals `flat`, and its `pct` equals flat / cov_a to two decimals. The builder warns on any mismatch.
+- **Carrier intake.** Status per row from the tiers in `property_facts.md`. A guess is never `verified`. No applicant identifiers.
 - **Body text limits.** Card bodies and lever impact lines under 200 characters.
-- **`chosen` flag.** Exactly one wind_deductible option must have `chosen: true`.
+- **`chosen` flag.** Exactly one wind_deductible option carries `chosen: true` or `chosen: "default"` (see below).
 - **Every dollar figure the buyer didn't choose is an estimate** and must carry "est." in the string. Chosen coverage levels (deductibles, liability limit) are selections, not estimates — no label.
 - **`premium_range.basis_lines`** must name a source per line. No source, no line.
-- **Spec sheet quote_columns.rows** are fixed labels (9 rows) — do not add rows without checking the PDF fits one page. Quotes compare on TOTAL cost (premium + fees + taxes), never on property premium alone; surplus lines channel and minimum earned premium are grid rows because they change what the number means.
+- **Spec sheet quote_columns.rows** are the fixed 10-row set above. Quotes compare on TOTAL cost (premium + fees + taxes), never on property premium alone; surplus lines channel and minimum earned premium are grid rows because they change what the number means.
 - **Colors and icons**: named palette tokens and validated FA names only.
 
 ## market_profile
@@ -280,11 +331,11 @@ Top-level string, set at intake. `"coastal"` or `"inland"`. It decides three thi
 
 | | coastal | inland |
 |---|---|---|
-| `wind_deductible` | required, exactly 3 options | omit the key entirely |
+| `wind_deductible` | required, exactly 3 options | omit the key entirely; use `deductibles` |
 | Slide 5 | percentage steps in dollars | flat AOP deductible plus any separate wind/hail deductible |
 | Lever 1 | state mitigation program (FORTIFIED or equivalent) | drop it if no program exists; 4 levers is fine |
 
-The builder warns if `wind_deductible` is populated on an inland profile. Default when the key is absent is `"coastal"`, for backward compatibility with existing data files.
+The builder warns if `wind_deductible` is populated on an inland profile, and if `deductibles` is missing or has no chosen option. Default when the key is absent is `"coastal"`, for backward compatibility with existing data files.
 
 ## The `chosen` flag
 

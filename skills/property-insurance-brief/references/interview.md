@@ -46,6 +46,27 @@ Not asked, handled by defaults or research: occupancy (primary residence unless 
 
 **Cov A rule:** Cov A is an estimated rebuild cost (local $/sqft × sqft, labeled est.), sanity-checked against the appraisal value when one exists. It is never the purchase price and never presented as final — the spec sheet instructs each agent to run their estimator and show the number.
 
+## Carrier intake harvesting
+
+Page 2 of the spec sheet answers the carrier's intake form. Fill each field from the best source, in this order, and set the status from the source, never from confidence.
+
+| Intake field | First source | Fallback | Status if only the fallback exists |
+|---|---|---|---|
+| Year built, sqft, stories, lot | County assessor / revenue commission | MLS | listing |
+| Construction, foundation | Inspection report | MLS remarks | listing |
+| Roof year | County permit | MLS remarks, then buyer walkthrough | listing / buyer |
+| Roof shape (hip / gable) | Inspection report, aerial imagery | Listing photos | unconfirmed |
+| Wind mitigation | FORTIFIED designation on file for the address | Seller | unconfirmed |
+| Heat / AC year | Permit, data plate photo | MLS remarks | listing |
+| Water heater year and location | Data plate photo, inspection | Buyer walkthrough | buyer |
+| Electrical panel brand | Inspection, panel photo | Buyer walkthrough (optional follow-up question) | buyer |
+| Plumbing material | Inspection | Buyer walkthrough | buyer |
+| Detached structures, pool, trampoline | Assessor sketch, listing | Buyer | buyer |
+| Dogs, home business, occupancy, mortgaged | Buyer (Q2) | — | buyer |
+| Prior claims | CLUE report from the seller, buyer's own history (Q1) | — | buyer |
+
+A field with no source at all renders `unconfirmed` (CONFIRM) with a plain value such as "Not known". Federal Pacific, Zinsco or fuse panels, polybutylene or galvanized supply, and aluminum branch wiring are eligibility risks: put them in the intake value and on the red-flag list. Never write SSN, driver's license number, or date of birth, even when the carrier's form asks; those go only into the agent's secure portal.
+
 ## Inland profile
 
 On `market_profile: "inland"`:

@@ -30,6 +30,7 @@ function mapFacts(PF, opt) {
     wind_deductible_default: INS ? INS.wind_deductible_chosen === "default" : false,
     wind_deductible_options_pct: INS && Array.isArray(INS.wind_deductible_options_pct) ? INS.wind_deductible_options_pct : [],
     aop_deductible: INS ? num(INS.aop_deductible) : null,
+    wind_deductible_flat: INS && INS.wind_deductible_flat != null ? num(INS.wind_deductible_flat) : null,
     wind_note: INS ? INS.wind_note || null : null,
     fha: Object.assign({}, FHA, { loan_limit: num(M.fha_loan_limit) }),
     k203: K203,

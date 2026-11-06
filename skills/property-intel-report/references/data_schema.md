@@ -1,5 +1,7 @@
 # property_data.json — Schema Reference
 
+Slide map: 1 title · 2 exec summary · 3 at a glance · 4 monthly carry (+ five-year strip from `projection`) · 5 price trajectory · 6 tax & assessment (`tax_record`) · 7 title, liens & permits (`title_record`) · 8 schools · 9 site & surroundings (`climate`) · 10 diligence budget · 11 competing inventory · 12 red flags · 13 question scripts · 14 action plan · 15 offer strategy · 16 sources & caveats.
+
 The deck builder consumes a single JSON file with the structure below. Every field maps to a slide. Fill all required fields. Optional fields are marked.
 
 Color tokens accepted as named strings: `marine`, `teal`, `coral`, `green`, `crimson`, `amber`, `steel`. Or pass raw hex without `#`.
@@ -21,7 +23,7 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
     "eyebrow": "PROPERTY INTELLIGENCE REPORT",
     "tagline": "A buyer's diligence brief on a 1986 fixer-upper, 2.4 acres near Fish River.",
     "status_tag": "STATUS: PENDING · BACKUP OFFER PLAY",  // optional, renders coral pill
-    "prepared_label": "PREPARED <MONTH YEAR>"   // generated from the run date, never hardcoded                  // defaults to current month/year
+    "prepared_label": "PREPARED <MONTH YEAR>"   // generated from the run date, never hardcoded
   },
 
   "exec_summary": {
@@ -74,13 +76,55 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
       // history supports; a 5-day-old listing at original price has none of them.
       { "big": "-$130,900", "label": "Total reduction" },
       { "big": "-25.2%",    "label": "Off original ask" },
-      { "big": "12",        "label": "Price cuts" },
-      { "big": "79 days",   "label": "On market this cycle" },
+      { "big": "11",        "label": "Price cuts" },        // points minus one
+      { "big": "308 days",  "label": "On market this cycle" },  // from the first listing date
       { "big": "2 cycles",  "label": "Listings withdrawn" }
     ],
     "source_note": "Sources: Zillow MLS history."
   },
 
+  "tax_record": {                          // SLIDE 6. Source: county revenue commission / assessor (tier 1)
+    "title": "A Homestead Bill That Resets at Closing",
+    "subtitle": "...",
+    "stats": [                             // up to 4 cards: appraised, assessed, tax paid, post-sale est.
+      { "big": "$318,000", "label": "COUNTY APPRAISED (2025)", "sub": "Revenue commission market value", "color": "teal" },
+      { "big": "$1,740",   "label": "POST-SALE EST. / YR",     "sub": "+$29/mo vs the seller's bill",   "color": "coral" }
+    ],
+    "history_title": "Annual tax paid · up 8% a year since 2020",
+    "history": [ { "year": 2020, "tax": 945 }, { "year": 2025, "tax": 1388 } ],   // oldest first, up to 10
+    "millage_label": "MILLAGE STACK (UNINCORPORATED)",
+    "millage": [ { "authority": "State of Alabama", "mills": 6.5 } ],         // up to 6; must sum to millage_total
+    "millage_total": 43.65,
+    "exemptions": [ { "name": "Homestead (seller's)", "effect": "Ends at sale. File your own by Dec 31." } ],  // up to 3
+    "reset": {                             // the number the slide exists to show
+      "current_annual": 1388, "post_sale_annual": 1740, "monthly_delta": 29,   // (post - current) / 12
+      "math": "$389K x 10% x 43.65 mills = $1,698, plus $42 fire district dues"
+    },
+    "flag": "Special assessment: $42/yr fire dues. No delinquency or tax-sale history.",  // optional, one line, crimson
+    "source_note": "Sources: Baldwin County Revenue Commission, ADOR millage table."
+  },
+
+  "title_record": {                        // SLIDE 7. Sources: probate / recorder indexes, permit portal, recorded plat
+    "title": "A Clean Chain, One Loose Permit",
+    "subtitle": "...",
+    "deed_chain": [                        // newest first, up to 5. Transfer TYPE, never a person's name
+      { "date": "2011-06", "type": "Warranty deed, individual", "price": "$205,000", "note": "Current owner; 15-year hold" }
+    ],
+    "encumbrances": [                      // up to 4: mortgages (with est. remaining and seller equity), liens, judgments, lis pendens
+      { "item": "Mortgage (2011)", "status": "OPEN", "detail": "$164,000 original; est. $95K remaining...", "color": "amber" },
+      { "item": "Liens and judgments", "status": "NONE FOUND", "detail": "Probate index searched by parcel.", "color": "green" }
+    ],
+    "permits": [ { "year": "2019", "work": "Accessory shed", "status": "Expired, no final" } ],   // up to 6
+    "permits_note": "",                    // shown when permits is empty
+    "mismatches": [ { "field": "Bedrooms", "record": "3", "listing": "4 (bonus room)" } ],    // up to 3; each needs a caveat
+    "easements": "Recorded plat shows a 20-ft drainage easement...",
+    "footer": "Pre-offer screen from public records. The title commitment and survey govern.",
+    "source_note": "Sources: Baldwin County Probate, county permit portal, recorded plat."
+  },
+
+  // Not rendered as its own slide. The comp screen is kept as data so its arithmetic can be
+  // checked, and its conclusion is cited in offer.rationale_lines. property-appraisal owns
+  // the value; when its value block exists, the rationale cites that number instead.
   "comps": {
     "title": "What the Subject Should Cost",
     "subtitle": "Normalized $/sqft analysis...",
@@ -101,9 +145,10 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
     ],
     "implied_range": "$290K – $388K",
     "implied_takeaway": "Subject's $389K ask sits at the top of fair value...",
-    "source_note": "Comp $/sqft from Redfin AVMs..."
+    "source_note": "Comp $/sqft from recorded sales (county probate, MLS closed records). Never an AVM."
   },
 
+  // Rendered as the "IN FIVE YEARS" strip under the carry cards on slide 4, not its own slide.
   "projection": {
     "title": "What This Property Costs Over Time",
     "subtitle": "Tax has grown X% in Y years and insurance is escalating...",
@@ -120,7 +165,7 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
     "year5_carry": 2848,
     "delta_label": "+$241/mo",
     "delta_sub": "by year 5  ·  +9.2% nominal",
-    "cumulative_note": "Cumulative 5-yr extra cost over flat baseline: ~$7,400.",
+    "cumulative_note": "Cumulative 5-yr extra cost over flat baseline: $7,008 (year deltas $55 + $113 + $175 + $241, x 12).",
     "source_note": "Assumes 6% annual tax growth, 7% insurance growth..."
   },
 
@@ -142,8 +187,8 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
     "source_note": "Sources: GreatSchools.org, Niche, district website."
   },
 
-  "climate": {
-    "title": "What Insurance Will Actually Cost You",
+  "climate": {                            // SLIDE 9 — Site & Surroundings: hazard scores + site facts
+    "title": "Climate, Site & Surroundings",
     "subtitle": "...",
     "risks": [
       // up to 6 cards, 3 cols x 2 rows. The six categories are a national superset.
@@ -162,7 +207,17 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
       { "icon": "FaFire",   "label": "LEAD / ASBESTOS",   "level": "LOW",
         "color": "green",   "body": "Built post-1978..." }
     ],
-    "source_note": "Sources: Augurisk, EPA Radon Zones, First Street, FEMA MSC."
+    // risks: compact cards, body 140 chars max. Score the hazard; never price it (the insurance brief owns cost).
+    "site": [
+      // up to 6 rows, each with a source. The facts a listing never shows. flag: true renders crimson.
+      { "label": "Soils",             "value": "Fine sandy loam, moderately well drained; moderate septic suitability.", "source": "USDA Web Soil Survey" },
+      { "label": "Wetlands",          "value": "Forested wetland mapped on 0.4 ac along the creek; not buildable.", "source": "USFWS NWI", "flag": true },
+      { "label": "Elevation / surge", "value": "Pad about 38 ft; outside every storm-surge category.", "source": "USGS 3DEP, NOAA SLOSH (est.)" },
+      { "label": "Zoning / land use", "value": "Unzoned county; future land use rural residential.", "source": "County GIS" },
+      { "label": "Nearby development","value": "72-lot subdivision approved 0.6 mi north (2025).", "source": "Planning commission minutes", "flag": true },
+      { "label": "Roads",             "value": "No state road project within 1 mi.", "source": "State DOT work program" }
+    ],
+    "source_note": "Sources: Augurisk, EPA Radon Zones, First Street, FEMA MSC, USDA, USFWS, USGS, NOAA, county planning."
   },
 
   "diligence": {
@@ -246,7 +301,7 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
     "rationale_lines": [
       // 1-3 lines, render in italics next to opening number
       "Supported by normalized comp analysis",
-      "(see slide 6) — fair value $290K-$388K",
+      "comp screen: fair value $290K-$388K",
       "with 25% fixer condition discount."
     ],
     "walk_away":      [ "string", "..." ],   // 3-4 items
@@ -291,9 +346,14 @@ Every count above except `monthly_carry.scenarios` (always 4) and `projection.ye
 | Premium strips | Adjusted base must equal the average compounded through each strip, not the average minus their sum |
 | Price cuts | The cut callout must equal `price_history.points.length - 1` |
 | Days on market | Measured from the first listing date of the current cycle to the prepared date |
-| Cumulative 5-yr | Must equal the sum of the four year-over-year deltas x 12 |
+| Cumulative 5-yr | Must equal the sum of each year's increase over year 1, x 12 |
 | Carry totals | Each scenario's `total` must equal pi + pmi + tax + ins + wind + flood |
 | Year carries | `year1_carry` and `year5_carry` must equal their own components |
+| Millage | `tax_record.millage` must sum to `millage_total` |
+| Tax reset | `reset.monthly_delta` = (post_sale_annual - current_annual) / 12; carry tax x 12 must be within $12 of post_sale_annual |
+| Open permits | An open or expired permit on slide 7 must appear in a red flag |
+| Record vs listing | Every mismatch on slide 7 needs a caveat naming it |
+| Names | The deed chain shows transfer types, never a person's name |
 
 ## Hygiene contracts
 

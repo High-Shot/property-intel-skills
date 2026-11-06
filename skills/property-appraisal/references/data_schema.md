@@ -43,16 +43,19 @@ Mirrors the 9 slides. Fill every field. Numbers are raw (no $ or commas); the bu
     {
       "address": "456 Oak Ln",
       "sold_date": "Apr 2026",
-      "sold_price": 415000,
+      "sold_price": 415000,                      // headline sold price
+      "concessions": 0,                          // seller concessions in dollars; 0 = checked, none found.
+                                                 // Omit only if unchecked (the builder warns).
+      "concessions_source": "",                  // required when concessions > 0: MLS remarks, sold sheet, closing statement
       "sqft": 2280,
-      "ppsf": 182,                               // sold_price / sqft, rounded
+      "ppsf": 182,                               // (sold_price - concessions) / sqft, rounded
       "distance_mi": 0.4,
       "lat": 30.60823, "lng": -87.89912,         // optional; must agree with distance_mi or the explorer warns
       "source": "Redfin sold page (MLS)",
       "source_tier": 1,                          // 1 or 2 only — never 3
       "key_diffs": "Similar age; smaller lot; original kitchen",
       "net_adjustment": 12000,                   // signed number
-      "adjusted_value": 427000,
+      "adjusted_value": 427000,                  // sold_price - concessions + net_adjustment
       "weight": 0.30                             // all weights sum to 1.0
     }
   ],

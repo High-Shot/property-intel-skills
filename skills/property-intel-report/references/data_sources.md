@@ -15,6 +15,20 @@ A directory of public sources by domain. Use for verification and to build the "
 - **County Probate / Recorder of Deeds** — sale history, deeds, mortgages, liens. Often called "Landmark WEB" or similar e-record portals.
 - **Zillow / Redfin / Homes.com** — convenient aggregators of public records but secondary. Verify against county for parcel ID and tax.
 
+## Tax & Assessment (slide 6)
+
+- **County revenue commission / assessor / tax collector.** The parcel's appraised value, assessed value, assessment class, exemptions in force (homestead, senior, disability, current use), and bills by year. Most counties show 5-10 years of bills online. Look for a delinquency flag or tax-sale certificate on the same page.
+- **State revenue department millage table** (Alabama: ADOR). Mills by authority (state, county, school, city, special district). Sum them; the total should reproduce the bill within the exemption credit.
+- **Special assessments and districts.** Fire district dues, improvement districts, drainage or road assessments. They ride on the tax bill and are easy to miss.
+- **Post-sale reset.** Homestead and senior exemptions end at sale. Recompute the bill at the purchase price with the buyer's own homestead, and say the filing deadline.
+
+## Deeds, Mortgages, Liens (slide 7)
+
+- **County probate judge / recorder of deeds index**, searched by parcel and by owner. Deed type (warranty, quitclaim, executor's, foreclosure), recording date, and consideration or deed tax where recorded. Record transfer TYPE, never a person's name, in any deliverable.
+- **Recorded mortgages** and their satisfactions. Original amount and date give an estimated remaining balance (standard amortization at the PMMS rate of that year, labeled est.), and therefore the seller's equity: the single best read on how far a seller can cut.
+- **Liens, judgments, lis pendens.** Same index. A lis pendens means litigation touching the property; a mechanics' lien means unpaid work.
+- **Recorded plat and covenants.** Easements (drainage, utility, access), setbacks, and deed restrictions. HOA declarations if any.
+
 ## Listing History & Comps
 
 - **Redfin** — best for listing history transparency, $/sqft, AVM.
@@ -48,9 +62,23 @@ A directory of public sources by domain. Use for verification and to build the "
 
 ## Permits & Code
 
+Open or expired permits transfer to the buyer. Flag any permit without a final inspection, and compare permitted work against what the listing claims was done (a "new roof" with no roof permit, a bonus room with no permit).
+
+
 - **County / city permit portal** — search `<county> <state> citizenserve` or `<county> <state> permit search`. Coverage typically post-2010 or post-2020.
 - **County Building Department** — older permits often available only by request.
 - **County Health Department** — septic permits and Approval-for-Use records (in states where septic is regulated by health, not building).
+
+## Site & Surroundings (slide 9)
+
+- **USDA Web Soil Survey** — `websoilsurvey.nrcs.usda.gov` — soil series, drainage class, shrink-swell, septic absorption suitability. The reason a slab cracks or a drainfield fails.
+- **USFWS National Wetlands Inventory** — `fws.gov/program/national-wetlands-inventory` — mapped wetlands on or next to the parcel. Wetland acreage is not buildable and is worth less.
+- **USGS 3DEP / National Map** — ground elevation at the pad. **NOAA SLOSH / National Hurricane Center storm surge maps** — surge category by location on hurricane coasts.
+- **County or city zoning map and future land use map** — what the parcel and its neighbors may become.
+- **Planning commission and zoning board agendas and minutes** — rezonings, subdivisions, commercial site plans within about a mile. The single best read on what changes next door.
+- **State DOT work program / STIP** — funded road projects near the parcel.
+- **Noise** — airport noise contours, rail lines, highway proximity (DOT noise maps where published).
+- **Historical aerial imagery** (USGS EarthExplorer, county GIS) — prior use of the land, fill, old structures.
 
 ## Utilities & Infrastructure
 
@@ -85,6 +113,10 @@ When sources conflict, prefer in this order:
 6. **Crowd-sourced** (Niche reviews, City-Data forums)
 
 The aggregators are convenient but they scrape. They get tax records, parcel IDs, and sale prices wrong roughly 5-10% of the time. For the offer slide, never cite an aggregator alone for a contested fact.
+
+## County portals that block fetches
+
+Many county assessor, probate and permit portals refuse `WebFetch` (session tokens, search forms, image-only records). Before marking a county fact unavailable: search for the portal's direct parcel URL pattern, then use an available browser tool to run the search the way a person would, respecting any browser rules the user has set. If no browser is available, say which portal blocked the fetch and give the buyer the exact search to run. Never fill the gap from an aggregator and label it tier 1.
 
 ## Source volatility
 

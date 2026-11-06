@@ -109,6 +109,56 @@ const D = JSON.parse(fs.readFileSync(inputPath, "utf8"));
   if (/(sourced|derived|taken|pulled)\s+from[^.]{0,60}(AVM|Zestimate|Redfin Estimate)/i.test(D.comps?.source_note || ""))
     warn("comps.source_note sources comps from an AVM — AVMs are tier 3 and are never comps");
 
+  // 9. Tax & assessment record (slide 6).
+  const T = D.tax_record;
+  if (!T) warn("tax_record is missing: slide 6 is the county tax and assessment summary");
+  else {
+    const mill = T.millage || [];
+    if (mill.length) {
+      const msum = Math.round(mill.reduce((a, m) => a + Number(m.mills || 0), 0) * 100) / 100;
+      if (Math.abs(msum - Number(T.millage_total)) > 0.05) warn(`tax_record.millage sums to ${msum} mills but millage_total is ${T.millage_total}`);
+    }
+    cap("tax_record.millage", mill, 6);
+    cap("tax_record.stats", T.stats, 4);
+    cap("tax_record.exemptions", T.exemptions, 3);
+    cap("tax_record.history", T.history, 10);
+    const yrsH = (T.history || []).map(h => Number(h.year));
+    if (yrsH.some((y, i) => i && y <= yrsH[i - 1])) warn("tax_record.history must run oldest to newest, one row per year");
+    const R = T.reset;
+    if (!R) warn("tax_record.reset is missing: the post-sale tax reset is the number this slide exists to show");
+    else {
+      const md = Math.round((R.post_sale_annual - R.current_annual) / 12);
+      if (Math.abs(md - R.monthly_delta) > 1) warn(`tax_record.reset.monthly_delta ${R.monthly_delta} should be ${md} ((post_sale - current) / 12)`);
+      const sc = (D.monthly_carry?.scenarios || []).find(x => typeof x.tax === "number");
+      if (sc && Math.abs(sc.tax * 12 - R.post_sale_annual) > 12)
+        warn(`monthly carry tax $${sc.tax}/mo (= $${sc.tax * 12}/yr) disagrees with tax_record post-sale $${R.post_sale_annual}/yr`);
+    }
+  }
+  // 10. Title, liens & permits (slide 7).
+  const TR = D.title_record;
+  if (!TR) warn("title_record is missing: slide 7 is the deed chain, liens, and permits screen");
+  else {
+    cap("title_record.deed_chain", TR.deed_chain, 5);
+    cap("title_record.permits", TR.permits, 6);
+    cap("title_record.encumbrances", TR.encumbrances, 4);
+    cap("title_record.mismatches", TR.mismatches, 3);
+    // An open or expired permit transfers to the buyer: it must reach the red-flag slide.
+    const openP = (TR.permits || []).filter(p => /open|expired|no final|not finaled/i.test(p.status || ""));
+    if (openP.length && !/permit/i.test(JSON.stringify(D.red_flags?.items || [])))
+      warn(`${openP.length} open/expired permit(s) on slide 7 but no red flag mentions a permit`);
+    if ((TR.mismatches || []).length && !/record|mismatch|unpermitted|listing claims/i.test(JSON.stringify(D.sources?.caveats || [])))
+      warn("record-vs-listing mismatches shown on slide 7 but no caveat names them");
+    if ((TR.deed_chain || []).some(d => /\b(Mr|Mrs|Ms)\.?\s|\b[A-Z][a-z]+ [A-Z]\. [A-Z][a-z]+/.test(JSON.stringify(d))))
+      warn("title_record.deed_chain appears to name an individual; use the transfer type (individual, estate, LLC, bank), never a person's name");
+  }
+
+  // 11. Site & surroundings (slide 9).
+  (D.climate?.risks || []).forEach(r => { if ((r.body || "").length > 140) warn(`climate risk "${r.label}" body is ${r.body.length} chars; the compact card fits 140`); });
+  const site = D.climate?.site || [];
+  if (!site.length) warn("climate.site is empty: slide 9 carries soils, wetlands, elevation/surge, zoning, nearby development, and road projects");
+  cap("climate.site", site, 6);
+  site.forEach(r => { if (!r.source) warn(`climate.site "${r.label}" has no source`); });
+
   if (n) console.warn(`WARN: ${n} validation issue(s). Fix before delivery.`);
 })();
 
@@ -299,7 +349,7 @@ function fmt$(n) {
       D.monthly_carry.subtitle);
 
     const scenarios = D.monthly_carry.scenarios;
-    const cardW = 3.0, cardH = 4.65, baseY = 2.4;
+    const cardW = 3.0, cardH = 4.35, baseY = 2.3;
     scenarios.forEach((sc, i) => {
       const x = 0.6 + i * (cardW + 0.13);
       const color = cx(sc.color);
@@ -316,7 +366,7 @@ function fmt$(n) {
         ["Wind / hurricane", fmt$(sc.wind)],
         ["Flood (NFIP est.)", fmt$(sc.flood)]
       ];
-      let yy = baseY + 0.9;
+      let yy = baseY + 0.85;
       items.forEach(it => {
         const isDash = it[1] === "—";
         s.addText(it[0], { x: x + 0.25, y: yy, w: 1.7, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.graphite, valign: "middle", margin: 0 });
@@ -330,6 +380,15 @@ function fmt$(n) {
       s.addText(fmt$(sc.total), { x: x + 1.45, y: yy + 0.13, w: cardW - 1.6, h: 0.5, fontFace: FONT_H, fontSize: 20, color: C.white, bold: true, align: "right", valign: "middle", margin: 0 });
       s.addText(sc.note || "", { x: x + 0.25, y: baseY + cardH - 0.6, w: cardW - 0.4, h: 0.5, fontFace: FONT_B, fontSize: 10, color: C.steel, italic: true, margin: 0 });
     });
+    // Five-year line (was its own slide): year 1 vs year 5 at the 20%-down scenario, from the projection block.
+    const P = D.projection;
+    if (P && P.year1_carry && P.year5_carry) {
+      s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 6.72, w: 12.39, h: 0.38, fill: { color: C.marine }, line: { color: C.marine } });
+      s.addText([
+        { text: "IN FIVE YEARS  ", options: { color: C.coral, bold: true, charSpacing: 3 } },
+        { text: `${fmt$(P.year1_carry)}/mo now → ${fmt$(P.year5_carry)}/mo in year 5 (${P.delta_label})   ·   ${P.cumulative_note || ""}`, options: { color: C.white } }
+      ], { x: 0.8, y: 6.72, w: 12.0, h: 0.38, fontFace: FONT_B, fontSize: 10.5, valign: "middle", margin: 0 });
+    }
     if (D.monthly_carry.source_note) {
       s.addText(D.monthly_carry.source_note, { x: 0.6, y: 7.15, w: 12.2, h: 0.3, fontFace: FONT_B, fontSize: 9, color: C.steel, italic: true, margin: 0 });
     }
@@ -375,107 +434,128 @@ function fmt$(n) {
   }
 
   // ============================================================
-  // SLIDE 6 — COMP ANALYSIS
+  // SLIDE 6 — TAX & ASSESSMENT RECORD
   // ============================================================
   {
     const s = pres.addSlide();
     s.background = { color: C.white };
-    header(s, pres, "COMP ANALYSIS",
-      D.comps.title || "What the Subject Should Cost",
-      D.comps.subtitle);
+    const T = D.tax_record || {};
+    header(s, pres, "TAX & ASSESSMENT RECORD", T.title || "What the County Says This House Owes", T.subtitle);
 
-    const compLabels = D.comps.entries.map(c => c.label);
-    const compPSF = D.comps.entries.map(c => c.psf);
-
-    s.addChart(pres.charts.BAR, [{ name: "$ per sqft", labels: compLabels, values: compPSF }], {
-      x: 0.6, y: 2.45, w: 7.5, h: 4.55,
-      barDir: "col",
-      chartColors: [C.teal],
-      chartArea: { fill: { color: C.white }, roundedCorners: false },
-      catAxisLabelColor: C.steel, catAxisLabelFontFace: FONT_B, catAxisLabelFontSize: 10,
-      valAxisLabelColor: C.steel, valAxisLabelFontFace: FONT_B, valAxisLabelFontSize: 10,
-      valAxisLabelFormatCode: "$#,##0",
-      valGridLine: { color: C.hairline, size: 0.5 }, catGridLine: { style: "none" },
-      showValue: true, dataLabelPosition: "outEnd",
-      dataLabelColor: C.marine, dataLabelFontFace: FONT_B, dataLabelFontSize: 11,
-      dataLabelFormatCode: "$#,##0",
-      showLegend: false,
-      showTitle: true, title: D.comps.chart_title || "$ per sqft  ·  Nearby comps",
-      titleColor: C.marine, titleFontFace: FONT_H, titleFontSize: 14
+    // Row 1: up to 4 stat cards (appraised, assessed, current tax, post-sale tax)
+    const stats = (T.stats || []).slice(0, 4);
+    const sw = (12.13 - 0.13 * (stats.length - 1)) / Math.max(stats.length, 1), sy = 2.15, shh = 1.2;
+    stats.forEach((st, i) => {
+      const x = 0.6 + i * (sw + 0.13), color = cx(st.color || "teal");
+      s.addShape(pres.shapes.RECTANGLE, { x, y: sy, w: sw, h: shh, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, shadow: sh() });
+      s.addShape(pres.shapes.RECTANGLE, { x, y: sy, w: 0.08, h: shh, fill: { color }, line: { color } });
+      s.addText(st.big, { x: x + 0.25, y: sy + 0.1, w: sw - 0.35, h: 0.5, fontFace: FONT_H, fontSize: 22, color: C.marine, bold: true, margin: 0 });
+      s.addText(st.label, { x: x + 0.25, y: sy + 0.6, w: sw - 0.35, h: 0.25, fontFace: FONT_B, fontSize: 10, color, bold: true, charSpacing: 2, margin: 0 });
+      s.addText(st.sub || "", { x: x + 0.25, y: sy + 0.85, w: sw - 0.35, h: 0.3, fontFace: FONT_B, fontSize: 9.5, color: C.steel, margin: 0 });
     });
 
-    const px = 8.4, pw = 4.4;
-    s.addShape(pres.shapes.RECTANGLE, { x: px, y: 2.45, w: pw, h: 4.55, fill: { color: C.marine }, line: { color: C.marine }, shadow: shStrong() });
-    s.addText("FAIR-VALUE WALK", { x: px + 0.3, y: 2.6, w: pw - 0.4, h: 0.35, fontFace: FONT_B, fontSize: 11, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
-
-    let yy = 3.05;
-    D.comps.fair_value_walk.forEach((it, i) => {
-      const isLast = i === D.comps.fair_value_walk.length - 1;
-      s.addText(it.label, { x: px + 0.3, y: yy, w: 2.6, h: 0.35, fontFace: FONT_B, fontSize: 11, color: isLast ? C.coral : "B8C9D6", bold: isLast, valign: "middle", margin: 0 });
-      s.addText(it.value, { x: px + 2.9, y: yy, w: pw - 3.1, h: 0.35, fontFace: FONT_B, fontSize: 12, color: isLast ? C.coral : C.white, bold: true, align: "right", valign: "middle", margin: 0 });
-      s.addShape(pres.shapes.LINE, { x: px + 0.3, y: yy + 0.38, w: pw - 0.6, h: 0, line: { color: "1B4366", width: 0.5 } });
-      yy += 0.42;
-    });
-
-    yy += 0.05;
-    s.addText("IMPLIED FAIR VALUE", { x: px + 0.3, y: yy, w: pw - 0.4, h: 0.32, fontFace: FONT_B, fontSize: 11, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
-    s.addText(D.comps.implied_range, { x: px + 0.3, y: yy + 0.32, w: pw - 0.4, h: 0.6, fontFace: FONT_H, fontSize: 26, color: C.white, bold: true, margin: 0 });
-    s.addText(D.comps.implied_takeaway, { x: px + 0.3, y: yy + 0.95, w: pw - 0.4, h: 0.85, fontFace: FONT_B, fontSize: 11, color: "B8C9D6", italic: true, margin: 0 });
-
-    if (D.comps.source_note) {
-      s.addText(D.comps.source_note, { x: 0.6, y: 7.15, w: 12.2, h: 0.3, fontFace: FONT_B, fontSize: 9, color: C.steel, italic: true, margin: 0 });
+    // Bottom-left: tax paid history
+    const hist = (T.history || []).slice(-10);
+    if (hist.length) {
+      s.addChart(pres.charts.BAR, [{ name: "Tax paid", labels: hist.map(h => String(h.year)), values: hist.map(h => h.tax) }], {
+        x: 0.6, y: 3.5, w: 6.1, h: 3.25, barDir: "col", chartColors: [C.teal],
+        chartArea: { fill: { color: C.white }, roundedCorners: false },
+        catAxisLabelColor: C.steel, catAxisLabelFontFace: FONT_B, catAxisLabelFontSize: 9,
+        valAxisLabelColor: C.steel, valAxisLabelFontFace: FONT_B, valAxisLabelFontSize: 9, valAxisLabelFormatCode: "$#,##0",
+        valGridLine: { color: C.hairline, size: 0.5 }, catGridLine: { style: "none" },
+        showValue: true, dataLabelPosition: "outEnd", dataLabelColor: C.marine, dataLabelFontFace: FONT_B, dataLabelFontSize: 8.5, dataLabelFormatCode: "$#,##0",
+        showLegend: false, showTitle: true, title: T.history_title || "Annual tax paid", titleColor: C.marine, titleFontFace: FONT_H, titleFontSize: 12
+      });
+    } else {
+      s.addText("Tax history not retrievable from the county portal; see source note.", { x: 0.6, y: 3.6, w: 6.1, h: 0.4, fontFace: FONT_B, fontSize: 11, color: C.steel, italic: true, margin: 0 });
     }
+
+    // Bottom-right: millage stack, then exemptions
+    const rx = 6.95, rw = 5.78;
+    let yy = 3.5;
+    const mill = (T.millage || []).slice(0, 6);
+    s.addText(T.millage_label || "MILLAGE STACK", { x: rx, y: yy, w: rw, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: C.coral, bold: true, charSpacing: 3, margin: 0 });
+    yy += 0.32;
+    const rowM = (label, val, bold) => {
+      s.addText(label, { x: rx, y: yy, w: rw - 1.3, h: 0.25, fontFace: FONT_B, fontSize: 10, color: bold ? C.marine : C.graphite, bold, valign: "middle", margin: 0 });
+      s.addText(val, { x: rx + rw - 1.3, y: yy, w: 1.3, h: 0.25, fontFace: FONT_B, fontSize: 10, color: C.marine, bold: true, align: "right", valign: "middle", margin: 0 });
+      s.addShape(pres.shapes.LINE, { x: rx, y: yy + 0.26, w: rw, h: 0, line: { color: C.hairline, width: 0.4 } });
+      yy += 0.28;
+    };
+    mill.forEach(m => rowM(m.authority, `${m.mills} mills`, false));
+    if (mill.length) rowM("Total", `${T.millage_total} mills`, true);
+    yy += 0.12;
+    const ex = (T.exemptions || []).slice(0, 3);
+    if (ex.length) {
+      s.addText("EXEMPTIONS IN FORCE", { x: rx, y: yy, w: rw, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: C.coral, bold: true, charSpacing: 3, margin: 0 });
+      yy += 0.32;
+      ex.forEach(e => {
+        s.addText([{ text: e.name + "  ", options: { bold: true, color: C.marine } }, { text: e.effect || "", options: { color: C.graphite } }],
+          { x: rx, y: yy, w: rw, h: 0.4, fontFace: FONT_B, fontSize: 9.5, valign: "top", margin: 0 });
+        yy += 0.4;
+      });
+    }
+    if (T.flag) s.addText(T.flag, { x: 0.6, y: 6.8, w: 12.13, h: 0.3, fontFace: FONT_B, fontSize: 10.5, color: C.crimson, bold: true, margin: 0 });
+    if (T.source_note) s.addText(T.source_note, { x: 0.6, y: 7.15, w: 12.2, h: 0.3, fontFace: FONT_B, fontSize: 9, color: C.steel, italic: true, margin: 0 });
   }
 
   // ============================================================
-  // SLIDE 7 — 5-YEAR PROJECTION
+  // SLIDE 7 — TITLE, LIENS & PERMITS
   // ============================================================
   {
     const s = pres.addSlide();
     s.background = { color: C.white };
-    header(s, pres, "5-YEAR COST PROJECTION",
-      D.projection.title || "What This Property Costs Over Time",
-      D.projection.subtitle);
+    const R = D.title_record || {};
+    header(s, pres, "TITLE, LIENS & PERMITS", R.title || "What the Public Record Shows", R.subtitle);
+    const lx = 0.6, lw = 6.1, rx = 6.95, rw = 5.78;
+    const label = (t, x, y, w, color = C.coral) => s.addText(t, { x, y, w, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color, bold: true, charSpacing: 3, margin: 0 });
+    const table = (rows, x, y, w, colW, maxRowH) => {
+      if (!rows.length) return y;
+      const hdr = rows[0].map(t => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.marine }, fontFace: FONT_B, fontSize: 9.5, valign: "middle" } }));
+      const body = rows.slice(1).map((r, i) => r.map((t, j) => ({ text: String(t ?? "—"), options: { fontFace: FONT_B, fontSize: 9.5, color: j === 0 ? C.marine : C.graphite, bold: j === 0, fill: { color: i % 2 ? "F4F7F9" : C.white }, valign: "middle" } })));
+      const rh = maxRowH;
+      s.addTable([hdr, ...body], { x, y, w, colW, rowH: [0.3, ...body.map(() => rh)], border: { type: "solid", pt: 0.5, color: C.hairline }, margin: 0.05 });
+      return y + 0.3 + body.length * rh;
+    };
 
-    const years = D.projection.years.map(y => y.label);
-    const piVals = D.projection.years.map(y => y.pi);
-    const taxVals = D.projection.years.map(y => y.tax);
-    const insVals = D.projection.years.map(y => y.ins);
-
-    s.addChart(pres.charts.BAR, [
-      { name: "Principal & Interest", labels: years, values: piVals },
-      { name: "Property tax", labels: years, values: taxVals },
-      { name: "Insurance (HO+wind+flood)", labels: years, values: insVals }
-    ], {
-      x: 0.6, y: 2.4, w: 8.0, h: 4.6,
-      barDir: "col", barGrouping: "stacked",
-      chartColors: [C.marine, C.amber, C.coral],
-      chartArea: { fill: { color: C.white }, roundedCorners: false },
-      catAxisLabelColor: C.steel, catAxisLabelFontFace: FONT_B, catAxisLabelFontSize: 10,
-      valAxisLabelColor: C.steel, valAxisLabelFontFace: FONT_B, valAxisLabelFontSize: 10,
-      valAxisLabelFormatCode: "$#,##0",
-      valGridLine: { color: C.hairline, size: 0.5 }, catGridLine: { style: "none" },
-      showValue: false, showLegend: true, legendPos: "b",
-      legendFontFace: FONT_B, legendFontSize: 10, legendColor: C.graphite,
-      showTitle: true, title: D.projection.chart_title || "Monthly carry by component  ·  $/month",
-      titleColor: C.marine, titleFontFace: FONT_H, titleFontSize: 14
-    });
-
-    const px = 8.85, pw = 4.0;
-    s.addShape(pres.shapes.RECTANGLE, { x: px, y: 2.4, w: pw, h: 4.6, fill: { color: C.marine }, line: { color: C.marine }, shadow: shStrong() });
-    s.addText("FIVE-YEAR DELTA", { x: px + 0.3, y: 2.55, w: pw - 0.4, h: 0.35, fontFace: FONT_B, fontSize: 11, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
-    s.addText(fmt$(D.projection.year1_carry), { x: px + 0.3, y: 3.0, w: pw - 0.4, h: 0.55, fontFace: FONT_H, fontSize: 32, color: C.white, bold: true, margin: 0 });
-    s.addText("Year 1 monthly carry", { x: px + 0.3, y: 3.55, w: pw - 0.4, h: 0.3, fontFace: FONT_B, fontSize: 11, color: "B8C9D6", italic: true, margin: 0 });
-    s.addText(fmt$(D.projection.year5_carry), { x: px + 0.3, y: 4.0, w: pw - 0.4, h: 0.55, fontFace: FONT_H, fontSize: 32, color: C.white, bold: true, margin: 0 });
-    s.addText("Year 5 monthly carry", { x: px + 0.3, y: 4.55, w: pw - 0.4, h: 0.3, fontFace: FONT_B, fontSize: 11, color: "B8C9D6", italic: true, margin: 0 });
-    s.addShape(pres.shapes.LINE, { x: px + 0.3, y: 5.0, w: pw - 0.6, h: 0, line: { color: "1B4366", width: 1 } });
-    s.addText(D.projection.delta_label, { x: px + 0.3, y: 5.1, w: pw - 0.4, h: 0.5, fontFace: FONT_H, fontSize: 28, color: C.coral, bold: true, margin: 0 });
-    s.addText(D.projection.delta_sub, { x: px + 0.3, y: 5.6, w: pw - 0.4, h: 0.3, fontFace: FONT_B, fontSize: 11, color: "B8C9D6", italic: true, margin: 0 });
-    s.addText(D.projection.cumulative_note, { x: px + 0.3, y: 6.0, w: pw - 0.4, h: 0.85, fontFace: FONT_B, fontSize: 11, color: C.white, margin: 0 });
-
-    if (D.projection.source_note) {
-      s.addText(D.projection.source_note, { x: 0.6, y: 7.15, w: 12.2, h: 0.3, fontFace: FONT_B, fontSize: 9, color: C.steel, italic: true, margin: 0 });
+    // Left: deed chain, then permits
+    const deeds = (R.deed_chain || []).slice(0, 5);
+    label("DEED CHAIN", lx, 2.15, lw);
+    let ly = table([["Recorded", "Transfer type", "Price", "Note"], ...deeds.map(d => [d.date, d.type, d.price, d.note || ""])], lx, 2.47, lw, [1.0, 1.55, 1.05, 2.5], 0.32);
+    if (!deeds.length) { s.addText("No recorded transfers found; see source note.", { x: lx, y: 2.5, w: lw, h: 0.3, fontFace: FONT_B, fontSize: 10, color: C.steel, italic: true, margin: 0 }); ly = 2.85; }
+    const permits = (R.permits || []).slice(0, 6);
+    label("PERMITS ON FILE", lx, ly + 0.2, lw);
+    if (permits.length) {
+      ly = table([["Year", "Work", "Status"], ...permits.map(p => [p.year, p.work, p.status])], lx, ly + 0.52, lw, [0.8, 3.9, 1.4], 0.3);
+    } else {
+      s.addText(R.permits_note || "No permits found in the online portal; older records may be by request only.", { x: lx, y: ly + 0.52, w: lw, h: 0.4, fontFace: FONT_B, fontSize: 10, color: C.steel, italic: true, margin: 0 });
     }
+
+    // Right: encumbrances, record vs listing, easements
+    let ry = 2.15;
+    label("LIENS & ENCUMBRANCES", rx, ry, rw);
+    ry += 0.34;
+    (R.encumbrances || []).slice(0, 4).forEach(e => {
+      const color = cx(e.color || "steel");
+      s.addShape(pres.shapes.RECTANGLE, { x: rx, y: ry, w: 0.06, h: 0.48, fill: { color }, line: { color } });
+      s.addText([{ text: e.item + "   ", options: { bold: true, color: C.marine } }, { text: e.status || "", options: { bold: true, color } }],
+        { x: rx + 0.15, y: ry, w: rw - 0.15, h: 0.22, fontFace: FONT_B, fontSize: 10, margin: 0 });
+      s.addText(e.detail || "", { x: rx + 0.15, y: ry + 0.22, w: rw - 0.15, h: 0.26, fontFace: FONT_B, fontSize: 9, color: C.graphite, margin: 0 });
+      ry += 0.56;
+    });
+    const mm = (R.mismatches || []).slice(0, 3);
+    if (mm.length) {
+      ry += 0.08;
+      label("RECORD VS LISTING", rx, ry, rw, C.crimson);
+      ry = table([["Field", "Public record", "Listing"], ...mm.map(m => [m.field, m.record, m.listing])], rx, ry + 0.32, rw, [1.5, 2.14, 2.14], 0.3);
+    }
+    if (R.easements) {
+      ry += 0.15;
+      label("EASEMENTS & RESTRICTIONS", rx, ry, rw);
+      s.addText(R.easements, { x: rx, y: ry + 0.3, w: rw, h: Math.max(6.75 - ry - 0.3, 0.3), fontFace: FONT_B, fontSize: 9.5, color: C.graphite, valign: "top", margin: 0 });
+    }
+    s.addText(R.footer || "Pre-offer screen from public records. The title commitment and survey govern.", { x: 0.6, y: 6.82, w: 12.13, h: 0.28, fontFace: FONT_B, fontSize: 10, color: C.amber, bold: true, italic: true, margin: 0 });
+    if (R.source_note) s.addText(R.source_note, { x: 0.6, y: 7.15, w: 12.2, h: 0.3, fontFace: FONT_B, fontSize: 9, color: C.steel, italic: true, margin: 0 });
   }
 
   // ============================================================
@@ -511,29 +591,49 @@ function fmt$(n) {
   }
 
   // ============================================================
-  // SLIDE 9 — CLIMATE & RISK
+  // SLIDE 9 — SITE & SURROUNDINGS (hazard scores + what no listing portal shows)
   // ============================================================
   {
     const s = pres.addSlide();
     s.background = { color: C.white };
-    header(s, pres, "CLIMATE & RISK",
-      D.climate.title || "What Insurance Will Actually Cost You",
+    header(s, pres, "SITE & SURROUNDINGS",
+      D.climate.title || "Climate, Site & Surroundings",
       D.climate.subtitle);
 
-    const cardW = 4.05, cardH = 2.35;
-    for (let i = 0; i < D.climate.risks.length; i++) {
-      const r = D.climate.risks[i];
+    // Row 1-2: hazard cards, compact (up to 6, 3 per row)
+    const risks = (D.climate.risks || []).slice(0, 6);
+    const cardW = 4.05, cardH = 1.22;
+    for (let i = 0; i < risks.length; i++) {
+      const r = risks[i];
       const col = i % 3, row = Math.floor(i / 3);
       const x = 0.6 + col * (cardW + 0.13);
-      const y = 2.15 + row * (cardH + 0.18);
+      const y = 2.12 + row * (cardH + 0.12);
       const color = cx(r.color);
       const ic = await getIcon(r.icon, r.color);
       s.addShape(pres.shapes.RECTANGLE, { x, y, w: cardW, h: cardH, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, shadow: sh() });
-      s.addShape(pres.shapes.RECTANGLE, { x, y, w: 0.08, h: cardH, fill: { color }, line: { color } });
-      s.addImage({ data: ic, x: x + 0.3, y: y + 0.22, w: 0.4, h: 0.4 });
-      s.addText(r.label, { x: x + 0.85, y: y + 0.22, w: cardW - 1, h: 0.25, fontFace: FONT_B, fontSize: 11, color: C.marine, bold: true, charSpacing: 3, margin: 0 });
-      s.addText(r.level, { x: x + 0.85, y: y + 0.46, w: cardW - 1, h: 0.3, fontFace: FONT_B, fontSize: 13, color, bold: true, margin: 0 });
-      s.addText(r.body, { x: x + 0.3, y: y + 0.85, w: cardW - 0.5, h: cardH - 0.95, fontFace: FONT_B, fontSize: 10.5, color: C.graphite, margin: 0, valign: "top" });
+      s.addShape(pres.shapes.RECTANGLE, { x, y, w: 0.07, h: cardH, fill: { color }, line: { color } });
+      s.addImage({ data: ic, x: x + 0.22, y: y + 0.14, w: 0.3, h: 0.3 });
+      s.addText(r.label, { x: x + 0.62, y: y + 0.1, w: 1.9, h: 0.22, fontFace: FONT_B, fontSize: 9.5, color: C.marine, bold: true, charSpacing: 2, margin: 0 });
+      s.addText(r.level, { x: x + 0.62, y: y + 0.3, w: cardW - 0.75, h: 0.22, fontFace: FONT_B, fontSize: 10.5, color, bold: true, margin: 0 });
+      s.addText(r.body, { x: x + 0.22, y: y + 0.54, w: cardW - 0.35, h: cardH - 0.58, fontFace: FONT_B, fontSize: 9, color: C.graphite, margin: 0, valign: "top" });
+    }
+
+    // Bottom: site facts table
+    const site = (D.climate.site || []).slice(0, 6);
+    const ty = 2.12 + (risks.length > 3 ? 2 : 1) * (cardH + 0.12) + 0.08;
+    if (site.length) {
+      s.addText("SITE FACTS NO LISTING SHOWS", { x: 0.6, y: ty, w: 8, h: 0.26, fontFace: FONT_B, fontSize: 10.5, color: C.coral, bold: true, charSpacing: 3, margin: 0 });
+      const rows = [["Item", "Finding", "Source"].map(t => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.marine }, fontFace: FONT_B, fontSize: 9.5, valign: "middle" } }))];
+      site.forEach((r, i) => {
+        const fill = i % 2 ? "F4F7F9" : C.white;
+        rows.push([
+          { text: r.label, options: { fontFace: FONT_B, fontSize: 9.5, bold: true, color: C.marine, fill: { color: fill }, valign: "middle" } },
+          { text: r.value, options: { fontFace: FONT_B, fontSize: 9.5, color: r.flag ? C.crimson : C.graphite, bold: !!r.flag, fill: { color: fill }, valign: "middle" } },
+          { text: r.source || "", options: { fontFace: FONT_B, fontSize: 8.5, color: C.steel, italic: true, fill: { color: fill }, valign: "middle" } }
+        ]);
+      });
+      const rh = Math.min(0.3, (7.05 - (ty + 0.3) - 0.28) / site.length);
+      s.addTable(rows, { x: 0.6, y: ty + 0.3, w: 12.39, colW: [2.2, 7.2, 2.99], rowH: [0.28, ...site.map(() => rh)], border: { type: "solid", pt: 0.5, color: C.hairline }, margin: 0.05 });
     }
     if (D.climate.source_note) {
       s.addText(D.climate.source_note, { x: 0.6, y: 7.15, w: 12.2, h: 0.3, fontFace: FONT_B, fontSize: 9, color: C.steel, italic: true, margin: 0 });

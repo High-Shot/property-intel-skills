@@ -14,6 +14,7 @@
     "bfe_note": "Zone X, no BFE assigned. Lidar freeboard est. +12 ft above nearest flood source."
   },
   "market_profile": "coastal",
+  "cov_a": 385000,
   "title": {
     "eyebrow": "HOMEOWNERS INSURANCE BRIEF",
     "tagline": "A coverage decision brief and quote-request package for a coastal Alabama buyer.",
@@ -248,6 +249,10 @@
     "range_label": "EST. ANNUAL PREMIUM, HOMEOWNERS ONLY, EXCL. FLOOD",
     "basis_lines": [
       {
+        "label": "Real quote, same territory and protection class (Oct 2026), scaled to this Cov A",
+        "value": "$3,392 est."
+      },
+      {
         "label": "ALDOI ComparePremiums, $300K Cov A HO-3 profile, coastal territory",
         "value": "anchor"
       },
@@ -265,7 +270,14 @@
       }
     ],
     "caveat": "Real quotes on this spec may land inside OR outside this range. That is the point of getting three of them on identical assumptions.",
-    "source_note": "Sources: ALDOI ComparePremiums (real HO-3 premiums by company); Insurify AL rate data. All figures est. and illustrative in this example."
+    "source_note": "Sources: ALDOI ComparePremiums (real HO-3 premiums by company); Insurify AL rate data. All figures est. and illustrative in this example.",
+    "ladder": {
+      "rung": 2,
+      "rate_per_1k": 8.81,
+      "quote_total": 3790,
+      "quote_cov_a": 430000,
+      "math": "$8.81 per $1K Cov A (Oct 2026 Fairhope territory 5 quote, carrier defaults) x $385K = $3,392 est. Full spec prices higher."
+    }
   },
   "spec_sheet": {
     "headline": "Quote Request & Comparison Worksheet",
@@ -307,7 +319,7 @@
     "coverage_block": [
       {
         "label": "Dwelling (Cov A)",
-        "value": "$385,000 est. RC; run your estimator, show the number"
+        "value": "$385,000 est. (2,400 sf x $160/sf local rebuild); run your estimator, show it"
       },
       {
         "label": "Wind/hurricane ded.",
@@ -351,16 +363,178 @@
       "rows": [
         "Carrier & channel (admitted / surplus)",
         "Total cost ($ premium + all fees + taxes)",
-        "Wind deductible ($ and trigger)",
+        "Wind deductible ($, flat or %, trigger)",
         "AOP deductible ($)",
-        "Roof settlement (RCV or age-ACV form?)",
+        "Roof terms (RCV/ACV, roof sublimit $)",
+        "Water damage / water backup limits",
         "Min. earned premium %",
         "FORTIFIED credit applied?",
-        "Notable exclusions",
+        "Endorsements added ($ each)",
         "Deviations from spec"
       ]
     },
-    "footer": "Estimates in this packet are labeled and sourced. Quotes entered above are the real numbers. Prepared with the buyer's coverage brief, July 2026."
+    "footer": "Estimates in this packet are labeled and sourced. Quotes entered above are the real numbers. Prepared with the buyer's coverage brief, July 2026.",
+    "carrier_intake": {
+      "headline": "Carrier Intake: Property Answers",
+      "instruction": "Answers in the order a typical carrier intake form asks them. CONFIRM rows are not verified; resolve them before a carrier rates on them. Applicant identifiers go only into the agent's secure portal.",
+      "sections": [
+        {
+          "title": "Occupancy & use",
+          "rows": [
+            {
+              "label": "Occupancy",
+              "value": "Primary residence, owner-occupied",
+              "status": "buyer"
+            },
+            {
+              "label": "Home business",
+              "value": "None",
+              "status": "buyer"
+            },
+            {
+              "label": "Rented / short-term",
+              "value": "No",
+              "status": "buyer"
+            }
+          ]
+        },
+        {
+          "title": "Dwelling",
+          "rows": [
+            {
+              "label": "Year built",
+              "value": "1998",
+              "status": "verified"
+            },
+            {
+              "label": "Living sqft / stories",
+              "value": "2,400 sqft, 1 story",
+              "status": "verified"
+            },
+            {
+              "label": "Lot / pond on lot",
+              "value": "0.40 ac / no pond",
+              "status": "verified"
+            },
+            {
+              "label": "Garage",
+              "value": "Attached, 2-car",
+              "status": "listing"
+            },
+            {
+              "label": "Pool / trampoline",
+              "value": "No pool / no trampoline",
+              "status": "buyer"
+            },
+            {
+              "label": "Dogs",
+              "value": "None",
+              "status": "buyer"
+            }
+          ]
+        },
+        {
+          "title": "Construction & roof",
+          "rows": [
+            {
+              "label": "Construction",
+              "value": "Masonry veneer over wood frame",
+              "status": "listing"
+            },
+            {
+              "label": "Foundation",
+              "value": "Slab",
+              "status": "listing"
+            },
+            {
+              "label": "Roof material / shape",
+              "value": "Architectural shingle; shape not recorded",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Roof year",
+              "value": "2019 (county permit)",
+              "status": "verified"
+            },
+            {
+              "label": "Wind mitigation",
+              "value": "No FORTIFIED designation found",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Shutters",
+              "value": "None seen",
+              "status": "buyer"
+            }
+          ]
+        },
+        {
+          "title": "Systems",
+          "rows": [
+            {
+              "label": "Heat / AC",
+              "value": "Central heat pump, 2017",
+              "status": "listing"
+            },
+            {
+              "label": "Plumbing material",
+              "value": "Not known",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Wiring",
+              "value": "Copper (age of home)",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Electrical panel",
+              "value": "Brand not seen",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Water heater",
+              "value": "Tank, garage; year not seen",
+              "status": "unconfirmed"
+            },
+            {
+              "label": "Monitored alarm",
+              "value": "No",
+              "status": "buyer"
+            },
+            {
+              "label": "Detached structures",
+              "value": "None",
+              "status": "verified"
+            }
+          ]
+        },
+        {
+          "title": "History & lien",
+          "rows": [
+            {
+              "label": "Prior claims (5 yr)",
+              "value": "None",
+              "status": "buyer"
+            },
+            {
+              "label": "Current carrier",
+              "value": "None (new purchase)",
+              "status": "buyer"
+            },
+            {
+              "label": "Mortgaged",
+              "value": "Yes, lender named at binding",
+              "status": "buyer"
+            },
+            {
+              "label": "CLUE report",
+              "value": "Request from seller before option period ends",
+              "status": "unconfirmed"
+            }
+          ]
+        }
+      ]
+    }
   },
   "agent_script": {
     "title": "Work the Script",

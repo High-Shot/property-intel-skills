@@ -42,7 +42,7 @@ const D = {
   condition_total: A.condition_total ?? 0,
   avm_checks: A.reconciliation?.avm_checks || [],
   comps: (A.comps || []).map(c => ({
-    address: c.address, sold_date: c.sold_date, sold_price: c.sold_price, sqft: c.sqft,
+    address: c.address, sold_date: c.sold_date, sold_price: c.sold_price, concessions: c.concessions || 0, sqft: c.sqft,
     ppsf: c.ppsf, distance_mi: c.distance_mi, source: c.source, source_tier: c.source_tier,
     key_diffs: c.key_diffs, net_adjustment: c.net_adjustment, adjusted_value: c.adjusted_value,
     weight: c.weight, lat: c.lat ?? null, lng: c.lng ?? null

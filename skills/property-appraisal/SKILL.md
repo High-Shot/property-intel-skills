@@ -7,7 +7,7 @@ description: "Estimate the market value of a residential property using a sales 
 
 This skill produces a defensible market-value estimate for a residential property, packaged as a 9-slide PowerPoint the buyer can use to decide whether the list price is right and what to anchor on.
 
-It is a companion to `property-intel-report`. That skill answers "what am I buying and what could go wrong." This skill answers "what is it actually worth." Do not duplicate that skill's content (climate, schools, diligence budget, question scripts) here.
+It is a companion to `property-intel-report`. That skill answers "what am I buying and what could go wrong." This skill answers "what is it actually worth." Do not duplicate that skill's content (tax record, title and permits, climate and site, schools, diligence budget, competing inventory, question scripts) here. This skill owns the value, the comps, and the negotiation anchors; the intel deck cites them.
 
 This is a valuation estimate, not a licensed appraisal. The deck says so. Never present a point value without a range and a confidence rating.
 
@@ -32,9 +32,9 @@ Required: full street address with city, state, ZIP. Parse from a Zillow/Redfin/
 Then research the gaps with parallel `WebSearch` + `WebFetch`. Target 25-35 tool calls on a cold start, far fewer when the cache is warm. If a dedicated deep-research tool exists on this runtime (for example `launch_extended_search_task`) you may use it instead; do not assume it exists. The full source list and reliability tiers are in `references/data_sources.md`. Priorities in order:
 
 1. **Subject property record**: sqft, beds/baths, year built, lot, garage, parcel ID, last sale price and date.
-2. **Sold comps (the core)**: screen 5-8 closed sales, then carry the **strongest 3-5** into the grid (the deck fits 5). Criteria: within ~1 mile (rural: 3-5 miles), sold in the last 6 months (stretch to 12 if thin), similar sqft (±25%), age (±15 yrs), and style. For each: sold price, sold date, sqft, lot, beds/baths, condition clues from listing remarks. Record the SOURCE and TIER for every sold price (see data_sources.md). Never use an AVM estimate as a comp. Say in the reconciliation how many you screened and why you dropped the ones you dropped. If fewer than 3 survive screening, take the thin-comp path in `references/data_schema.md` rather than loosening the criteria to reach a count.
+2. **Sold comps (the core)**: screen 5-8 closed sales, then carry the **strongest 3-5** into the grid (the deck fits 5). Criteria: within ~1 mile (rural: 3-5 miles), sold in the last 6 months (stretch to 12 if thin), similar sqft (±25%), age (±15 yrs), and style. For each: sold price, **seller concessions** (MLS remarks, sold sheet; record 0 only when checked, see methodology §2 Step 0), sold date, days on market and price cuts before the sale, sqft, lot, beds/baths, condition clues from listing remarks. Where MLS is silent (FSBO, off-market), the deed and any sales validation form at the county probate or recorder office can show the recorded consideration; that is tier 1. Record the SOURCE and TIER for every sold price (see data_sources.md). Never use an AVM estimate as a comp. Say in the reconciliation how many you screened and why you dropped the ones you dropped. If fewer than 3 survive screening, take the thin-comp path in `references/data_schema.md` rather than loosening the criteria to reach a count.
    Record **coordinates** for the subject and every comp you carry (lat/lng to 5 decimals) and for each sale you screen out. Sources and tiers are in `references/data_sources.md` § Coordinates. Coordinates drive the explorer map only; they never enter the value math. Keep the strongest 2-5 rejected sales with a one-line reason each in `screened_out`, so the buyer can see what was considered and why it was dropped.
-3. **Active/pending competition**: 2-3 listings, for ceiling context only.
+3. **Active/pending competition**: `property-intel-report` owns competing inventory. Read its listings from the conversation or cache if present and cite the highest as a ceiling line. If it has not run, note one active listing as the ceiling and research no further; the intel deck does the full inventory.
 4. **AVM cross-checks**: Zestimate, Redfin Estimate, Realtor.com estimate. Sanity band only, clearly labeled, never blended into the comp math.
 5. **Market condition**: ZIP or city median $/sqft trend, months of inventory, median days on market. Used for the time adjustment.
 
@@ -122,7 +122,7 @@ Slides 1 and 9 are dark marine. All others white.
 - Your interview questions were already folded into the dossier's single combined batch. Do not ask again. Read the answers from the conversation and proceed.
 - Write your headline outputs back to the cache before finishing so the reconciliation note can use them.
 - Deliver your own files normally. The orchestrator writes the reconciliation note; you do not.
-- Write `value` (point, low, high, confidence, method) back to `property_facts.json`.
+- Write `value` (point, low, high, confidence, method) back to `property_facts.json`, plus `value.anchors` as numbers (`walk_away_ceiling`, `fair_value`, `list`) matching slide 8. The intel deck's offer slide builds its opening from `value.high` and cites these anchors rather than producing its own.
 - When the buyer walked it, also write `repairs`: one item per repair at cure cost (low/high, no 1.25 multiplier; that lives in the condition slide), fuller scope in `full_low`/`full_high` when the buyer named one, `moisture: true` on rot or water items, and optional improvements as `category: "upgrade"`. The dashboard's repair panel and 203(k) check read it. The insurance skill uses it for context and the reconciliation note compares it against the intel deck's comp screen.
 
 ## Design System

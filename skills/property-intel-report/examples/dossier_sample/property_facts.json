@@ -155,7 +155,12 @@
     "confidence": "Medium",
     "from_skill": "property-appraisal",
     "method": "sales comparison, 5 comps, effective-age adjusted",
-    "as_of": "2026-10-18"
+    "as_of": "2026-10-18",
+    "anchors": {
+      "walk_away_ceiling": 484000,
+      "fair_value": 452000,
+      "list": 539000
+    }
   },
   "insurance": {
     "market_profile": "coastal",

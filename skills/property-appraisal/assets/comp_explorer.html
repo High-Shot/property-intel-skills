@@ -376,7 +376,7 @@ var D = /*__DATA__*/null;
         "<input type=\"checkbox\" id=\"inc-" + i + "\" data-i=\"" + i + "\"" + (on ? " checked" : "") + " aria-label=\"Include comp " + (i + 1) + "\">" +
         "<div class=\"c-main\"><label for=\"inc-" + i + "\" class=\"c-addr\"><span class=\"badge\">" + (i + 1) + "</span>" + esc(c.address) +
         " <span class=\"tier t" + c.source_tier + "\">T" + c.source_tier + "</span></label>" +
-        "<div class=\"c-meta num\">Sold " + money(c.sold_price) + " · " + esc(c.sold_date) + " · " + c.sqft.toLocaleString("en-US") + " sq ft · $" + c.ppsf + "/sq ft · " + c.distance_mi + " mi" + osm + "</div>" +
+        "<div class=\"c-meta num\">Sold " + money(c.sold_price) + (c.concessions > 0 ? " less " + money(c.concessions) + " concessions" : "") + " · " + esc(c.sold_date) + " · " + c.sqft.toLocaleString("en-US") + " sq ft · $" + c.ppsf + "/sq ft · " + c.distance_mi + " mi" + osm + "</div>" +
         (c.key_diffs ? "<div class=\"c-diffs\">" + esc(c.key_diffs) + "</div>" : "") +
         "<div class=\"c-src\">" + esc(c.source) + "</div></div>" +
         "<div class=\"c-val num\"><div class=\"adj\">" + money(c.adjusted_value) + "</div>" +

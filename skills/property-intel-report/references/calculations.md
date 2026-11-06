@@ -136,6 +136,10 @@ For the deck, show year 1 through year 5 as 5 stacked bars, plus the year-1 → 
 
 ## 7. Recommended opening offer
 
+**When an appraisal exists, it sets the base.** If `property_facts.json` carries `value` from `property-appraisal`, use `value.high` in place of `implied_fair_value_high` below and cite the appraisal in the rationale lines, not the screen. The appraisal's `value.anchors` (walk-away ceiling, fair value, list) are its numbers; this deck's walk-away, reduce and go-to-ask triggers are conditions around them, never a competing set of prices. Cap `opening_high` at `value.point` rounded down to $5K: opening above the appraised value needs a stated reason in the rationale lines (a verified competing offer, a concession offered back), and the dashboard warns without one.
+
+Without an appraisal, use the screen:
+
 ```
 opening_low  = implied_fair_value_high × 0.90
 opening_high = implied_fair_value_high × 0.94

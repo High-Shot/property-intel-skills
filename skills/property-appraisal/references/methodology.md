@@ -12,7 +12,9 @@ Use 3-5 comps in the grid (deck fits 5 best; pick the strongest 5 if more). Fewe
 
 ## 2. Adjustment schedule (percent-of-value based)
 
-Adjust the COMP toward the SUBJECT. Comp superior → subtract; comp inferior → add. Rates are percentages of the comp's sold price unless noted. These are defaults; if research surfaces local paired-sales evidence (e.g., two near-identical sales differing only in garage), prefer the local evidence and note it.
+**Step 0: net out seller concessions.** Before any adjustment, subtract the seller's concessions (closing costs paid, rate buydowns, repair credits at closing) from every comp's sold price. A $475,000 sale with $36,824 in concessions is a $438,176 sale; adjusting the headline price overstates that comp by 7.8%. Concessions live in MLS remarks, the agent's sold sheet, or the closing statement; record the amount in `concessions` and where you found it in `concessions_source`. Record `0` only when you checked and found none. An unchecked comp has no `concessions` field, and the builder warns. Every percentage below applies to the **net** price. If the subject's own deal includes concessions, the verdict compares value to the net offer, not the headline.
+
+Adjust the COMP toward the SUBJECT. Comp superior → subtract; comp inferior → add. Rates are percentages of the comp's net sold price (after Step 0) unless noted. These are defaults; if research surfaces local paired-sales evidence (e.g., two near-identical sales differing only in garage), prefer the local evidence and note it.
 
 | Item | Rate | Notes |
 |---|---|---|
@@ -28,11 +30,11 @@ Adjust the COMP toward the SUBJECT. Comp superior → subtract; comp inferior �
 | Outbuildings/extras | Depreciated contribution, not cost | Workshop, dock, generator, solar (owned only, leased = $0 or negative). |
 | Condition/updates (comp-visible) | ±5-15% | From listing remarks and photos: "fully renovated" comp vs original subject → subtract 5-15%. Coarse; the interview refines the subject side in §4. |
 
-**Net adjustment discipline:** if a comp's gross adjustments exceed 25% or net exceeds 15% of its sold price, it is a weak comp — keep it only if comps are thin, and cut its weight in half.
+**Net adjustment discipline:** if a comp's gross adjustments exceed 25% or net exceeds 15% of its net sold price, it is a weak comp — keep it only if comps are thin, and cut its weight in half.
 
 ## 3. Weighting
 
-Score each comp 1-5 on: similarity (after adjustments — lower gross adjustment = higher score), recency, proximity, and source tier (Tier 1 = 5, Tier 2 = 3, Tier 3 = never a comp). Weight = product of the four scores, normalized to sum to 1. Round to 0.05 steps for the deck. Base indicated value = Σ(adjusted value × weight).
+Score each comp 1-5 on: similarity (after adjustments — lower gross adjustment = higher score), recency, proximity, and source tier (Tier 1 = 5, Tier 2 = 3, Tier 3 = never a comp). Weight = product of the four scores, normalized to sum to 1. Within the similarity score, a comp that sold after a long market time or several cuts is evidence of the price the market accepted, not the price it was asked; a comp that sold in days over list may carry a bidding premium. Say so in `key_diffs` when it moves the score. Round to 0.05 steps for the deck. Adjusted value = sold price − concessions + net adjustment. Base indicated value = Σ(adjusted value × weight).
 
 ## 4. Subject condition adjustments (from the interview)
 

@@ -25,6 +25,9 @@ if (!inputPath) {
 }
 const D = JSON.parse(fs.readFileSync(inputPath, "utf8"));
 
+const num = v => (v == null ? NaN : typeof v === "number" ? v : parseFloat(String(v).replace(/[^0-9.]/g, "")));
+const fmt$ = n => "$" + Math.round(n).toLocaleString("en-US");
+
 // ===== DATA VALIDATION (layout contracts from data_schema.md; warnings, non-fatal) =====
 (function validate() {
   const warn = m => console.warn("WARN: " + m);
@@ -44,9 +47,34 @@ const D = JSON.parse(fs.readFileSync(inputPath, "utf8"));
       warn(`exactly one wind_deductible option must carry chosen:true (buyer selected) or chosen:"default" (unchosen); found ${picked} selected and ${defaulted} defaulted`);
     if (defaulted === 1 && !/not selected|unchosen|default/i.test(JSON.stringify(D.caveats || D.sources?.caveats || "")))
       warn('wind deductible is a default, but no caveat says so — the caveats slide must state "wind deductible not selected by buyer"');
-  } else if (opts.length) {
-    warn(`market_profile is "${profile}" but wind_deductible.options is populated; percentage wind deductibles are a coastal construct`);
+    // Deductible arithmetic. cov_a (number) is the Cov A the spec requests; every
+    // percentage option's dollars must equal pct x cov_a, and a flat option must carry
+    // dollars == flat and pct == flat / cov_a to two decimals.
+    const covA = num(D.cov_a);
+    if (!covA) warn("cov_a (number) is missing; deductible dollars cannot be checked against Cov A");
+    opts.forEach(o => {
+      const pct = parseFloat(String(o.pct).replace(/[^0-9.]/g, ""));
+      const dollars = num(o.dollars);
+      if (o.flat != null) {
+        if (dollars !== Math.round(o.flat)) warn(`flat wind option: dollars ${o.dollars} does not equal flat ${o.flat}`);
+        if (covA && Math.abs(pct - Math.round(o.flat / covA * 10000) / 100) > 0.005)
+          warn(`flat wind option: pct ${o.pct} should be ${(o.flat / covA * 100).toFixed(2)}% (flat / Cov A)`);
+      } else if (covA && pct && Math.abs(dollars - pct / 100 * covA) > 1) {
+        warn(`wind option ${o.pct}: dollars ${o.dollars} should be ${fmt$(pct / 100 * covA)} (pct x Cov A ${fmt$(covA)})`);
+      }
+    });
+  } else {
+    if (opts.length)
+      warn(`market_profile is "${profile}" but wind_deductible.options is populated; percentage wind deductibles are a coastal construct`);
+    const dopts = D.deductibles?.options || [];
+    if (dopts.length < 1 || dopts.length > 3) warn(`inland profile: deductibles.options is ${dopts.length}, expected 1-3 (flat AOP plus any separate wind/hail)`);
+    if (dopts.filter(o => o.chosen).length !== 1) warn('inland profile: exactly one deductibles option must carry chosen:true or chosen:"default"');
   }
+  // Cov A worksheet: the dwelling row shows its basis (sqft x local $/sf, source, date) so every agent starts from the same number.
+  const dw = (D.spec_sheet?.coverage_block || []).find(r => /cov a|dwelling/i.test(r.label || ""));
+  if (dw && !/\bx\b|×/.test(dw.value) && !/carrier|quote/i.test(dw.value)) warn(`spec sheet dwelling row "${dw.value}" does not show its basis (sqft x $/sf, source) or a carrier figure`);
+  const qr = (D.spec_sheet?.quote_columns?.rows || []).length;
+  if (qr !== 10) warn(`spec_sheet.quote_columns.rows is ${qr}; the quote grid is a fixed 10-row set (see data_schema.md)`);
   const cl = (D.coverage_lines?.rows || []).length;
   if (cl < 7 || cl > 9) warn(`coverage_lines.rows is ${cl}, expected 7-9`);
   const lv = (D.levers?.items || []).length;
@@ -66,6 +94,21 @@ const D = JSON.parse(fs.readFileSync(inputPath, "utf8"));
   if (bl.length > 5) warn(`premium_range.basis_lines is ${bl.length}, layout fits 5`);
   if (bl.length < 3 && !/anchor|comparison tool|no state|single source|limited/i.test(JSON.stringify(D.caveats || D.sources?.caveats || "")))
     warn(`only ${bl.length} basis line(s) — the caveats slide must say why the anchor set is thin`);
+  // Premium ladder (rates_and_anchors.md §9). rung 1 = quote on this address ... 4 = state average.
+  const L = D.premium_range?.ladder;
+  if (!L) warn("premium_range.ladder is missing: name the rung the range is built from (rates_and_anchors.md §9)");
+  else {
+    if (![1, 2, 3, 4].includes(L.rung)) warn(`premium_range.ladder.rung is ${L.rung}; expected 1-4`);
+    if (L.quote_total != null && L.quote_cov_a) {
+      const r = Math.round(L.quote_total / L.quote_cov_a * 100000) / 100;
+      if (Math.abs(r - L.rate_per_1k) > 0.01) warn(`ladder rate_per_1k ${L.rate_per_1k} should be ${r.toFixed(2)} (quote_total / quote_cov_a x 1000)`);
+    }
+    if (L.rate_per_1k && D.cov_a && (L.rung === 1 || L.rung === 2)) {
+      const implied = L.rate_per_1k * D.cov_a / 1000;
+      const lo = num(D.premium_range.range_low), hi = num(D.premium_range.range_high);
+      if (implied < lo - 50 || implied > hi + 50) warn(`ladder implies ${fmt$(implied)} ($${L.rate_per_1k} x ${fmt$(D.cov_a)} / 1000) but the range is ${fmt$(lo)}-${fmt$(hi)}`);
+    }
+  }
   const fl = (D.flood?.facts || []).length;
   if (fl < 3 || fl > 4) warn(`flood.facts is ${fl}, expected 3-4`);
   if (/<Month|<TODAY|<YYYY/.test(JSON.stringify(D))) warn("a date placeholder survived into the data file — generate it from the run date");
@@ -158,7 +201,7 @@ function sourceNote(s, text) {
   {
     const s = pres.addSlide();
     const P = D.primer;
-    header(s, pres, "HOW COASTAL INSURANCE IS PRICED", P.title, P.subtitle, C.coral);
+    header(s, pres, (D.market_profile || "coastal") === "inland" ? "HOW INSURANCE IS PRICED HERE" : "HOW COASTAL INSURANCE IS PRICED", P.title, P.subtitle, C.coral);
     const cards = (P.cards || []).slice(0, 4);
     const cw = 5.72, ch = 2.15, gx = 0.17, gy = 0.25, x0 = 0.85, y0 = 2.15;
     for (let i = 0; i < cards.length; i++) {
@@ -230,8 +273,10 @@ function sourceNote(s, text) {
   // ================= SLIDE 5 — WIND DEDUCTIBLE MATH (3 option cards) =================
   {
     const s = pres.addSlide();
-    const WD = D.wind_deductible;
-    header(s, pres, "WIND DEDUCTIBLE MATH", WD.title, WD.subtitle, C.crimson);
+    const inland = (D.market_profile || "coastal") === "inland";
+    // Inland: flat all-other-perils choice plus any separate wind/hail deductible. No percentages invented.
+    const WD = inland ? (D.deductibles || {}) : D.wind_deductible;
+    header(s, pres, inland ? "DEDUCTIBLES IN DOLLARS" : "WIND DEDUCTIBLE MATH", WD.title, WD.subtitle, C.crimson);
     const opts = (WD.options || []).slice(0, 3);
     const cw = 3.78, ch = 2.45, gx = 0.13, x0 = 0.85, y0 = 2.15;
     opts.forEach((o, i) => {
@@ -245,9 +290,16 @@ function sourceNote(s, text) {
         // "default" is truthy, so it shares the highlight, but it must never read as the buyer's choice.
         s.addText(o.chosen === "default" ? "DEFAULT" : "YOUR PICK", { x: x + cw - 1.55, y: y0 + 0.2, w: 1.35, h: 0.38, fontFace: FONT_B, fontSize: 9.5, color: C.white, bold: true, charSpacing: 1, align: "center", valign: "middle", margin: 0 });
       }
-      s.addText(o.pct, { x: x + 0.28, y: y0 + 0.18, w: 1.9, h: 0.65, fontFace: FONT_H, fontSize: 34, color: col, bold: true, margin: 0 });
+      if (inland) {
+        s.addText(o.label || "", { x: x + 0.28, y: y0 + 0.28, w: cw - 1.9, h: 0.5, fontFace: FONT_B, fontSize: 14, color: col, bold: true, charSpacing: 1, margin: 0 });
+      } else if (o.flat != null) {
+        // Flat-dollar hurricane deductible: lead with FLAT, show the effective percent of Cov A.
+        s.addText("FLAT", { x: x + 0.28, y: y0 + 0.18, w: 1.9, h: 0.65, fontFace: FONT_H, fontSize: 34, color: col, bold: true, margin: 0 });
+      } else {
+        s.addText(o.pct, { x: x + 0.28, y: y0 + 0.18, w: 1.9, h: 0.65, fontFace: FONT_H, fontSize: 34, color: col, bold: true, margin: 0 });
+      }
       s.addText(o.dollars, { x: x + 0.28, y: y0 + 0.88, w: cw - 0.56, h: 0.62, fontFace: FONT_H, fontSize: 26, color: C.marine, bold: true, margin: 0 });
-      s.addText("OUT OF POCKET AT CLAIM", { x: x + 0.28, y: y0 + 1.48, w: cw - 0.56, h: 0.26, fontFace: FONT_B, fontSize: 8.5, color: C.steel, charSpacing: 2, margin: 0 });
+      s.addText(o.flat != null ? `OUT OF POCKET AT CLAIM · ${o.pct} OF COV A` : "OUT OF POCKET AT CLAIM", { x: x + 0.28, y: y0 + 1.48, w: cw - 0.56, h: 0.26, fontFace: FONT_B, fontSize: 8.5, color: C.steel, charSpacing: 2, margin: 0 });
       s.addText(o.note || "", { x: x + 0.28, y: y0 + 1.76, w: cw - 0.56, h: 0.62, fontFace: FONT_B, fontSize: 10, color: C.graphite, valign: "top", margin: 0 });
     });
     // Framing band
@@ -320,8 +372,13 @@ function sourceNote(s, text) {
     header(s, pres, "ESTIMATED PREMIUM RANGE", PR.title, PR.subtitle, C.amber);
     // Range hero
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 2.1, w: 11.6, h: 1.55, fill: { color: C.marine }, line: { color: C.marine }, rectRadius: 0.08, shadow: sh() });
-    s.addText(`${PR.range_low}  –  ${PR.range_high}`, { x: 1.15, y: 2.28, w: 8.5, h: 0.85, fontFace: FONT_H, fontSize: 44, color: C.white, bold: true, margin: 0 });
-    s.addText(PR.range_label || "", { x: 1.15, y: 3.15, w: 11, h: 0.35, fontFace: FONT_B, fontSize: 11.5, color: C.amber, bold: true, charSpacing: 2, margin: 0 });
+    s.addText(`${PR.range_low}  –  ${PR.range_high}`, { x: 1.15, y: 2.28, w: 7.6, h: 0.85, fontFace: FONT_H, fontSize: 44, color: C.white, bold: true, margin: 0 });
+    s.addText(PR.range_label || "", { x: 1.15, y: 3.15, w: 7.6, h: 0.35, fontFace: FONT_B, fontSize: 11.5, color: C.amber, bold: true, charSpacing: 2, margin: 0 });
+    if (PR.ladder) {
+      const RUNG = { 1: "QUOTE ON THIS HOUSE", 2: "QUOTE IN THIS TERRITORY", 3: "STATE DOI COMPARISON", 4: "STATE AVERAGE STUDY" };
+      s.addText(`RUNG ${PR.ladder.rung} OF 4 · ${RUNG[PR.ladder.rung] || ""}`, { x: 8.9, y: 2.3, w: 3.35, h: 0.3, fontFace: FONT_B, fontSize: 9.5, color: C.coral, bold: true, charSpacing: 2, align: "right", margin: 0 });
+      s.addText(PR.ladder.math || "", { x: 8.9, y: 2.62, w: 3.35, h: 0.9, fontFace: FONT_B, fontSize: 10.5, color: "D7E2EA", align: "right", valign: "top", margin: 0 });
+    }
     // Basis lines
     s.addText("WHERE THE RANGE COMES FROM", { x: 0.85, y: 3.95, w: 6, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.teal, bold: true, charSpacing: 3, margin: 0 });
     const basis = (PR.basis_lines || []).slice(0, 5);
@@ -359,7 +416,7 @@ function sourceNote(s, text) {
     // Right: quote comparison grid preview
     const rightX = 6.6, rightW = 5.85;
     const qc = SS.quote_columns || {};
-    const qRows = (qc.rows || []).slice(0, 9);
+    const qRows = (qc.rows || []).slice(0, 10);
     const rows = [];
     rows.push([
       { text: "", options: { fill: { color: C.marine } } },

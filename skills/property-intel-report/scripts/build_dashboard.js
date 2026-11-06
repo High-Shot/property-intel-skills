@@ -132,6 +132,10 @@ if (opt.insurance) {
   const covStat = (IN.coverage_spec?.stats || []).find(s => /COV A|DWELLING/i.test(s.label || ""));
   if (covStat && money(covStat.big) !== F.cov_a_est) warn(`insurance deck Cov A ${covStat.big} != facts cov_a_est ${F.cov_a_est}`);
   (IN.wind_deductible?.options || []).forEach(o => {
+    if (o.flat != null) {
+      if (F.wind_deductible_flat != null && Math.round(o.flat) !== F.wind_deductible_flat) warn(`insurance deck flat wind deductible ${o.flat} != facts wind_deductible_flat ${F.wind_deductible_flat}`);
+      return;
+    }
     const want = Math.round(F.cov_a_est * money(o.pct) / 100);
     if (Math.abs(money(o.dollars) - want) > 50) warn(`insurance deck says ${o.pct} = ${o.dollars}, but ${o.pct} of ${F.cov_a_est} is ${want}`);
   });
@@ -148,6 +152,17 @@ if (opt.intel) {
     const srcLo = (F.premium_low + (F.flood_premium_low || 0)) / 12, srcHi = (F.premium_high + (F.flood_premium_high || 0)) / 12;
     if (intelIns < srcLo - 75 || intelIns > srcHi + 75)
       warn(`intel carry insurance $${intelIns}/mo is more than $75/mo outside the insurance brief range $${Math.round(srcLo)}-$${Math.round(srcHi)}/mo; update the intel carry slide to cite the brief`);
+  }
+  // Ownership: the appraisal owns value. The intel offer cites it and opens at or below it unless it says why.
+  if (F.value) {
+    const nums = String(PD.offer?.opening || "").match(/\$?\s*(\d{3})\s*K|\$\s*([\d,]{6,})/gi) || [];
+    const vals = nums.map(t => /k/i.test(t) ? Number(t.replace(/[^\d]/g, "")) * 1000 : Number(t.replace(/[^\d]/g, "")));
+    const openHi = vals.length ? Math.max(...vals) : null;
+    const why = /compet|multiple offer|bidding|concession/i.test(JSON.stringify(PD.offer?.rationale_lines || []));
+    if (openHi && openHi > F.value.point && !why) warn(`intel opening offer tops out at $${openHi.toLocaleString()}, above the appraisal point $${F.value.point.toLocaleString()}, with no stated reason`);
+    const pk = Math.round(F.value.point / 1000);
+    if (!(PD.offer?.rationale_lines || []).some(l => l.includes("$" + pk + "K") || l.includes(F.value.point.toLocaleString())))
+      warn(`intel offer rationale does not cite the appraisal point ($${pk}K); the appraisal owns value`);
   }
 }
 

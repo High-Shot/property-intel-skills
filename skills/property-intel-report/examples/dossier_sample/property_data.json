@@ -198,6 +198,154 @@
     ],
     "source_note": "Sources: Redfin price history (MLS; public records). 2013 shows MLS $195,000 and recorded $195,250 a week apart; the recorded figure is used."
   },
+  "tax_record": {
+    "title": "Inside City Limits, Small Reset",
+    "subtitle": "The homestead you file keeps the post-sale bill close to the seller's. City millage is the bigger line here.",
+    "stats": [
+      {
+        "big": "$401,000",
+        "label": "COUNTY APPRAISED (2025)",
+        "sub": "Revenue commission market value",
+        "color": "teal"
+      },
+      {
+        "big": "$40,100",
+        "label": "ASSESSED VALUE",
+        "sub": "10% residential class",
+        "color": "teal"
+      },
+      {
+        "big": "$2,009",
+        "label": "TAX PAID (2025)",
+        "sub": "Homestead applied",
+        "color": "green"
+      },
+      {
+        "big": "$2,140",
+        "label": "POST-SALE EST. / YR",
+        "sub": "+$11/mo vs the seller's bill",
+        "color": "coral"
+      }
+    ],
+    "history_title": "Annual tax paid",
+    "history": [
+      {
+        "year": 2021,
+        "tax": 1610
+      },
+      {
+        "year": 2022,
+        "tax": 1722
+      },
+      {
+        "year": 2023,
+        "tax": 1843
+      },
+      {
+        "year": 2024,
+        "tax": 1950
+      },
+      {
+        "year": 2025,
+        "tax": 2009
+      }
+    ],
+    "millage_label": "MILLAGE STACK (CITY)",
+    "millage": [
+      {
+        "authority": "State of Alabama",
+        "mills": 6.5
+      },
+      {
+        "authority": "County general",
+        "mills": 7.5
+      },
+      {
+        "authority": "County schools",
+        "mills": 12.0
+      },
+      {
+        "authority": "City",
+        "mills": 7.0
+      },
+      {
+        "authority": "District schools",
+        "mills": 13.0
+      }
+    ],
+    "millage_total": 46.0,
+    "exemptions": [
+      {
+        "name": "Homestead",
+        "effect": "Seller's ends at sale; yours restores it. File by Dec 31 after closing or the first bill runs about $300 higher."
+      }
+    ],
+    "reset": {
+      "current_annual": 2009,
+      "post_sale_annual": 2140,
+      "monthly_delta": 11,
+      "math": "$475K x 10% x 46.0 mills less homestead credit"
+    },
+    "source_note": "SYNTHETIC. Pattern follows a county revenue commission record and the state revenue department millage table."
+  },
+  "title_record": {
+    "title": "Long Hold, Low Debt, Thin Permit File",
+    "subtitle": "Nine years of ownership and a small mortgage mean the seller can take less. The replumb the listing claims has no permit.",
+    "deed_chain": [
+      {
+        "date": "2017-09",
+        "type": "Warranty deed, individual",
+        "price": "$185,000",
+        "note": "Current owner; bought as a project"
+      },
+      {
+        "date": "2004-05",
+        "type": "Warranty deed, individual",
+        "price": "$162,500",
+        "note": ""
+      }
+    ],
+    "encumbrances": [
+      {
+        "item": "Mortgage (2017)",
+        "status": "OPEN",
+        "detail": "$175,750 original; est. $140K remaining. The seller nets well over $300K even well under list.",
+        "color": "amber"
+      },
+      {
+        "item": "Liens and judgments",
+        "status": "NONE FOUND",
+        "detail": "Probate index searched by parcel and owner type.",
+        "color": "green"
+      }
+    ],
+    "permits": [
+      {
+        "year": "2024",
+        "work": "HVAC replacement",
+        "status": "Finaled"
+      },
+      {
+        "year": "2021",
+        "work": "Roof replacement",
+        "status": "Finaled"
+      },
+      {
+        "year": "—",
+        "work": "Whole-house replumb (listing claim)",
+        "status": "Not found"
+      }
+    ],
+    "mismatches": [
+      {
+        "field": "Living sq ft",
+        "record": "3,135",
+        "listing": "3,200"
+      }
+    ],
+    "easements": "Recorded plat shows a 7.5-ft utility easement on the rear line. Zoned R-2; no HOA.",
+    "source_note": "SYNTHETIC. Pattern follows county probate indexes, the city permit portal, and the recorded plat."
+  },
   "comps": {
     "title": "What the Subject Should Cost",
     "subtitle": "Five recorded 2025-26 sales within 2.5 mi, all 2,894-3,298 sq ft. They are 11-21 years newer than the subject, so the screen strips a newer-build premium, then applies a cosmetic discount for the walkthrough repair list. This is a screen; the appraisal deck carries the value.",
@@ -331,7 +479,7 @@
     "source_note": "Sources: GreatSchools via Redfin; Niche K-12; NBC15 reporting on the Fairhope city-schools study. Confirm zoning with Baldwin County Public Schools."
   },
   "climate": {
-    "title": "Climate & Hazard Exposure",
+    "title": "Climate, Site & Surroundings",
     "subtitle": "Wind and heat are the real exposures; flood and fire score minimal. Wind drives what insurance costs here. The insurance brief carries the sourced premium range and quote spec.",
     "risks": [
       {
@@ -339,7 +487,7 @@
         "label": "WIND / HURRICANE",
         "level": "9 / 10  ·  SEVERE",
         "color": "crimson",
-        "body": "First Street Wind Factor 9/10: 99% chance of strong winds in 30 years. About 2.4 mi from Mobile Bay. Expect a 2% named-storm deductible ($10,000 on a $500K Cov A)."
+        "body": "First Street Wind Factor 9/10: 99% chance of strong winds in 30 years. About 2.4 mi from Mobile Bay. The insurance brief prices it."
       },
       {
         "icon": "FaSun",
@@ -353,7 +501,7 @@
         "label": "FLOOD",
         "level": "1 / 10  ·  MINIMAL",
         "color": "green",
-        "body": "Outside the FEMA flood zone (you confirmed); First Street Flood Factor 1/10. Flood is not lender-required. The lender's flood cert will confirm."
+        "body": "Outside the FEMA flood zone (you confirmed); First Street Flood Factor 1/10. The lender's flood cert is the determination."
       },
       {
         "icon": "FaTree",
@@ -374,10 +522,43 @@
         "label": "BUILD ERA (1992)",
         "level": "LOW",
         "color": "green",
-        "body": "Post-1978, so no lead-paint disclosure. 1978-96 is the polybutylene window; the listing claims a full replumb. Confirm no poly-B remains at the water heater."
+        "body": "Post-1978, no lead-paint disclosure. 1978-96 is the polybutylene window; confirm no poly-B remains at the water heater."
       }
     ],
-    "source_note": "Sources: First Street Foundation factors via Redfin; flood zone status per buyer. Earthquake and radon are not material here and are omitted."
+    "source_note": "SYNTHETIC. Sources pattern: First Street, FEMA, USDA, USFWS, USGS, NOAA, city planning, state DOT.",
+    "site": [
+      {
+        "label": "Soils",
+        "value": "Sandy loam, well drained; low shrink-swell. Slab movement unlikely.",
+        "source": "USDA Web Soil Survey"
+      },
+      {
+        "label": "Wetlands",
+        "value": "None mapped on the parcel.",
+        "source": "USFWS National Wetlands Inventory"
+      },
+      {
+        "label": "Elevation / surge",
+        "value": "About 95 ft above sea level; outside every storm-surge category.",
+        "source": "USGS 3DEP, NOAA SLOSH (est.)"
+      },
+      {
+        "label": "Zoning / land use",
+        "value": "R-2 single family; neighbors zoned the same.",
+        "source": "City zoning map"
+      },
+      {
+        "label": "Nearby development",
+        "value": "No rezoning or subdivision applications within 1 mi in the last 12 months.",
+        "source": "City planning commission agendas"
+      },
+      {
+        "label": "Roads",
+        "value": "Road widening on the nearby state route planned for 2027-28, 0.8 mi east; expect construction traffic.",
+        "source": "State DOT work program",
+        "flag": true
+      }
+    ]
   },
   "diligence": {
     "title": "Itemized Pre-Closing Costs",
@@ -636,10 +817,10 @@
   },
   "offer": {
     "title": "The Number, The Walk-Away, The Upside",
-    "opening": "$440K – $460K",
+    "opening": "$435K – $450K",
     "rationale_lines": [
-      "Screen high $489K x 0.90 to x 0.94 = $440K-$460K.",
-      "Appraisal point $452K sits inside that band.",
+      "Appraisal high $484K x 0.90 = $435K; capped at the",
+      "appraisal point $452K, rounded down to $450K.",
       "Pre-move-in repairs (est. $15K) are the justification."
     ],
     "walk_away": [
@@ -679,6 +860,7 @@
       "Carry uses PMMS; your rate will differ by credit, lender, and points.",
       "Insurance figures come from the insurance brief's sourced range, not quotes.",
       "Post-sale tax assumes homestead filed and appraisal reset to $475K; city limits confirmed. Revenue Commission portal could not be fetched.",
+      "Public record shows 3,135 sq ft; the listing claims 3,200. This brief uses the record.",
       "Flood zone status is per the buyer; the lender's flood cert is the determination.",
       "Comp screen is a screen. property-appraisal owns the value ($452K, Medium confidence).",
       "Systems ages are buyer-confirmed; permits not yet in hand. Repair costs are estimates until bids.",

@@ -1,6 +1,6 @@
 # Property Intelligence Report
 
-Buyer's decision brief for a residential property. Produces a 16-slide PowerPoint covering all-in monthly carry, normalized comps, a 5-year cost projection, climate and hazard exposure, an itemized diligence budget, competing inventory, red flags, a phased action plan, offer strategy with walk-away triggers, and printable question scripts.
+Buyer's decision brief for a residential property. Produces a 16-slide PowerPoint covering all-in monthly carry with a 5-year line, the county tax and assessment record, the deed chain with liens and permits, climate and site risk, schools, an itemized diligence budget, competing inventory, red flags, a phased action plan, offer strategy with walk-away triggers, and printable question scripts. Value and premiums come from the sibling skills, not from this deck.
 
 This is the front door of a three-skill family:
 

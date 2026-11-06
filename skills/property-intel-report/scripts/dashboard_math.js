@@ -84,7 +84,9 @@ function repairBudget(F, scope, withUpgrades) {
 function deductibleTable(F, quotes) {
   quotes = quotes || {};
   var opts = (F.wind_deductible_options_pct || []).slice().sort(function (a, b) { return a - b; }).map(function (p) {
-    return { pct: p, dollars: Math.round(F.cov_a_est * p / 100), chosen: p === F.wind_deductible_pct, premium: quotes[p] > 0 ? quotes[p] : null };
+    // A flat-dollar hurricane deductible is stored as its effective percent; its dollars are the carrier's figure.
+    var flat = F.wind_deductible_flat && p === F.wind_deductible_pct;
+    return { pct: p, flat: !!flat, dollars: flat ? F.wind_deductible_flat : Math.round(F.cov_a_est * p / 100), chosen: p === F.wind_deductible_pct, premium: quotes[p] > 0 ? quotes[p] : null };
   });
   var base = null;
   for (var i = 0; i < opts.length; i++) if (opts[i].premium != null) { base = opts[i]; break; }

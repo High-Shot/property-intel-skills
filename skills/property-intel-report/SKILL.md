@@ -1,11 +1,13 @@
 ---
 name: property-intel-report
-description: "Generate a buyer's intelligence report and decision-support deck for any residential property. Use this skill whenever the user provides an address and asks for analysis, due diligence, evaluation, or a buyer's brief on a home. Also trigger on phrases like 'should I buy', 'property report', 'evaluate this listing', 'analyze this house', 'due diligence on', or when given a Zillow, Redfin, or MLS link with intent to analyze. This is the front door of the property skill family: start here when the request is general. Use property-appraisal instead if the user only wants a value number or CMA, and property-insurance-brief if they only want coverage or premiums. Produces a 16-slide PowerPoint covering all-in monthly carry, normalized comp analysis, 5-year cost projection, climate risk, itemized inspection budget, competing inventory, red flags, phased action plan, offer strategy with walk-away triggers, and printable question scripts for the listing agent, neighbors, and inspector."
+description: "Generate a buyer's intelligence report and decision-support deck for any residential property. Use this skill whenever the user provides an address and asks for analysis, due diligence, evaluation, or a buyer's brief on a home. Also trigger on phrases like 'should I buy', 'property report', 'evaluate this listing', 'analyze this house', 'due diligence on', or when given a Zillow, Redfin, or MLS link with intent to analyze. This is the front door of the property skill family: start here when the request is general. Use property-appraisal instead if the user only wants a value number or CMA, and property-insurance-brief if they only want coverage or premiums. Produces a 16-slide PowerPoint covering all-in monthly carry with a 5-year line, the county tax and assessment record, deed chain, liens and permits, climate and site risk, itemized inspection budget, competing inventory, red flags, phased action plan, offer strategy with walk-away triggers, and printable question scripts for the listing agent, neighbors, and inspector."
 ---
 
 # Property Intelligence Report
 
 This skill produces a buyer's decision brief for any residential property. The output is a 16-slide PowerPoint that synthesizes public records, market data, and climate/risk intelligence into a single document the buyer can take into the negotiation.
+
+**One home per fact.** This deck owns the public record (tax, title, permits), hazard and site, schools, diligence, competing inventory, red flags, scripts, and the offer triggers. `property-appraisal` owns value, comps, and the negotiation anchors; this deck cites them on the offer slide and has no comp slide. `property-insurance-brief` owns premiums and deductibles; this deck's carry slide uses its range. The table is in `references/property_facts.md` § Ownership.
 
 The deck is decision-support, not a data dump. Every slide answers a buyer question: can I afford this, is the price right, what am I actually buying, what could go wrong, what is my move.
 
@@ -40,13 +42,17 @@ If a dedicated deep-research tool is available on this runtime (for example `lau
 
 After research returns, you should have:
 - Property record (parcel ID, lot, year built, sqft, beds/baths)
-- Ownership and tax history
+- **Tax and assessment record** from the county (not a portal summary): appraised and assessed value, millage by authority, exemptions in force, special assessments, 5-10 years of bills, delinquency or tax-sale history
+- **Deed chain, mortgages, liens** from the probate or recorder index: transfer types and prices, recorded mortgages (for the seller-equity estimate), liens, judgments, lis pendens, plat easements and restrictions
+- **Record vs listing**: every place the county record disagrees with the listing (sqft, beds, year built, permitted work)
 - Listing price history (every cut, every withdrawal)
 - 5-7 nearby comps with $/sqft, lot, year, sale price
 - Schools with ratings and distance
 - Climate risk scores (Augurisk city + First Street parcel)
 - FEMA flood zone for the parcel
-- Permit history, septic permits, code violations
+- **Site facts no listing shows**: soils (drainage, shrink-swell, septic suitability), mapped wetlands, pad elevation and storm-surge category, zoning and future land use, rezonings or subdivisions within about a mile, funded road projects, noise sources
+- Permit history with status (finaled, open, expired), septic permits, code violations
+- County portals often block `WebFetch`; see `references/data_sources.md` § County portals before calling a fact unavailable
 - Current Freddie Mac PMMS 30-yr rate (FRED series `MORTGAGE30US` is the usual mirror; if either has moved, use any named weekly national average and cite it)
 - 4-5 competing listings at adjacent price points in the same ZIP
 
@@ -66,11 +72,17 @@ All rates, percentages, and dollar anchors used below live in `references/rates_
 
 If `property_facts.json` carries an `insurance` block from a `property-insurance-brief` run, use those figures and cite them. Otherwise use the orientation bands in `rates_and_anchors.md` and label them est.
 
+**Tax and assessment (slide 6).** Fill `tax_record` from the county record. Sum the millage and check it against the total. Compute the post-sale reset at the purchase price with the buyer's own homestead; the monthly carry's tax line must equal it. Name any special assessment and the homestead filing deadline. This is the one slide where a buyer sees what the county actually charges, so it carries real records, not a portal estimate.
+
+**Title, liens and permits (slide 7).** Fill `title_record` from the probate index, permit portal and plat. Show transfer types and prices, never owners' names. Estimate the remaining balance on any open mortgage and state the seller's equity in plain dollars; it is the best read on how far the seller can move. Every open or expired permit becomes a red flag. Every record-vs-listing mismatch gets a caveat and, where it suggests unpermitted work, an inspector question. Write the same facts to `record` in `property_facts.json`.
+
 **Normalized comp analysis.** Compute $/sqft for every comp. **Verify the average against the listed values before using it** — this is the step the old worked example got wrong. Then strip premiums *sequentially*, not additively, using the schedule in `calculations.md`. Apply fixer discount last, based on listing language and price-cut history. Implied fair value range = adjusted base × subject sqft.
 
-This is a screen, not a valuation. If `property_facts.json` has a `value` block from `property-appraisal`, publish that number and label this walk as the screen that supports it. If the two disagree by more than 5%, say so on the comp slide.
+This is a screen, not a valuation, and it no longer gets its own slide: `property-appraisal` owns value and comps. Keep the walk in the `comps` block so the builder can check its arithmetic, and cite its conclusion in one rationale line on the offer slide. If `property_facts.json` has a `value` block from `property-appraisal`, the rationale cites that number and the screen only supports it; if the two disagree by more than 5%, say so in the rationale.
 
-**5-year cost projection.** Hold P&I fixed. Grow tax and insurance at the rates in `rates_and_anchors.md`, using the parcel's actual trailing tax growth from research where it is higher. Output year-1 and year-5 monthly totals plus the delta. The cumulative delta is the sum of the four year-over-year deltas × 12; compute it, do not estimate it.
+**5-year cost projection** (rendered as the strip under the carry cards on slide 4). Hold P&I fixed. Grow tax and insurance at the rates in `rates_and_anchors.md`, using the parcel's actual trailing tax growth from research where it is higher. Output year-1 and year-5 monthly totals plus the delta. The cumulative delta is the sum of the four year-over-year deltas × 12; compute it, do not estimate it.
+
+**Site & surroundings (slide 9).** Hazard cards score the risk and stop there; cost belongs to the insurance brief. The site table carries up to six sourced facts from `references/data_sources.md` § Site & Surroundings. Flag the ones that change the decision (wetland acreage, an approved subdivision next door, a road project) and carry each flagged fact into the red flags or scripts.
 
 **Diligence budget.** Use `references/diligence_budget_template.md` as the baseline. Adjust line items by region (e.g., wind mitigation inspection only in hurricane states, sewer scope only on municipal sewer, water test only on private well).
 
@@ -181,12 +193,12 @@ The deck must always be 16 slides in this order:
 1. Title (dark, address + tagline)
 2. Executive Summary — Good / Bad / Ugly (3-column card layout)
 3. At a Glance — six big-number cards
-4. Total Monthly Carry — four scenarios side-by-side
+4. Total Monthly Carry — four scenarios side-by-side, with the five-year strip underneath
 5. Price Trajectory — line chart + callouts
-6. Normalized Comp Analysis — bar chart + fair-value walk
-7. 5-Year Cost Projection — stacked bar chart + delta callout
+6. Tax & Assessment Record — appraised/assessed/paid/post-sale cards, tax history chart, millage stack, exemptions
+7. Title, Liens & Permits — deed chain, encumbrances with seller equity, permits, record vs listing, easements
 8. Schools — three school cards
-9. Climate & Risk — six risk cards
+9. Site & Surroundings — compact hazard cards (scored, never priced) + a site-facts table (soils, wetlands, elevation/surge, zoning, development, roads)
 10. Itemized Diligence Budget — table with totals
 11. Competing Inventory — subject + 4 alternatives
 12. Top Red Flags — 6 numbered cards

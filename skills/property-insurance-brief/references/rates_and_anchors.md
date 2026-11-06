@@ -4,7 +4,7 @@ Every rate, program name, statutory figure, and dollar anchor this skill applies
 
 **Standing rule.** Any anchor older than six months at run time must be re-verified during Stage 2, or the figure it produces must be labeled stale on the caveats slide. Insurance markets move faster than the other two skills' domains — treat this file as the shortest-lived reference in the family.
 
-Last full review: **2026-08**.
+Last full review: **2026-11**.
 
 ---
 
@@ -56,6 +56,17 @@ Everything below is **one territory's** detail. Never apply it to another state.
 | State average, $300K dwelling | Cite the named rate study and its year | — | Annual studies. Never quote a figure without naming the study |
 | Guaranty fund | Does not cover surplus-lines carriers | statutory | Only on a change in state law |
 
+### Real-quote anchors (coastal Alabama)
+
+A real quote is the best anchor this file can hold. Each row is one quote, expressed as total cost per $1,000 of Cov A so it transfers to a house of a different size in the same territory and protection class. Expire each row six months after its quote date.
+
+| Territory / PPC | Construction | Cov A | Wind ded. | AOP | Total/yr | $ per $1K Cov A | Quote date | Expires |
+|---|---|---|---|---|---|---|---|---|
+| Fairhope territory 5 / PPC 3 | Masonry veneer, 1994 | $430,000 | $20,000 flat hurricane | $2,500 | $3,790 | $8.81 | 2026-10-08 | 2027-04 |
+| Fairhope territory 5 / PPC 3 | Masonry veneer | (second quote, same carrier) | $20,000 flat hurricane | $2,500 | — | $8.62 | 2026-10 | 2027-04 |
+
+Both quotes came from one carrier on carrier defaults (Cov C 25%, MedPay $1,000, water backup $5,000, animal liability $5,000, no ordinance or law). A quote at the full spec in this file's §1 prices higher; say so beside the anchor. One carrier is not a market: the ladder in §9 treats these as rung 2 for any other address, never as the range.
+
 ---
 
 ## 5. Flood
@@ -75,6 +86,7 @@ Never price flood from a zone table. Report the zone for the mandate, give cost 
 | Anchor | Value | as_of | Verify |
 |---|---|---|---|
 | Rebuild cost, 1980s–2000s construction | $150–250 /sqft | 2025-Q4 | **Stale — re-verify locally.** Materials and labor inflation |
+| Fairhope, AL check | ~$160 /sqft landed within 0.5% of a carrier's Cov A ($432K est. vs $430K carrier) | 2026-10 | One data point. Re-verify each run |
 
 Cov A is always labeled est. until a carrier replacement-cost estimator runs. It anchors to rebuild cost, never to market value or purchase price. If `property_facts.json` carries a `value` block from `property-appraisal`, that is the market value — it is not Cov A, and using it as Cov A over-insures on an expensive lot and under-insures on a cheap one.
 
@@ -93,3 +105,19 @@ Watch for an RCV roof headline with an age-triggered ACV roof endorsement attach
 ## 8. Deck metadata
 
 Never hardcode a date. `prepared_label`, footer dates, and rate-study years come from the run date or from the study actually cited. A literal month and year in a schema example is a placeholder, not a default.
+
+
+---
+
+## 9. The premium ladder
+
+Slide 8's range is built from the highest rung available and shows its arithmetic. Lower rungs are context, never a competing number.
+
+| Rung | Source | How it becomes a number |
+|---|---|---|
+| 1 | Real quote on this address | Total cost, normalized to the spec (add the cost of spec lines the quote omitted, subtract endorsements the spec did not ask for, name each) |
+| 2 | Real quote in the same territory and protection class (§4) | $ per $1K Cov A × this house's Cov A, adjusted for construction and roof age differences, named |
+| 3 | State DOI premium comparison for a matching profile | DOI figure scaled by Cov A ÷ the DOI profile's dwelling value |
+| 4 | Named state-average study | Study figure, labeled as a state average |
+
+Write the rung used into `premium_range.ladder` (see `data_schema.md`). A rung-3 or rung-4 range on a coastal property is wide by nature; say so on the slide instead of narrowing it.

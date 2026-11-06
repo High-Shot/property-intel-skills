@@ -80,3 +80,8 @@ Do not report a field as unavailable without trying steps 1 and 2, and do not si
 ## Source volatility
 
 Scraping observations in this file ("Zillow blocks most direct fetches," "portal X is JavaScript-interactive") are point-in-time, not durable facts. Re-test rather than assuming. Vendor availability changes too; do not treat any single aggregator as guaranteed to exist.
+
+
+## Seller concessions
+
+Concessions hide inside the headline sold price. Check, in order: MLS "concessions" or "seller paid" field and remarks (Redfin and Realtor.com sold pages often show it), the listing agent's sold sheet, then the closing statement if the buyer's agent can get it. Record the dollars and the source on the comp. A remark like "seller paid $10K toward closing" is a concession; a price cut before contract is not.

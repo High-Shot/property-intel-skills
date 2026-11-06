@@ -37,6 +37,16 @@ const D = JSON.parse(fs.readFileSync(inputPath, "utf8"));
     warn(`point_value ${pv} differs from base+condition ${expected} by more than $1,000`);
   (D.comps || []).forEach((c, i) => {
     if (c.source_tier === 3) warn(`comp ${i + 1} has source_tier 3 — AVMs are never comps`);
+    // Seller concessions come out of the sold price before any adjustment (methodology §2, Step 0).
+    if (c.concessions == null) warn(`comp ${i + 1} (${c.address}) has no concessions field: check MLS remarks or the sold sheet and record the amount, or 0 if none`);
+    const conc = c.concessions || 0;
+    if (conc > 0 && !c.concessions_source) warn(`comp ${i + 1} has $${conc} concessions with no concessions_source`);
+    if (!conc && /concession|seller paid|seller-paid|closing cost/i.test((c.key_diffs || "") + " " + (c.notes || "")))
+      warn(`comp ${i + 1} mentions concessions in its notes but concessions is ${c.concessions ?? "missing"}`);
+    if (typeof c.adjusted_value === "number" && typeof c.net_adjustment === "number" && Math.abs(c.sold_price - conc + c.net_adjustment - c.adjusted_value) > 1)
+      warn(`comp ${i + 1} adjusted_value ${c.adjusted_value} != sold_price ${c.sold_price} - concessions ${conc} + net_adjustment ${c.net_adjustment}`);
+    if (c.sqft && c.ppsf && Math.abs(Math.round((c.sold_price - conc) / c.sqft) - c.ppsf) > 1)
+      warn(`comp ${i + 1} ppsf ${c.ppsf} should be ${Math.round((c.sold_price - conc) / c.sqft)} (net of concessions)`);
   });
   const weighted = (D.comps || []).reduce((a, c) => a + (c.adjusted_value || 0) * (c.weight || 0), 0);
   const base = D.reconciliation?.base_indicated_value || 0;
@@ -286,7 +296,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
       rows.push([
         { text: c.address + "\n" + (c.key_diffs || ""), options: { ...base, fontSize: 9.5, align: "left" } },
         { text: c.sold_date, options: { ...base, align: "center" } },
-        { text: fmt$(c.sold_price), options: { ...base, bold: true, align: "right" } },
+        { text: c.concessions > 0 ? fmt$(c.sold_price) + "\n−" + fmt$(c.concessions) + " conc." : fmt$(c.sold_price), options: { ...base, bold: true, align: "right", fontSize: c.concessions > 0 ? 9.5 : 10.5 } },
         { text: (c.sqft || 0).toLocaleString(), options: { ...base, align: "right" } },
         { text: "$" + c.ppsf, options: { ...base, align: "right" } },
         { text: fmtAdj(c.net_adjustment), options: { ...base, align: "right", color: (c.net_adjustment || 0) >= 0 ? C.green : C.crimson, bold: true } },
