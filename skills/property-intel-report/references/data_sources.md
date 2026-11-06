@@ -122,6 +122,14 @@ Many county assessor, probate and permit portals refuse `WebFetch` (session toke
 
 The revenue commission's property search (AssuranceWeb, reached from the county's Property Tax Calculator page) works in a browser: search by address, then Details. It shows appraised and assessed value, exemption code, tax district, building sketch areas (living vs adjusted sq ft), exterior and roof materials, year built and remodeled, improvements by year (pools, garages), tax paid by year back to the 1990s, and tax sales. Web search for this portal returns SEO spam; go through the county site.
 
+Deeds, mortgages and liens: the Judge of Probate's records search (Neumo, `baldwin.al.publicsearch.us`, also reached from the parcel page's DEED SEARCH link). What works, tested 2026-11:
+- **Advanced Search, Grantor = current owner name** returns every instrument the owner signed: mortgages, releases, liens. Quick Search by name returns nothing.
+- **Quick Search by document number** works for some numbers and not others; when it fails, open the record from an Advanced Search result instead.
+- The record summary shows type, dates, parties, legal description, marginal references (a later release of a mortgage shows here) and, on deeds and bills of sale, **consideration**. Mortgage amounts are not indexed: read them from page 1 of the document image (the note amount in the Documents section).
+- A Fairhope Single Tax leasehold transfers by **bill of sale**, not deed. The "LEASE IN#" number on the parcel is the colony's lease reference and does not search as a probate document number.
+- Seller equity estimate: newest unreleased mortgage amount, amortized from its note date at a rate labeled est., against the expected price less about 6% selling costs. Say it is an estimate.
+- Permits: the City of Fairhope has no public online permit search found as of 2026-11. Ask the city building department, or ask the seller for permit cards.
+
 ## Source volatility
 
 URLs and portal behavior in this file are point-in-time observations, not durable facts. Before relying on any of them:
