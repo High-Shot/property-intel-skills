@@ -92,7 +92,7 @@ This is a screen, not a valuation, and it no longer gets its own slide: `propert
 
 **Question scripts.** Customize per property. Every script question must reference a fact that actually appears in your research (e.g., "This listing was withdrawn twice before the current cycle — what happened each time?" — not a generic "ask about the listing history"). Before delivery, check each question against the price history and research notes: a question citing a price, date, or event that does not appear in your data is a fabrication, and it will be the first thing the listing agent notices.
 
-**Offer strategy.** Compute the opening offer with the formula in `calculations.md` §7 (not a rule of thumb from memory) and show the arithmetic in the rationale lines. Define three trigger sets: walk-away conditions, reduce-further conditions, go-to-ask conditions.
+**Offer strategy.** Compute the opening offer with the formula in `calculations.md` §7 (not a rule of thumb from memory) and show the arithmetic in the rationale lines. Define three trigger sets: walk-away conditions, reduce-further conditions, go-to-ask conditions. **If the buyer already has an offer out** (they say so, or the cache has `buyer.negotiation`), use negotiating mode instead: the slide shows their net position against the appraisal range, and the triggers become walk away, renegotiate, and close at this price. Never recommend an opening below a price the buyer has already offered.
 
 Save the JSON to `property_data.json` in your working directory.
 

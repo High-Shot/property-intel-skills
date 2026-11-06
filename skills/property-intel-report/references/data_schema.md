@@ -308,6 +308,22 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
     "go_to_ask":      [ "string", "..." ],   // 3-4 items
     "bottom_line": "This is a value play, not a turnkey buy. Buy the lot and the schools — pay accordingly for the house."
   },
+  // Negotiating mode: once the buyer has an offer out, the slide stops recommending an opening and
+  // shows where the deal stands. Set "mode": "negotiating" and add the block below; "opening" is not used.
+  // Triggers relabel to Walk away if / Renegotiate if / Close at this price if (override with trigger_labels).
+  //   "mode": "negotiating",
+  //   "title": "Where the Deal Stands and When to Walk",   // must not say "opening"
+  //   "negotiation": {
+  //     "stage": "offer_out",              // offer_out | countered | under_contract
+  //     "price": 490000, "credits": 5000,  // the buyer's live offer; credits = seller-paid closing costs or repair credit
+  //     "net": 485000,                     // price - credits; checked
+  //     "list_price": 489900,              // optional, shown in the status line
+  //     "seller_counter": null,            // {price, credits} when stage is countered
+  //     "value_ref": {"point": 467000, "low": 434000, "high": 500000, "source": "property-appraisal, Nov 6 2026"},
+  //     "over_range_reason": ""            // required when net > value_ref.high
+  //   }
+  // value_ref is copied from property_facts.json value; the dashboard warns if it differs. Rationale lines
+  // must cite the value point. Mirror price, credits, net, and stage into the cache at buyer.negotiation.
 
   "sources": {
     "title": "Where Every Number Came From",

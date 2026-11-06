@@ -110,7 +110,8 @@
       "key_diffs": "Similar age · smaller lot · original kitchen",
       "net_adjustment": 12000,
       "adjusted_value": 427000,
-      "weight": 0.3
+      "weight": 0.3,
+      "concessions_status": "public_page"
     },
     {
       "address": "456 Placeholder Ln",
@@ -127,7 +128,8 @@
       "key_diffs": "Slightly larger · dated throughout · 1-car garage",
       "net_adjustment": 14000,
       "adjusted_value": 412000,
-      "weight": 0.3
+      "weight": 0.3,
+      "concessions_status": "public_page"
     },
     {
       "address": "321 Specimen Way",
@@ -144,7 +146,9 @@
       "key_diffs": "Larger · renovated baths · pool",
       "net_adjustment": -32000,
       "adjusted_value": 410000,
-      "weight": 0.25
+      "weight": 0.25,
+      "concessions_status": "verified",
+      "concessions_source": "Listing agent's MLS sold sheet: no seller concessions"
     },
     {
       "address": "654 Demonstration Dr",
@@ -161,7 +165,8 @@
       "key_diffs": "9 months old · smaller · similar condition",
       "net_adjustment": 19000,
       "adjusted_value": 404000,
-      "weight": 0.15
+      "weight": 0.15,
+      "concessions_status": "not_stated"
     }
   ],
   "screened_out": [

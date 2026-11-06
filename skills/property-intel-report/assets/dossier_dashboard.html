@@ -266,7 +266,8 @@ var F = /*__DATA__*/null;
   var marks = [];
   if (V) { marks.push([V.low, "Walk-away"]); marks.push([V.point, "Fair value"]); }
   if (list) marks.push([list, "List"]);
-  if (F.buyer && F.buyer.planned_offer && F.buyer.planned_offer >= pMin && F.buyer.planned_offer <= pMax) marks.push([F.buyer.planned_offer, "Your plan"]);
+  if (F.negotiation && F.negotiation.net >= pMin && F.negotiation.net <= pMax) marks.push([F.negotiation.net, "Your net"]);
+  else if (F.buyer && F.buyer.planned_offer && F.buyer.planned_offer >= pMin && F.buyer.planned_offer <= pMax) marks.push([F.buyer.planned_offer, "Your plan"]);
   function drawTicks() {
     var span = pMax - pMin;
     var lastPct = -100, row = 0;

@@ -58,6 +58,23 @@ const D = JSON.parse(fs.readFileSync(inputPath, "utf8"));
   const conf = String(D.value_conclusion?.confidence || "");
   if (nc && nc < 3 && !/low/i.test(conf))
     warn(`only ${nc} comp(s) but confidence is "${conf}" — fewer than 3 usable comps forces Low`);
+  // Concession status: public pages often say nothing, and 0 then is an assumption, not a finding (methodology §2 Step 0).
+  const STAT = ["verified", "public_page", "not_stated"];
+  (D.comps || []).forEach((c, i) => {
+    if (!STAT.includes(c.concessions_status)) warn(`comp ${i + 1} (${c.address}) concessions_status is "${c.concessions_status ?? "missing"}"; use verified (sold sheet, closing statement), public_page (a public page states the amount or none), or not_stated`);
+    if (c.concessions_status === "not_stated" && c.concessions > 0) warn(`comp ${i + 1} has $${c.concessions} concessions but status not_stated; a known amount is verified or public_page`);
+    if (c.concessions_status === "verified" && !c.concessions_source) warn(`comp ${i + 1} concessions are verified but concessions_source is empty`);
+  });
+  const LEVELS = ["low", "medium", "high"];
+  const lvl = t => LEVELS.findIndex(l => new RegExp("^\\s*" + l + "\\b", "i").test(String(t || "")));
+  const unver = (D.comps || []).filter(c => c.concessions_status === "not_stated").reduce((a, c) => a + (c.weight || 0), 0);
+  if (unver > 0.30 + 1e-9) {
+    const before = D.value_conclusion?.confidence_before_concessions;
+    if (lvl(before) < 0) warn(`${Math.round(unver * 100)}% of comp weight has unverified concessions; set value_conclusion.confidence_before_concessions and drop confidence one level`);
+    else if (lvl(conf) !== Math.max(0, lvl(before) - 1))
+      warn(`${Math.round(unver * 100)}% of comp weight has unverified concessions: confidence must be one level below "${before}", but it is "${conf}"`);
+    if (!/concession/i.test(D.value_conclusion?.confidence_reason || "")) warn("confidence_reason must say concessions are unverified on the comps that carry the weight");
+  }
   // Verdict strings are an enum; every field carrying one must match character for character.
   const v1 = D.value_conclusion?.vs_list_verdict, v2 = D.value_vs_price?.verdict_headline;
   if (v1 && v2 && v1 !== v2)
@@ -342,7 +359,11 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
       rows.push([
         { text: c.address + "\n" + (c.key_diffs || ""), options: { ...base, fontSize: 9.5, align: "left" } },
         { text: c.sold_date, options: { ...base, align: "center" } },
-        { text: c.concessions > 0 ? fmt$(c.sold_price) + "\n−" + fmt$(c.concessions) + " conc." : fmt$(c.sold_price), options: { ...base, bold: true, align: "right", fontSize: c.concessions > 0 ? 9.5 : 10.5 } },
+        c.concessions > 0
+          ? { text: fmt$(c.sold_price) + "\n−" + fmt$(c.concessions) + " conc.", options: { ...base, bold: true, align: "right", fontSize: 9.5 } }
+          : c.concessions_status === "not_stated"
+            ? { text: [{ text: fmt$(c.sold_price), options: { bold: true, breakLine: true } }, { text: "conc. unverified", options: { fontSize: 8, color: C.amber, bold: false } }], options: { ...base, align: "right", fontSize: 10.5 } }
+            : { text: fmt$(c.sold_price), options: { ...base, bold: true, align: "right" } },
         { text: (c.sqft || 0).toLocaleString(), options: { ...base, align: "right" } },
         { text: "$" + c.ppsf, options: { ...base, align: "right" } },
         { text: fmtAdj(c.net_adjustment), options: { ...base, align: "right", color: (c.net_adjustment || 0) >= 0 ? C.green : C.crimson, bold: true } },
@@ -364,7 +385,13 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: tblBottom + 0.22, w: 12.13, h: 0.62, fill: { color: "F0F5F8" }, line: { color: C.teal, width: 1 }, rectRadius: 0.06 });
     s.addText([
       { text: "Weighted indicated value (before subject condition adjustments):  ", options: { fontFace: FONT_B, fontSize: 13, color: C.graphite } },
-      { text: fmt$(D.reconciliation.base_indicated_value), options: { fontFace: FONT_H, fontSize: 16, color: C.marine, bold: true } }
+      { text: fmt$(D.reconciliation.base_indicated_value), options: { fontFace: FONT_H, fontSize: 16, color: C.marine, bold: true } },
+      ...(() => {
+        const u = comps.filter(c => c.concessions_status === "not_stated");
+        if (!u.length) return [];
+        const w = Math.round(u.reduce((a, c) => a + (c.weight || 0), 0) * 100);
+        return [{ text: `   Concessions unverified on ${u.length} of ${comps.length} comps (${w}% of weight)`, options: { fontFace: FONT_B, fontSize: 11, color: C.amber } }];
+      })()
     ], { x: 0.9, y: tblBottom + 0.22, w: 11.6, h: 0.62, valign: "middle", margin: 0 });
     // Sources line
     s.addText("Sources: " + comps.map((c, i) => `[${i + 1}] ${c.source}`).join("  ·  "), { x: 0.6, y: tblBottom + 0.94, w: 12.13, h: 0.36, fontFace: FONT_B, fontSize: 8.5, color: C.steel, italic: true, margin: 0 });

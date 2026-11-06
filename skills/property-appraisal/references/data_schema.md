@@ -20,7 +20,9 @@ Mirrors the 9 slides. Fill every field. Numbers are raw (no $ or commas); the bu
     "point_value": 408000,
     "range_low": 390000,
     "range_high": 426000,
-    "confidence": "Medium",                      // High | Medium | Low
+    "confidence": "Medium",
+    "confidence_before_concessions": "High",   // required when not_stated comps carry > 30% of weight;
+                                                 // confidence must then be exactly one level lower (Low stays Low)                      // High | Medium | Low
     "confidence_reason": "4 comps, 3 Tier 1, one 9 months old; buyer walked the property.",
     "vs_list_verdict": "Priced above value",     // one of the four verdicts in methodology §8
     "vs_list_detail": "List is $17K (4.2%) above the indicated point value."
@@ -46,7 +48,10 @@ Mirrors the 9 slides. Fill every field. Numbers are raw (no $ or commas); the bu
       "sold_price": 415000,                      // headline sold price
       "concessions": 0,                          // seller concessions in dollars; 0 = checked, none found.
                                                  // Omit only if unchecked (the builder warns).
-      "concessions_source": "",                  // required when concessions > 0: MLS remarks, sold sheet, closing statement
+      "concessions_source": "",                  // required when concessions > 0 or status verified: MLS remarks, sold sheet, closing statement
+      "concessions_status": "public_page",       // verified (agent's MLS sold sheet or closing statement) | public_page (a public
+                                                 // sold page states the amount, or states none) | not_stated (pages are silent;
+                                                 // concessions 0 is an assumption). Grid tags not_stated "conc. unverified".
       "sqft": 2280,
       "ppsf": 182,                               // (sold_price - concessions) / sqft, rounded
       "distance_mi": 0.4,

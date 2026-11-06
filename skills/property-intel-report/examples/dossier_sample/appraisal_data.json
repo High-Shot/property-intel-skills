@@ -119,7 +119,8 @@
       "key_diffs": "2013 · 241 sf smaller · sold as-is",
       "net_adjustment": -10700,
       "adjusted_value": 464300,
-      "weight": 0.3
+      "weight": 0.3,
+      "concessions_status": "public_page"
     },
     {
       "address": "305 Sample Magnolia Ct",
@@ -136,7 +137,8 @@
       "key_diffs": "2013 · larger · kitchen 2023, en-suite 2024",
       "net_adjustment": -68000,
       "adjusted_value": 433500,
-      "weight": 0.2
+      "weight": 0.2,
+      "concessions_status": "public_page"
     },
     {
       "address": "48 Placeholder Royal Way",
@@ -153,7 +155,8 @@
       "key_diffs": "2010 · updated finishes · generator",
       "net_adjustment": -40200,
       "adjusted_value": 494800,
-      "weight": 0.25
+      "weight": 0.25,
+      "concessions_status": "public_page"
     },
     {
       "address": "21 Placeholder Royal Way",
@@ -170,7 +173,8 @@
       "key_diffs": "2003 · 3-car · bonus room · 11.6 mo old",
       "net_adjustment": -21500,
       "adjusted_value": 528500,
-      "weight": 0.15
+      "weight": 0.15,
+      "concessions_status": "public_page"
     },
     {
       "address": "900 Example Links Dr",
@@ -187,7 +191,8 @@
       "key_diffs": "2010 · same size · 3 bed · generator",
       "net_adjustment": -20200,
       "adjusted_value": 472800,
-      "weight": 0.1
+      "weight": 0.1,
+      "concessions_status": "not_stated"
     }
   ],
   "screened_out": [

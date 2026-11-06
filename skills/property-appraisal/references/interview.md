@@ -1,6 +1,6 @@
 # The Buyer Interview (one batch)
 
-Asked after research, before synthesis. One message, all questions at once, numbered so the buyer can answer inline. Q0 decides the set: buyers who have **not** walked it get the listing set (5 questions max, all answerable from listing photos and remarks); buyers who **have** walked it get the walkthrough set (up to 6, repairs by area with counts). Cut anything research or the conversation already answered and say which ones you cut and why ("the listing says new HVAC — skipping that question").
+Asked after research, before synthesis. One message, all questions at once, numbered so the buyer can answer inline. Q0 decides the set: buyers who have **not** walked it get the listing set (6 questions max with Q5, all answerable from listing photos and remarks); buyers who **have** walked it get the walkthrough set (up to 7 with Q5, repairs by area with counts). Cut anything research or the conversation already answered and say which ones you cut and why ("the listing says new HVAC — skipping that question").
 
 ## Phrasing rules
 
@@ -17,6 +17,7 @@ Asked after research, before synthesis. One message, all questions at once, numb
 **Q2. Flooring in the main living areas — type, and any visible wear?**
 **Q3. Anything that gave you pause — defects in the photos or remarks, a busy road, neighbors, drainage?**
 **Q4 (only if research did not answer it): Roof, HVAC, or water heater age, if you know it?**
+**Q5 (whenever a carried comp is `not_stated`): Can your agent send the MLS sold sheets for these comps: [addresses]?** Public pages don't show their seller concessions. Asked in both sets and counts toward the cap. A sold sheet is tier 1 and sets `concessions_status: "verified"`. No agent, or no answer: build with `not_stated`, apply the confidence rule in methodology §2, and list the addresses in the caveats so the buyer can ask later.
 
 ### Walkthrough set (buyer has walked it)
 

@@ -101,6 +101,15 @@ def slide_text(p, idx):
     return [sh.text_frame.text for sh in p.slides[idx].shapes if sh.has_text_frame]
 
 
+def all_text(p, idx):
+    out_ = []
+    for sh in p.slides[idx].shapes:
+        if sh.has_text_frame: out_.append(sh.text_frame.text)
+        if getattr(sh, "has_table", False) and sh.has_table:
+            out_ += [c.text for r in sh.table.rows for c in r.cells]
+    return " | ".join(out_)
+
+
 def check_pdf_pages(name, path, want):
     try:
         from pypdf import PdfReader
@@ -296,6 +305,53 @@ expect_warn("dashboard note that never states the appraisal point", node(ID, dum
 if os.path.exists(COMPARE):
     f = load(DF); f["address"].update({k: load(CREEK)["address"][k] for k in ("street", "zip")})
     expect_warn("compare with two caches for the same address", node(COMPARE, dump(f, "n14.json"), CREEK, "-o", out("n14.html"), "--today", TODAY), r"same (house|address)")
+
+# ========== v1.3: negotiating mode and concession status ==========
+def negotiating(d, f, net_over=0):
+    v = f["value"]; price = v["point"] + 20000 + net_over
+    d["offer"] = {
+        "mode": "negotiating", "title": "Where the Deal Stands and When to Walk",
+        "negotiation": {"stage": "offer_out", "price": price, "credits": 5000, "net": price - 5000,
+                        "list_price": price + 10000,
+                        "value_ref": {k: v[k] for k in ("point", "low", "high")} | {"source": "property-appraisal"}},
+        "rationale_lines": [f"Appraisal point ${round(v['point'] / 1000)}K, range ${round(v['low'] / 1000)}K-${round(v['high'] / 1000)}K.",
+                            "Net is over the point; the permits decide it."],
+        "walk_away": ["a", "b"], "reduce_further": ["c"], "go_to_ask": ["d"],
+        "bottom_line": "Net sits inside the range, over the point."}
+    return d
+f = load(DF); d = negotiating(load(DP), f)
+f["buyer"] = dict(f.get("buyer") or {}, negotiation={"stage": "offer_out", "price": d["offer"]["negotiation"]["price"], "credits": 5000, "net": d["offer"]["negotiation"]["net"], "as_of": TODAY})
+if build_clean("intel deck: negotiating mode", node(IB, dump(d, "neg_ok.json"), out("neg_ok.pptx"))):
+    p_ = check_pptx("intel negotiating", out("neg_ok.pptx"), 16)
+    if p_ is not None:
+        t = all_text(p_, 14)
+        record("intel negotiating slide shows the net position and relabeled triggers",
+               "net" in t and "Renegotiate if" in t and "Recommended opening" not in t, t[:300])
+if build_clean("dashboard: negotiating intel, cache buyer.negotiation (strict)",
+               node(ID, dump(f, "neg_f.json"), out("neg_dash.html"), "--appraisal", DA, "--insurance", DI, "--intel", dump(d, "neg_ok2.json"), "--strict", "--today", TODAY)):
+    record("dashboard slider marks the buyer's net", "Your net" in open(out("neg_dash.html")).read())
+d2 = load(dump(d, "x.json")); d2["offer"]["negotiation"]["net"] += 3000
+expect_warn("intel negotiating net that is not price minus credits", node(IB, dump(d2, "n30.json"), out("n30.pptx")), r"should be price")
+d2 = negotiating(load(DP), f, net_over=200000)
+expect_warn("intel net above the value range with no reason", node(IB, dump(d2, "n31.json"), out("n31.pptx")), r"above the value range high")
+d2 = load(dump(d, "x.json")); d2["offer"]["title"] = "Opening Offer and Walk-Away Triggers"
+expect_warn("intel negotiating slide titled as an opening", node(IB, dump(d2, "n32.json"), out("n32.pptx")), r"says opening")
+d2 = load(dump(d, "x.json")); d2["offer"]["negotiation"]["value_ref"]["point"] -= 10000
+expect_warn("dashboard negotiation value_ref drift vs appraisal",
+            node(ID, dump(f, "n33f.json"), out("n33.html"), "--intel", dump(d2, "n33.json"), "--today", TODAY), r"value_ref\.point")
+a = load(DA); a["comps"][2].pop("concessions_status")
+expect_warn("appraisal comp with no concessions_status", node(AB, dump(a, "n34.json"), out("n34.pptx")), r"concessions_status is \"missing\"")
+a = load(DA)
+for c in a["comps"][:3]: c["concessions_status"] = "not_stated"
+expect_warn("appraisal unverified concessions over 30% with no confidence drop", node(AB, dump(a, "n35.json"), out("n35.pptx")), r"confidence_before_concessions")
+a["value_conclusion"]["confidence_before_concessions"] = "High"
+a["value_conclusion"]["confidence"] = "Medium"
+a["value_conclusion"]["confidence_reason"] = a["value_conclusion"]["confidence_reason"] + " Concessions unverified on 3 comps."
+if build_clean("appraisal deck: unverified concessions with the one-level drop", node(AB, dump(a, "a_unver.pptx.json"), out("a_unver.pptx"))):
+    p_ = check_pptx("appraisal unverified", out("a_unver.pptx"), 9)
+    if p_ is not None:
+        t = all_text(p_, 3)
+        record("appraisal grid tags unverified concessions", "conc. unverified" in t and "of weight" in t, t[:300])
 
 # ========== hygiene: no real identifiers in shipped examples ==========
 ex_text = ""

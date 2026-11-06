@@ -149,6 +149,8 @@ That is 6% to 10% below the fair-value high. Round to nearest $5K. Always expres
 
 Example, continuing §5: implied fair value high of $449K → $449K × 0.90 = $404K, × 0.94 = $422K → opening offer **$405K–$420K** after rounding. Show this arithmetic in the deck's rationale lines.
 
+**Already negotiating.** If the buyer has an offer out, skip this formula: the opening is history. Use `offer.mode: "negotiating"` (data_schema.md) and put the buyer's net position (price minus credits) against the appraisal range. One rationale line states the gap to the point in dollars and percent ("$485K net is $18K, 3.9%, over the $467K point"); the triggers say what would make that number fair, what would reopen it, and what ends the deal.
+
 This is mechanical, not strategic. Adjust upward if competing offers are likely; adjust downward if condition issues are surfaced or the listing has been on market 60+ days with multiple cuts.
 
 ## 8. Time-on-market stress signal

@@ -154,7 +154,15 @@ if (opt.intel) {
       warn(`intel carry insurance $${intelIns}/mo is more than $75/mo outside the insurance brief range $${Math.round(srcLo)}-$${Math.round(srcHi)}/mo; update the intel carry slide to cite the brief`);
   }
   // Ownership: the appraisal owns value. The intel offer cites it and opens at or below it unless it says why.
-  if (F.value) {
+  const NEG = PD.offer?.mode === "negotiating" ? PD.offer.negotiation : null;
+  if (F.value && NEG) {
+    const V = NEG.value_ref || {};
+    ["point", "low", "high"].forEach(k => { if (V[k] !== F.value[k]) warn(`intel negotiation value_ref.${k} ${V[k]} != appraisal ${k} ${F.value[k]}; the appraisal owns value`); });
+    if (NEG.net > F.value.high && !NEG.over_range_reason) warn(`intel net position $${NEG.net.toLocaleString()} is above the appraisal high $${F.value.high.toLocaleString()} with no stated reason`);
+    const bn = PF.buyer?.negotiation;
+    if (bn && bn.net !== NEG.net) warn(`cache buyer.negotiation.net ${bn.net} != intel offer.negotiation.net ${NEG.net}`);
+  }
+  if (F.value && !NEG) {
     const nums = String(PD.offer?.opening || "").match(/\$?\s*(\d{3})\s*K|\$\s*([\d,]{6,})/gi) || [];
     const vals = nums.map(t => /k/i.test(t) ? Number(t.replace(/[^\d]/g, "")) * 1000 : Number(t.replace(/[^\d]/g, "")));
     const openHi = vals.length ? Math.max(...vals) : null;

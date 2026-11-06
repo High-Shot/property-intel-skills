@@ -81,7 +81,7 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
   },
 
   "comps": [
-    {"address": "", "sold_price": 0, "concessions": 0, "sold_date": "", "sqft": 0,
+    {"address": "", "sold_price": 0, "concessions": 0, "concessions_status": "public_page", "sold_date": "", "sqft": 0,
      "psf": 0, "lot_acres": 0, "year_built": 0, "beds": 0, "baths": 0,
      "distance_mi": 0, "lat": null, "lng": null,
      "source": "", "tier": 1, "notes": ""}
@@ -130,6 +130,8 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
 
   "buyer": {
     "financing": {"loan_type": "fha | conv", "down_pct": 0, "planned_offer": null},
+    "negotiation": null,          // once an offer is out: {"stage": "offer_out | countered | under_contract",
+                                  //   "price": 0, "credits": 0, "net": 0, "as_of": ""}; written by property-intel-report
     "insurance_intake": {"occupancy": "primary", "prior_claims_5yr": null, "dogs": "",
                          "trampoline": false, "mortgaged": true, "home_business": false}
   },
@@ -164,6 +166,7 @@ The dossier dashboard (`property-intel-report` Stage 5) reads only this cache. E
 | `market.fha_loan_limit` | `property-intel-report` | FHA county-limit check in the carry and repair panels |
 | `repairs.*` | `property-appraisal` | Repair panel: minimum vs full scope, upgrades, 203(k) Limited fit, financed-repair carry. Written only when the buyer walked it |
 | `buyer.financing` | `property-intel-report` (from the conversation) | Default loan type, down payment, and a "your plan" mark on the price slider. Omit when the buyer has not said |
+| `buyer.negotiation` | `property-intel-report` (from the conversation) | The live offer: net position on the intel offer slide and a "your net" mark on the dashboard slider. The appraisal's value-vs-price verdict compares value to this net when present |
 | `dossier.note` | `property-intel-report` Stage 5 | The reconciliation note, rendered at the top of the dashboard |
 
 A missing field shows as a notice in its panel, never as a guess.

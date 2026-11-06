@@ -159,6 +159,29 @@ const D = JSON.parse(fs.readFileSync(inputPath, "utf8"));
   cap("climate.site", site, 6);
   site.forEach(r => { if (!r.source) warn(`climate.site "${r.label}" has no source`); });
 
+  // 12. Offer mode (slide 15). "opening" recommends a first offer; "negotiating" shows where a live deal stands.
+  const O = D.offer || {}, mode = O.mode || "opening";
+  if (!["opening", "negotiating"].includes(mode)) warn(`offer.mode "${mode}" must be opening or negotiating`);
+  if (mode === "opening" && O.negotiation) warn("offer.negotiation is set but offer.mode is opening; set mode negotiating once an offer is out");
+  if (mode === "negotiating") {
+    const N = O.negotiation;
+    if (!N) warn("offer.mode is negotiating but offer.negotiation is missing");
+    else {
+      if (!["offer_out", "countered", "under_contract"].includes(N.stage)) warn(`offer.negotiation.stage "${N.stage}" must be offer_out, countered, or under_contract`);
+      const net = Number(N.price) - Number(N.credits || 0);
+      if (Math.abs(net - Number(N.net)) > 1) warn(`offer.negotiation.net ${N.net} should be price ${N.price} - credits ${N.credits || 0} = ${net}`);
+      const V = N.value_ref || {};
+      if (!(V.low <= V.point && V.point <= V.high)) warn("offer.negotiation.value_ref needs low <= point <= high from property-appraisal (or the comp screen, labeled)");
+      else {
+        if (N.net > V.high && !N.over_range_reason) warn(`net $${N.net} is above the value range high $${V.high}; set over_range_reason or walk it back`);
+        const pk = "$" + Math.round(V.point / 1000) + "K";
+        if (!(O.rationale_lines || []).some(l => l.includes(pk) || l.includes(V.point.toLocaleString()))) warn(`negotiating rationale must cite the value point ${pk}`);
+      }
+      if (N.seller_counter && N.stage !== "countered") warn("offer.negotiation.seller_counter is set but stage is not countered");
+      if (/opening/i.test(O.title || "")) warn("offer.title says opening, but the deal is past the opening offer");
+    }
+  }
+
   if (n) console.warn(`WARN: ${n} validation issue(s). Fix before delivery.`);
 })();
 
@@ -902,22 +925,50 @@ function fmt$(n) {
       x: 0.85, y: 0.9, w: 12, h: 0.7, fontFace: FONT_H, fontSize: 28, color: C.white, bold: true, margin: 0
     });
 
-    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 2.0, w: 12.2, h: 1.55, fill: { color: C.panel }, line: { color: C.coral, width: 1.5 } });
-    s.addText("RECOMMENDED OPENING OFFER", { x: 0.85, y: 2.15, w: 7, h: 0.32, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: true, charSpacing: 4, margin: 0 });
-    s.addText(D.offer.opening, { x: 0.85, y: 2.5, w: 7, h: 1.0, fontFace: FONT_H, fontSize: 48, color: C.coral, bold: true, margin: 0 });
+    const NEG = (D.offer.mode === "negotiating") && D.offer.negotiation;
+    const panelH = NEG ? 1.95 : 1.55;
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 2.0, w: 12.2, h: panelH, fill: { color: C.panel }, line: { color: C.coral, width: 1.5 } });
+    if (!NEG) {
+      s.addText("RECOMMENDED OPENING OFFER", { x: 0.85, y: 2.15, w: 7, h: 0.32, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: true, charSpacing: 4, margin: 0 });
+      s.addText(D.offer.opening, { x: 0.85, y: 2.5, w: 7, h: 1.0, fontFace: FONT_H, fontSize: 48, color: C.coral, bold: true, margin: 0 });
+    } else {
+      // Live deal: the buyer's net position against the appraisal range. Value is the appraisal's; the position is the buyer's.
+      const N = D.offer.negotiation, V = N.value_ref;
+      const k = v => "$" + Math.round(v / 1000) + "K";
+      const stageTxt = { offer_out: "Offer out", countered: "Seller countered", under_contract: "Under contract" }[N.stage] || "In negotiation";
+      let deal = `${stageTxt}: ${fmt$(N.price)}` + (N.credits ? ` with ${fmt$(N.credits)} back` : "");
+      if (N.seller_counter) deal += `. Counter ${fmt$(N.seller_counter.price)}` + (N.seller_counter.credits ? ` with ${fmt$(N.seller_counter.credits)} back` : "");
+      if (N.list_price) deal += `. List ${fmt$(N.list_price)}`;
+      s.addText("WHERE THE DEAL STANDS", { x: 0.85, y: 2.12, w: 7, h: 0.28, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: true, margin: 0 });
+      s.addText(deal + ".", { x: 0.85, y: 2.4, w: 7.1, h: 0.28, fontFace: FONT_B, fontSize: 12, color: "B8C9D6", margin: 0 });
+      s.addText(k(N.net) + " net", { x: 0.85, y: 2.7, w: 4, h: 0.62, fontFace: FONT_H, fontSize: 38, color: C.coral, margin: 0 });
+      const bx = 0.85, bw = 6.9, by = 3.62;
+      const lo = Math.min(V.low, N.net) - 5000, hi = Math.max(V.high, N.net) + 5000;
+      const X = v => bx + (v - lo) / (hi - lo) * bw;
+      s.addShape(pres.shapes.RECTANGLE, { x: bx, y: by, w: bw, h: 0.04, fill: { color: "1B4366" }, line: { color: "1B4366" } });
+      s.addShape(pres.shapes.RECTANGLE, { x: X(V.low), y: by - 0.03, w: X(V.high) - X(V.low), h: 0.1, fill: { color: "8FA9C0" }, line: { color: "8FA9C0" } });
+      s.addShape(pres.shapes.RECTANGLE, { x: X(V.point) - 0.015, y: by - 0.09, w: 0.03, h: 0.22, fill: { color: C.white }, line: { color: C.white } });
+      s.addShape(pres.shapes.OVAL, { x: X(N.net) - 0.08, y: by - 0.06, w: 0.16, h: 0.16, fill: { color: C.coral }, line: { color: C.coral } });
+      const lab = (v, t, y, color, bold) => s.addText(t, { x: Math.min(Math.max(X(v) - 0.7, bx - 0.1), bx + bw - 1.3), y, w: 1.4, h: 0.18, fontFace: FONT_B, fontSize: 9, color, bold: !!bold, align: "center", margin: 0 });
+      lab(V.low, "Low " + k(V.low), by + 0.14, "8FA9C0");
+      lab(V.high, "High " + k(V.high), by + 0.14, "8FA9C0");
+      lab(V.point, "Value " + k(V.point), by + 0.14, C.white);
+      lab(N.net, "You " + k(N.net), by - 0.26, C.coral, true);
+    }
     (D.offer.rationale_lines || []).forEach((line, i) => {
       s.addText(line, { x: 8.2, y: 2.4 + i * 0.3, w: 4.5, h: 0.4, fontFace: FONT_B, fontSize: 12, color: "B8C9D6", italic: true, margin: 0 });
     });
 
+    const L = D.offer.trigger_labels || (NEG ? ["WALK AWAY IF", "RENEGOTIATE IF", "CLOSE AT THIS PRICE IF"] : ["WALK AWAY IF", "REDUCE FURTHER IF", "GO TO ASK IF"]);
     const triggers = [
-      { color: C.crimson, label: "WALK AWAY IF", items: D.offer.walk_away },
-      { color: C.amber, label: "REDUCE FURTHER IF", items: D.offer.reduce_further },
-      { color: C.green, label: "GO TO ASK IF", items: D.offer.go_to_ask }
+      { color: C.crimson, label: L[0], items: D.offer.walk_away },
+      { color: C.amber, label: L[1], items: D.offer.reduce_further },
+      { color: C.green, label: L[2], items: D.offer.go_to_ask }
     ];
-    const cardW = 4.0, cardH = 3.3;
+    const cardW = 4.0, cardH = NEG ? 2.85 : 3.3;
     triggers.forEach((t, i) => {
       const x = 0.6 + i * (cardW + 0.15);
-      const y = 3.85;
+      const y = NEG ? 4.1 : 3.85;
       s.addShape(pres.shapes.RECTANGLE, { x, y, w: cardW, h: cardH, fill: { color: C.panel }, line: { color: t.color, width: 1 } });
       s.addShape(pres.shapes.RECTANGLE, { x, y, w: cardW, h: 0.08, fill: { color: t.color }, line: { color: t.color } });
       s.addText(t.label, { x: x + 0.25, y: y + 0.25, w: cardW - 0.4, h: 0.4, fontFace: FONT_B, fontSize: 13, color: t.color, bold: true, charSpacing: 4, margin: 0 });

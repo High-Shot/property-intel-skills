@@ -36,6 +36,7 @@ function mapFacts(PF, opt) {
     k203: K203,
     repairs: PF.repairs && Array.isArray(PF.repairs.items) && PF.repairs.items.length ? PF.repairs : null,
     buyer: PF.buyer && PF.buyer.financing ? PF.buyer.financing : null,
+    negotiation: PF.buyer && PF.buyer.negotiation && num(PF.buyer.negotiation.net) ? PF.buyer.negotiation : null,
     note: PF.dossier && PF.dossier.note && PF.dossier.note.headline ? PF.dossier.note : null,
     sources: Object.entries(PF.provenance || {}).map(([k, v]) =>
       `${k}: ${v.source}${v.tier ? ` (Tier ${v.tier})` : ""}${v.retrieved ? `, retrieved ${v.retrieved}` : ""}`)
