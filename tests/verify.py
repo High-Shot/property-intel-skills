@@ -293,6 +293,13 @@ for base, _, files in os.walk(SK):
 leaks = re.findall(r"\b\d{3}-\d{3}-\d{4}\b|spokeo|beenverified|truepeoplesearch|BCAR \d{6}|redfin\.com/AL/[^\"]+/home/\d+", ex_text, re.I)
 record("hygiene: no phone numbers, aggregators, MLS numbers, or listing URLs in examples", not leaks, ", ".join(sorted(set(leaks))[:5]))
 
+# ========== hygiene: SKILL.md frontmatter fits the upload limits ==========
+for sk in ("property-intel-report", "property-appraisal", "property-insurance-brief"):
+    fm = open(os.path.join(SK, sk, "SKILL.md")).read().split("---")[1]
+    m = re.search(r'^description:\s*"?(.*?)"?\s*$', fm, re.M)
+    n = len(m.group(1)) if m else 0
+    record(f"frontmatter: {sk} description 1-1024 chars", 0 < n <= 1024, f"{n} chars")
+
 # ========== summary ==========
 failed = [r for r in results if not r[1]]
 print(f"\n{len(results) - len(failed)}/{len(results)} checks passed" + (f"; {len(failed)} failed" if failed else ""))
