@@ -199,7 +199,7 @@ function renderIconSvg(IconComponent, color = "#000000", size = 256) {
 async function icon(iconName, colorName) {
   const Component = FA[iconName];
   if (!Component) throw new Error("Unknown icon: " + iconName);
-  const svg = renderIconSvg(Component, "#" + cx(colorName));
+  const svg = renderIconSvg(Component, "#" + C.steel); // one icon color; meaning lives in text and dots
   const png = await sharp(Buffer.from(svg)).png().toBuffer();
   return "image/png;base64," + png.toString("base64");
 }
@@ -207,8 +207,9 @@ const sh = () => ({ type: "outer", blur: 8, offset: 2, angle: 90, color: "000000
 const shStrong = () => ({ type: "outer", blur: 14, offset: 4, angle: 90, color: "000000", opacity: 0.20 });
 
 function header(s, pres, eyebrow, title, subtitle, accentColor = C.coral) {
-  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.4, w: 0.08, h: 0.95, fill: { color: accentColor }, line: { color: accentColor } });
-  s.addText(eyebrow, { x: 0.85, y: 0.4, w: 10, h: 0.3, fontFace: FONT_B, fontSize: 12, color: accentColor, bold: true, charSpacing: 5, margin: 0 });
+  accentColor = C.marine; // chrome is ink; color is saved for the moment
+  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.4, w: 0.04, h: 0.95, fill: { color: accentColor }, line: { color: accentColor } });
+  s.addText(eyebrow, { x: 0.85, y: 0.4, w: 10, h: 0.3, fontFace: FONT_B, fontSize: 12, color: C.steel, bold: false, charSpacing: 5, margin: 0 });
   s.addText(title, { x: 0.85, y: 0.7, w: 12.2, h: 0.7, fontFace: FONT_H, fontSize: 28, color: C.marine, bold: true, margin: 0 });
   if (subtitle) {
     s.addText(subtitle, { x: 0.85, y: 1.45, w: 11.8, h: 0.65, fontFace: FONT_B, fontSize: 13, color: C.graphite, italic: true, margin: 0 });
@@ -224,6 +225,50 @@ function fmt$(n) {
 (async () => {
   const pres = new pptxgen();
   pres.layout = "LAYOUT_WIDE";
+  // ===== STYLE LAYER =====
+  // Quiet chrome across every slide: sentence case instead of tracked caps, no drop shadows,
+  // regular-weight serif, no italic emphasis. Color is reserved for the slide's one moment and
+  // for meaning (good / caution / bad); chrome is marine ink and grey hairlines.
+  const ACRO = new Set(["FEMA","HVAC","PMI","MIP","AOP","NFIP","AVM","AVMS","HOA","ZIP","FHA","CLUE","ISO","PPC","EPA","MLS","RC","ACV","RCV","DOI","ALDOI","AL","US","USPAP","FORTIFIED","AIUA","MSC","GIS","DOT","SFHA","BFE","LTV","PMMS","FRED","ADOR","IBHS","HO","HO3","II","III","IV","GLA","CMA","AC","EST","NWI","USDA","USGS","NOAA","SLOSH","FST","R-2","PI","YOY","K","SF","SQFT"]);
+  function sentenceCase(t) {
+    if (typeof t !== "string" || /[a-z]/.test(t) || !/[A-Z][A-Z]/.test(t)) return t;
+    let first = true;
+    return t.replace(/[A-Za-z][A-Za-z0-9'’.\-]*/g, w => {
+      const bare = w.replace(/[.\-]+$/, "");
+      let out;
+      if (bare === "COV") out = "Cov";
+      else if (ACRO.has(bare.toUpperCase().replace(/[.'’]/g, "")) || /\d/.test(w) || (w.length === 1 && w !== "A")) out = w;
+      else out = w.toLowerCase();
+      if (/^(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)$/i.test(bare)) out = bare.charAt(0).toUpperCase() + bare.slice(1).toLowerCase() + w.slice(bare.length);
+      if (first) { out = out.charAt(0).toUpperCase() + out.slice(1); first = false; }
+      return out;
+    });
+  }
+  const quiet = o => {
+    const q = { ...(o || {}) };
+    delete q.charSpacing; delete q.shadow;
+    if (q.fontFace === FONT_H) q.bold = false;
+    if (q.italic) q.italic = false;
+    return q;
+  };
+  const _addSlide = pres.addSlide.bind(pres);
+  pres.addSlide = (...args) => {
+    const s = _addSlide(...args);
+    const at = s.addText.bind(s), as = s.addShape.bind(s), atb = s.addTable.bind(s);
+    s.addText = (text, opts) => {
+      const t = Array.isArray(text) ? text.map(r => ({ ...r, text: sentenceCase(r.text), options: quiet(r.options) })) : sentenceCase(text);
+      return at(t, quiet(opts));
+    };
+    s.addShape = (shape, opts) => as(shape, quiet(opts));
+    s.addTable = (rows, opts) => atb(rows.map(r => r.map(c => (c && typeof c === "object" && "text" in c) ? { ...c, text: sentenceCase(c.text), options: quiet(c.options) } : sentenceCase(c))), opts);
+    return s;
+  };
+  // Small mono source tag: the family's signature. Every key figure says where it came from.
+  const FONT_M = "Consolas";
+  function srcTag(s, text, x, y, w, dark = false) {
+    if (!text) return;
+    s.addText(text, { x, y, w, h: 0.2, fontFace: FONT_M, fontSize: 8, color: dark ? "8FA9C0" : "64748B", margin: 0, align: "left", valign: "middle" });
+  }
   pres.author = "Property Intelligence Report";
   pres.title = `${D.property.address} — Buyer Intelligence Report`;
 
@@ -241,10 +286,10 @@ function fmt$(n) {
   {
     const s = pres.addSlide();
     s.background = { color: C.marine };
-    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 1.6, w: 0.08, h: 4.3, fill: { color: C.coral }, line: { color: C.coral } });
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 1.6, w: 0.04, h: 4.3, fill: { color: "1B4366" }, line: { color: "1B4366" } });
     s.addText(D.title.eyebrow || "PROPERTY INTELLIGENCE REPORT", {
       x: 0.85, y: 1.55, w: 10, h: 0.4,
-      fontFace: FONT_B, fontSize: 14, color: C.coral, bold: true, charSpacing: 6, margin: 0
+      fontFace: FONT_B, fontSize: 14, color: "8FA9C0", bold: false, margin: 0
     });
     s.addText(D.property.address, {
       x: 0.85, y: 2.05, w: 12, h: 1.2,
@@ -259,13 +304,13 @@ function fmt$(n) {
       fontFace: FONT_B, fontSize: 16, color: "CDD7DE", margin: 0
     });
     if (D.title.status_tag) {
-      s.addShape(pres.shapes.RECTANGLE, { x: 0.85, y: 5.85, w: 4.5, h: 0.55, fill: { color: C.coral }, line: { color: C.coral } });
+      s.addShape(pres.shapes.RECTANGLE, { x: 0.85, y: 5.85, w: 4.5, h: 0.55, fill: { color: C.panel }, line: { color: "1B4366", width: 0.75 } });
       s.addText(D.title.status_tag, {
         x: 0.85, y: 5.85, w: 4.5, h: 0.55,
         fontFace: FONT_B, fontSize: 12, color: C.white, bold: true, charSpacing: 5, align: "center", valign: "middle", margin: 0
       });
     }
-    s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 6.8, w: W, h: 0.05, fill: { color: C.coral }, line: { color: C.coral } });
+    s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 6.8, w: W, h: 0.01, fill: { color: "1B4366" }, line: { color: "1B4366" } });
     s.addText(D.title.prepared_label || "PREPARED " + new Date().toLocaleString("en-US", { month: "long", year: "numeric" }).toUpperCase(), {
       x: 0.85, y: 6.95, w: 5, h: 0.4,
       fontFace: FONT_B, fontSize: 11, color: "8FA0AE", bold: true, charSpacing: 4, margin: 0
@@ -283,8 +328,8 @@ function fmt$(n) {
   {
     const s = pres.addSlide();
     s.background = { color: C.white };
-    s.addText("EXECUTIVE SUMMARY", { x: 0.6, y: 0.4, w: 8, h: 0.35, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 5, margin: 0 });
-    s.addText(D.exec_summary.headline || "The Good. The Bad. The Ugly.", {
+    s.addText("EXECUTIVE SUMMARY", { x: 0.6, y: 0.4, w: 8, h: 0.35, fontFace: FONT_B, fontSize: 12, color: C.steel, bold: false, charSpacing: 5, margin: 0 });
+    s.addText(D.exec_summary.headline || "Strengths, Problems, and Deal Risks", {
       x: 0.6, y: 0.75, w: 12, h: 0.7, fontFace: FONT_H, fontSize: 32, color: C.marine, bold: true, margin: 0
     });
 
@@ -293,9 +338,9 @@ function fmt$(n) {
     const iX = await getIcon("FaTimesCircle", "crimson");
 
     const cols = [
-      { x: 0.6, color: C.green, ic: iCheck, label: "THE GOOD", items: D.exec_summary.good },
-      { x: 4.85, color: C.amber, ic: iWarn, label: "THE BAD", items: D.exec_summary.bad },
-      { x: 9.1, color: C.crimson, ic: iX, label: "THE UGLY", items: D.exec_summary.ugly }
+      { x: 0.6, color: C.green, ic: iCheck, label: "Strengths", items: D.exec_summary.good },
+      { x: 4.85, color: C.amber, ic: iWarn, label: "Problems", items: D.exec_summary.bad },
+      { x: 9.1, color: C.crimson, ic: iX, label: "Deal risks", items: D.exec_summary.ugly }
     ];
     cols.forEach(col => {
       s.addShape(pres.shapes.RECTANGLE, { x: col.x, y: 1.7, w: 4.0, h: 5.55, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, shadow: sh() });
@@ -315,8 +360,8 @@ function fmt$(n) {
   {
     const s = pres.addSlide();
     s.background = { color: C.white };
-    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.4, w: 0.08, h: 0.95, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText("AT A GLANCE", { x: 0.85, y: 0.4, w: 8, h: 0.3, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 5, margin: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.4, w: 0.04, h: 0.95, fill: { color: C.marine }, line: { color: C.marine } });
+    s.addText("AT A GLANCE", { x: 0.85, y: 0.4, w: 8, h: 0.3, fontFace: FONT_B, fontSize: 12, color: C.steel, bold: false, charSpacing: 5, margin: 0 });
     s.addText(D.at_a_glance.title || "The Property in Numbers", {
       x: 0.85, y: 0.7, w: 12, h: 0.7, fontFace: FONT_H, fontSize: 30, color: C.marine, bold: true, margin: 0
     });
@@ -326,12 +371,13 @@ function fmt$(n) {
       const col = i % 3, row = Math.floor(i / 3);
       const x = 0.6 + col * (cardW + 0.18);
       const y = 1.85 + row * (cardH + 0.2);
-      const color = cx(st.color || (i % 3 === 0 ? "coral" : i % 3 === 1 ? "teal" : "green"));
+      const color = C.marine; // stat cards are ink; the figure carries the weight
       s.addShape(pres.shapes.RECTANGLE, { x, y, w: cardW, h: cardH, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, shadow: sh() });
-      s.addShape(pres.shapes.RECTANGLE, { x, y, w: 0.08, h: cardH, fill: { color }, line: { color } });
+      s.addShape(pres.shapes.RECTANGLE, { x, y, w: 0.04, h: cardH, fill: { color }, line: { color } });
       s.addText(st.big, { x: x + 0.3, y: y + 0.25, w: cardW - 0.4, h: 1.1, fontFace: FONT_H, fontSize: 44, color: C.marine, bold: true, margin: 0 });
       s.addText(st.label, { x: x + 0.3, y: y + 1.4, w: cardW - 0.4, h: 0.32, fontFace: FONT_B, fontSize: 11, color, bold: true, charSpacing: 4, margin: 0 });
-      s.addText(st.sub, { x: x + 0.3, y: y + 1.75, w: cardW - 0.4, h: 0.55, fontFace: FONT_B, fontSize: 11, color: C.steel, italic: true, margin: 0 });
+      s.addText(st.sub, { x: x + 0.3, y: y + 1.72, w: cardW - 0.4, h: 0.38, fontFace: FONT_B, fontSize: 11, color: C.steel, italic: true, margin: 0 });
+      srcTag(s, st.src, x + 0.3, y + cardH - 0.32, cardW - 0.5);
     });
     if (D.at_a_glance.source_note) {
       s.addText(D.at_a_glance.source_note, { x: 0.6, y: 7.15, w: 12.2, h: 0.3, fontFace: FONT_B, fontSize: 9, color: C.steel, italic: true, margin: 0 });
@@ -352,7 +398,7 @@ function fmt$(n) {
     const cardW = 3.0, cardH = 4.35, baseY = 2.3;
     scenarios.forEach((sc, i) => {
       const x = 0.6 + i * (cardW + 0.13);
-      const color = cx(sc.color);
+      const color = C.marine; // four scenarios, one ink: color would rank them
       s.addShape(pres.shapes.RECTANGLE, { x, y: baseY, w: cardW, h: cardH, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, shadow: sh() });
       s.addShape(pres.shapes.RECTANGLE, { x, y: baseY, w: cardW, h: 0.08, fill: { color }, line: { color } });
       s.addText(sc.label, { x: x + 0.25, y: baseY + 0.18, w: cardW - 0.4, h: 0.32, fontFace: FONT_B, fontSize: 13, color, bold: true, charSpacing: 4, margin: 0 });
@@ -385,7 +431,7 @@ function fmt$(n) {
     if (P && P.year1_carry && P.year5_carry) {
       s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 6.72, w: 12.39, h: 0.38, fill: { color: C.marine }, line: { color: C.marine } });
       s.addText([
-        { text: "IN FIVE YEARS  ", options: { color: C.coral, bold: true, charSpacing: 3 } },
+        { text: "IN FIVE YEARS  ", options: { color: "8FA9C0", bold: true, charSpacing: 3 } },
         { text: `${fmt$(P.year1_carry)}/mo now → ${fmt$(P.year5_carry)}/mo in year 5 (${P.delta_label})   ·   ${P.cumulative_note || ""}`, options: { color: C.white } }
       ], { x: 0.8, y: 6.72, w: 12.0, h: 0.38, fontFace: FONT_B, fontSize: 10.5, valign: "middle", margin: 0 });
     }
@@ -410,8 +456,8 @@ function fmt$(n) {
       values: D.price_history.points.map(p => p.price)
     }], {
       x: 0.6, y: 2.5, w: 8.6, h: 4.5,
-      chartColors: [C.coral], lineSize: 3, lineDataSymbol: "circle", lineDataSymbolSize: 10,
-      lineDataSymbolLineColor: C.coral,
+      chartColors: [C.teal], lineSize: 2.5, lineDataSymbol: "circle", lineDataSymbolSize: 10,
+      lineDataSymbolLineColor: C.teal,
       chartArea: { fill: { color: C.white }, roundedCorners: false },
       catAxisLabelColor: C.steel, catAxisLabelFontFace: FONT_B, catAxisLabelFontSize: 10,
       valAxisLabelColor: C.steel, valAxisLabelFontFace: FONT_B, valAxisLabelFontSize: 10,
@@ -422,7 +468,7 @@ function fmt$(n) {
 
     const px = 9.5, pw = 3.3;
     s.addShape(pres.shapes.RECTANGLE, { x: px, y: 2.5, w: pw, h: 4.5, fill: { color: C.marine }, line: { color: C.marine }, shadow: shStrong() });
-    s.addText(D.price_history.callouts_label || "THE NUMBERS", { x: px + 0.3, y: 2.7, w: pw - 0.4, h: 0.35, fontFace: FONT_B, fontSize: 11, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
+    s.addText(D.price_history.callouts_label || "THE NUMBERS", { x: px + 0.3, y: 2.7, w: pw - 0.4, h: 0.35, fontFace: FONT_B, fontSize: 11, color: "8FA9C0", bold: true, charSpacing: 4, margin: 0 });
     D.price_history.callouts.forEach((c, i) => {
       const yy = 3.15 + i * 0.78;
       s.addText(c.big, { x: px + 0.3, y: yy, w: pw - 0.4, h: 0.4, fontFace: FONT_H, fontSize: 22, color: C.white, bold: true, margin: 0 });
@@ -446,7 +492,7 @@ function fmt$(n) {
     const stats = (T.stats || []).slice(0, 4);
     const sw = (12.13 - 0.13 * (stats.length - 1)) / Math.max(stats.length, 1), sy = 2.15, shh = 1.2;
     stats.forEach((st, i) => {
-      const x = 0.6 + i * (sw + 0.13), color = cx(st.color || "teal");
+      const x = 0.6 + i * (sw + 0.13), color = C.marine;
       s.addShape(pres.shapes.RECTANGLE, { x, y: sy, w: sw, h: shh, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, shadow: sh() });
       s.addShape(pres.shapes.RECTANGLE, { x, y: sy, w: 0.08, h: shh, fill: { color }, line: { color } });
       s.addText(st.big, { x: x + 0.25, y: sy + 0.1, w: sw - 0.35, h: 0.5, fontFace: FONT_H, fontSize: 22, color: C.marine, bold: true, margin: 0 });
@@ -474,7 +520,7 @@ function fmt$(n) {
     const rx = 6.95, rw = 5.78;
     let yy = 3.5;
     const mill = (T.millage || []).slice(0, 6);
-    s.addText(T.millage_label || "MILLAGE STACK", { x: rx, y: yy, w: rw, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: C.coral, bold: true, charSpacing: 3, margin: 0 });
+    s.addText(T.millage_label || "MILLAGE STACK", { x: rx, y: yy, w: rw, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: C.steel, bold: false, charSpacing: 3, margin: 0 });
     yy += 0.32;
     const rowM = (label, val, bold) => {
       s.addText(label, { x: rx, y: yy, w: rw - 1.3, h: 0.25, fontFace: FONT_B, fontSize: 10, color: bold ? C.marine : C.graphite, bold, valign: "middle", margin: 0 });
@@ -487,7 +533,7 @@ function fmt$(n) {
     yy += 0.12;
     const ex = (T.exemptions || []).slice(0, 3);
     if (ex.length) {
-      s.addText("EXEMPTIONS IN FORCE", { x: rx, y: yy, w: rw, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: C.coral, bold: true, charSpacing: 3, margin: 0 });
+      s.addText("EXEMPTIONS IN FORCE", { x: rx, y: yy, w: rw, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: C.steel, bold: false, charSpacing: 3, margin: 0 });
       yy += 0.32;
       ex.forEach(e => {
         s.addText([{ text: e.name + "  ", options: { bold: true, color: C.marine } }, { text: e.effect || "", options: { color: C.graphite } }],
@@ -508,7 +554,7 @@ function fmt$(n) {
     const R = D.title_record || {};
     header(s, pres, "TITLE, LIENS & PERMITS", R.title || "What the Public Record Shows", R.subtitle);
     const lx = 0.6, lw = 6.1, rx = 6.95, rw = 5.78;
-    const label = (t, x, y, w, color = C.coral) => s.addText(t, { x, y, w, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color, bold: true, charSpacing: 3, margin: 0 });
+    const label = (t, x, y, w, color = C.steel) => s.addText(t, { x, y, w, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color, bold: false, charSpacing: 3, margin: 0 });
     const table = (rows, x, y, w, colW, maxRowH) => {
       if (!rows.length) return y;
       const hdr = rows[0].map(t => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.marine }, fontFace: FONT_B, fontSize: 9.5, valign: "middle" } }));
@@ -573,7 +619,7 @@ function fmt$(n) {
     D.schools.list.forEach((sc, i) => {
       const x = 0.6 + i * (cardW + 0.17);
       const y = 2.3;
-      const color = cx(sc.color || colors[i % 3]);
+      const color = C.marine;
       s.addShape(pres.shapes.RECTANGLE, { x, y, w: cardW, h: cardH, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, shadow: sh() });
       s.addShape(pres.shapes.RECTANGLE, { x, y, w: cardW, h: 0.18, fill: { color }, line: { color } });
       s.addText(sc.rating, { x: x + 0.3, y: y + 0.5, w: 1.7, h: 1.5, fontFace: FONT_H, fontSize: 84, color, bold: true, margin: 0 });
@@ -622,7 +668,7 @@ function fmt$(n) {
     const site = (D.climate.site || []).slice(0, 6);
     const ty = 2.12 + (risks.length > 3 ? 2 : 1) * (cardH + 0.12) + 0.08;
     if (site.length) {
-      s.addText("SITE FACTS NO LISTING SHOWS", { x: 0.6, y: ty, w: 8, h: 0.26, fontFace: FONT_B, fontSize: 10.5, color: C.coral, bold: true, charSpacing: 3, margin: 0 });
+      s.addText("SITE FACTS NO LISTING SHOWS", { x: 0.6, y: ty, w: 8, h: 0.26, fontFace: FONT_B, fontSize: 10.5, color: C.steel, bold: false, charSpacing: 3, margin: 0 });
       const rows = [["Item", "Finding", "Source"].map(t => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.marine }, fontFace: FONT_B, fontSize: 9.5, valign: "middle" } }))];
       site.forEach((r, i) => {
         const fill = i % 2 ? "F4F7F9" : C.white;
@@ -664,7 +710,7 @@ function fmt$(n) {
     yy += 0.36;
 
     D.diligence.groups.forEach(group => {
-      const gColor = cx(group.color);
+      const gColor = C.marine;
       s.addShape(pres.shapes.RECTANGLE, { x: lx, y: yy, w: lw, h: grpH, fill: { color: C.mist }, line: { color: C.mist } });
       s.addShape(pres.shapes.RECTANGLE, { x: lx, y: yy, w: 0.08, h: grpH, fill: { color: gColor }, line: { color: gColor } });
       s.addText(group.category, { x: lx + 0.2, y: yy, w: 8, h: grpH, fontFace: FONT_B, fontSize: 10, color: gColor, bold: true, charSpacing: 4, valign: "middle", margin: 0 });
@@ -682,7 +728,7 @@ function fmt$(n) {
     });
 
     yy += 0.05;
-    s.addShape(pres.shapes.RECTANGLE, { x: lx, y: yy, w: lw, h: 0.45, fill: { color: C.coral }, line: { color: C.coral } });
+    s.addShape(pres.shapes.RECTANGLE, { x: lx, y: yy, w: lw, h: 0.45, fill: { color: C.marine }, line: { color: C.marine } });
     s.addText("TOTAL DILIGENCE BUDGET", { x: lx + 0.2, y: yy, w: 8, h: 0.45, fontFace: FONT_B, fontSize: 12, color: C.white, bold: true, charSpacing: 4, valign: "middle", margin: 0 });
     s.addText("$" + D.diligence.total_low.toLocaleString(), { x: lx + 9.6, y: yy, w: 1.2, h: 0.45, fontFace: FONT_H, fontSize: 16, color: C.white, bold: true, align: "right", valign: "middle", margin: 0 });
     s.addText("$" + D.diligence.total_high.toLocaleString(), { x: lx + 10.9, y: yy, w: 1.2, h: 0.45, fontFace: FONT_H, fontSize: 16, color: C.white, bold: true, align: "right", valign: "middle", margin: 0 });
@@ -706,10 +752,10 @@ function fmt$(n) {
     const subj = D.inventory.subject;
     const sx = 0.6, sy = 2.4, sw = 4.6, shh = 4.7;
     s.addShape(pres.shapes.RECTANGLE, { x: sx, y: sy, w: sw, h: shh, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, shadow: sh() });
-    s.addShape(pres.shapes.RECTANGLE, { x: sx, y: sy, w: sw, h: 0.4, fill: { color: C.coral }, line: { color: C.coral } });
+    s.addShape(pres.shapes.RECTANGLE, { x: sx, y: sy, w: sw, h: 0.4, fill: { color: C.marine }, line: { color: C.marine } });
     s.addText("SUBJECT", { x: sx + 0.25, y: sy, w: 3, h: 0.4, fontFace: FONT_B, fontSize: 11, color: C.white, bold: true, charSpacing: 4, valign: "middle", margin: 0 });
     s.addText(subj.address, { x: sx + 0.25, y: sy + 0.55, w: sw - 0.4, h: 0.55, fontFace: FONT_H, fontSize: 22, color: C.marine, bold: true, margin: 0 });
-    s.addText(subj.price, { x: sx + 0.25, y: sy + 1.1, w: sw - 0.4, h: 0.85, fontFace: FONT_H, fontSize: 40, color: C.coral, bold: true, margin: 0 });
+    s.addText(subj.price, { x: sx + 0.25, y: sy + 1.1, w: sw - 0.4, h: 0.85, fontFace: FONT_H, fontSize: 40, color: C.marine, bold: true, margin: 0 });
     const subjStats = [
       ["Bed / Bath", subj.bed_bath],
       ["Square feet", subj.sqft],
@@ -788,9 +834,9 @@ function fmt$(n) {
     const iNeighbor = await getIcon("FaUserFriends", "teal");
     const iInspector = await getIcon("FaHardHat", "amber");
     const cols = [
-      { ic: iAgent, color: C.coral, label: "LISTING AGENT", count: `${D.scripts.agent.length} questions`, items: D.scripts.agent },
-      { ic: iNeighbor, color: C.teal, label: "NEIGHBORS", count: `${D.scripts.neighbors.length} questions`, items: D.scripts.neighbors },
-      { ic: iInspector, color: C.amber, label: "BRIEF YOUR INSPECTOR", count: `${D.scripts.inspector.length} priorities`, items: D.scripts.inspector }
+      { ic: iAgent, color: C.marine, label: "LISTING AGENT", count: `${D.scripts.agent.length} questions`, items: D.scripts.agent },
+      { ic: iNeighbor, color: C.marine, label: "NEIGHBORS", count: `${D.scripts.neighbors.length} questions`, items: D.scripts.neighbors },
+      { ic: iInspector, color: C.marine, label: "BRIEF YOUR INSPECTOR", count: `${D.scripts.inspector.length} priorities`, items: D.scripts.inspector }
     ];
     const cardW = 4.0, cardH = 4.7, baseY = 2.3;
     cols.forEach(col => {
@@ -799,7 +845,7 @@ function fmt$(n) {
       s.addShape(pres.shapes.RECTANGLE, { x, y: baseY, w: cardW, h: 0.55, fill: { color: col.color }, line: { color: col.color } });
       s.addImage({ data: col.ic, x: x + 0.25, y: baseY + 0.11, w: 0.32, h: 0.32 });
       s.addText(col.label, { x: x + 0.7, y: baseY + 0.05, w: cardW - 0.8, h: 0.3, fontFace: FONT_B, fontSize: 13, color: C.white, bold: true, charSpacing: 4, valign: "middle", margin: 0 });
-      s.addText(col.count, { x: x + 0.7, y: baseY + 0.3, w: cardW - 0.8, h: 0.22, fontFace: FONT_B, fontSize: 10, color: "FFE5D6", italic: true, valign: "middle", margin: 0 });
+      s.addText(col.count, { x: x + 0.7, y: baseY + 0.3, w: cardW - 0.8, h: 0.22, fontFace: FONT_B, fontSize: 10, color: "AFC3D4", italic: false, valign: "middle", margin: 0 });
 
       const runs = [];
       col.items.forEach((t, j) => {
@@ -828,7 +874,7 @@ function fmt$(n) {
     D.action.phases.slice(0, 4).forEach((p, i) => {
       const x = 0.6 + i * (cardW + 0.13);
       const y = 1.65;
-      const color = cx(p.color);
+      const color = C.marine;
       s.addShape(pres.shapes.RECTANGLE, { x, y, w: cardW, h: cardH, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, shadow: sh() });
       s.addShape(pres.shapes.RECTANGLE, { x, y, w: cardW, h: 1.0, fill: { color }, line: { color } });
       s.addText("PHASE  " + String(i + 1).padStart(2, "0"), { x: x + 0.25, y: y + 0.15, w: cardW - 0.4, h: 0.3, fontFace: FONT_B, fontSize: 10, color: C.white, bold: true, charSpacing: 4, margin: 0 });
@@ -850,15 +896,15 @@ function fmt$(n) {
   {
     const s = pres.addSlide();
     s.background = { color: C.marine };
-    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.6, w: 0.08, h: 0.95, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText("OFFER STRATEGY", { x: 0.85, y: 0.6, w: 8, h: 0.3, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 5, margin: 0 });
-    s.addText(D.offer.title || "The Number, The Walk-Away, The Upside", {
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.6, w: 0.04, h: 0.95, fill: { color: "1B4366" }, line: { color: "1B4366" } });
+    s.addText("OFFER STRATEGY", { x: 0.85, y: 0.6, w: 8, h: 0.3, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: true, charSpacing: 5, margin: 0 });
+    s.addText(D.offer.title || "Opening Offer and Walk-Away Triggers", {
       x: 0.85, y: 0.9, w: 12, h: 0.7, fontFace: FONT_H, fontSize: 28, color: C.white, bold: true, margin: 0
     });
 
     s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 2.0, w: 12.2, h: 1.55, fill: { color: C.panel }, line: { color: C.coral, width: 1.5 } });
-    s.addText("RECOMMENDED OPENING OFFER", { x: 0.85, y: 2.15, w: 7, h: 0.32, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
-    s.addText(D.offer.opening, { x: 0.85, y: 2.5, w: 7, h: 1.0, fontFace: FONT_H, fontSize: 48, color: C.white, bold: true, margin: 0 });
+    s.addText("RECOMMENDED OPENING OFFER", { x: 0.85, y: 2.15, w: 7, h: 0.32, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: true, charSpacing: 4, margin: 0 });
+    s.addText(D.offer.opening, { x: 0.85, y: 2.5, w: 7, h: 1.0, fontFace: FONT_H, fontSize: 48, color: C.coral, bold: true, margin: 0 });
     (D.offer.rationale_lines || []).forEach((line, i) => {
       s.addText(line, { x: 8.2, y: 2.4 + i * 0.3, w: 4.5, h: 0.4, fontFace: FONT_B, fontSize: 12, color: "B8C9D6", italic: true, margin: 0 });
     });
@@ -881,7 +927,7 @@ function fmt$(n) {
       s.addText(runs, { x: x + 0.25, y: y + 0.75, w: cardW - 0.4, h: cardH - 0.9, fontFace: FONT_B, fontSize: 11, color: C.white, valign: "top", paraSpaceAfter: 6 });
     });
 
-    s.addText("BOTTOM LINE", { x: 0.85, y: 7.1, w: 3, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
+    s.addText("BOTTOM LINE", { x: 0.85, y: 7.1, w: 3, h: 0.3, fontFace: FONT_B, fontSize: 11, color: "8FA9C0", bold: true, charSpacing: 4, margin: 0 });
     s.addText(D.offer.bottom_line, {
       x: 2.6, y: 7.1, w: 10.3, h: 0.3, fontFace: FONT_B, fontSize: 12, color: C.white, italic: true, margin: 0, align: "right"
     });
@@ -893,31 +939,31 @@ function fmt$(n) {
   {
     const s = pres.addSlide();
     s.background = { color: C.marine };
-    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.6, w: 0.08, h: 0.95, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText("SOURCES & CAVEATS", { x: 0.85, y: 0.6, w: 8, h: 0.3, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 5, margin: 0 });
-    s.addText(D.sources.title || "Show Your Work", {
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.6, w: 0.04, h: 0.95, fill: { color: "1B4366" }, line: { color: "1B4366" } });
+    s.addText("SOURCES & CAVEATS", { x: 0.85, y: 0.6, w: 8, h: 0.3, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: true, charSpacing: 5, margin: 0 });
+    s.addText(D.sources.title || "Where Every Number Came From", {
       x: 0.85, y: 0.9, w: 12, h: 0.7, fontFace: FONT_H, fontSize: 28, color: C.white, bold: true, margin: 0
     });
 
     const lx = 0.6, rx = 6.95, colW = 6.25, colH = 5.0;
     s.addShape(pres.shapes.RECTANGLE, { x: lx, y: 2.0, w: colW, h: colH, fill: { color: C.panel }, line: { color: "1B4366", width: 1 } });
-    s.addShape(pres.shapes.RECTANGLE, { x: lx, y: 2.0, w: colW, h: 0.08, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText("KEY PUBLIC DATA SOURCES", { x: lx + 0.3, y: 2.2, w: colW - 0.5, h: 0.35, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x: lx, y: 2.0, w: colW, h: 0.01, fill: { color: "1B4366" }, line: { color: "1B4366" } });
+    s.addText("KEY PUBLIC DATA SOURCES", { x: lx + 0.3, y: 2.2, w: colW - 0.5, h: 0.35, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: true, charSpacing: 4, margin: 0 });
     const sRuns = D.sources.list.map((t, i) => ({
       text: t, options: { bullet: { code: "25A0" }, breakLine: i < D.sources.list.length - 1, paraSpaceAfter: 4 }
     }));
     s.addText(sRuns, { x: lx + 0.3, y: 2.65, w: colW - 0.5, h: colH - 0.8, fontFace: FONT_B, fontSize: 10.5, color: C.white, valign: "top", paraSpaceAfter: 4 });
 
     s.addShape(pres.shapes.RECTANGLE, { x: rx, y: 2.0, w: colW, h: colH, fill: { color: C.panel }, line: { color: "1B4366", width: 1 } });
-    s.addShape(pres.shapes.RECTANGLE, { x: rx, y: 2.0, w: colW, h: 0.08, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText("CAVEATS", { x: rx + 0.3, y: 2.2, w: colW - 0.5, h: 0.35, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x: rx, y: 2.0, w: colW, h: 0.01, fill: { color: "1B4366" }, line: { color: "1B4366" } });
+    s.addText("CAVEATS", { x: rx + 0.3, y: 2.2, w: colW - 0.5, h: 0.35, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: true, charSpacing: 4, margin: 0 });
     const cRuns = D.sources.caveats.map((t, i) => ({
       text: t, options: { bullet: { code: "25A0" }, breakLine: i < D.sources.caveats.length - 1, paraSpaceAfter: 6 }
     }));
     s.addText(cRuns, { x: rx + 0.3, y: 2.65, w: colW - 0.5, h: colH - 0.8, fontFace: FONT_B, fontSize: 10.5, color: C.white, valign: "top", paraSpaceAfter: 6 });
 
-    s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 7.14, w: W, h: 0.04, fill: { color: C.coral }, line: { color: C.coral } });
-    const footer = `${D.property.address.toUpperCase()}  ·  PROPERTY INTELLIGENCE REPORT  ·  ${D.title.prepared_label || ""}`;
+    s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 7.14, w: W, h: 0.01, fill: { color: "1B4366" }, line: { color: "1B4366" } });
+    const footer = `${D.property.address}  ·  Property intelligence report  ·  ${sentenceCase(D.title.prepared_label || "")}`;
     s.addText(footer, {
       x: 0.6, y: 7.22, w: 12.2, h: 0.24, fontFace: FONT_B, fontSize: 9, color: "8FA0AE", charSpacing: 3, align: "center", margin: 0
     });

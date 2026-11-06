@@ -14,7 +14,7 @@
     "prepared_label": "PREPARED MAY 2026"
   },
   "exec_summary": {
-    "headline": "The Good. The Bad. The Ugly.",
+    "headline": "Strengths, Problems, and Deal Risks",
     "good": [
       "2.4 acres, no HOA, no deed restrictions visible — rare in Fairhope's price band.",
       "Roof, septic, and HVAC all replaced 2022–2025; transferable termite bond.",
@@ -48,37 +48,43 @@
         "big": "$389,000",
         "label": "CURRENT LIST PRICE",
         "sub": "Down from $519,900 (Jun 2025)",
-        "color": "coral"
+        "color": "coral",
+        "src": "MLS · T1"
       },
       {
         "big": "2,875",
         "label": "LIVING SQUARE FEET",
         "sub": "$135 / sqft",
-        "color": "teal"
+        "color": "teal",
+        "src": "County record · T1"
       },
       {
         "big": "2.4",
         "label": "ACRES",
         "sub": "Irregular metes-and-bounds, 135 × 767",
-        "color": "green"
+        "color": "green",
+        "src": "County GIS · T1"
       },
       {
         "big": "4 / 3",
         "label": "BEDROOMS / BATHROOMS",
         "sub": "2 main-level masters, slab foundation",
-        "color": "teal"
+        "color": "teal",
+        "src": "MLS · T2"
       },
       {
         "big": "1986",
         "label": "YEAR BUILT",
         "sub": "Roof, septic, HVAC all 2022–2025",
-        "color": "green"
+        "color": "green",
+        "src": "County record · T1"
       },
       {
         "big": "$1,388",
         "label": "ANNUAL TAX (2025)",
         "sub": "Homestead exemption applied",
-        "color": "coral"
+        "color": "coral",
+        "src": "Revenue commission · T1"
       }
     ],
     "source_note": "Sources: Zillow public records, Baldwin County Revenue Commission."
@@ -877,7 +883,7 @@
     ]
   },
   "offer": {
-    "title": "The Number, The Walk-Away, The Upside",
+    "title": "Opening Offer and Walk-Away Triggers",
     "opening": "$348K – $364K",
     "rationale_lines": [
       "Comp screen: fair value $290K-$387K",
@@ -905,7 +911,7 @@
     "bottom_line": "This is a value play, not a turnkey buy. Buy the lot and the schools — pay accordingly for the house."
   },
   "sources": {
-    "title": "Show Your Work",
+    "title": "Where Every Number Came From",
     "list": [
       "Freddie Mac Primary Mortgage Market Survey (May 1, 2026)",
       "Baldwin County Revenue Commissioner & GIS Parcel Viewer",

@@ -4,7 +4,7 @@ Slide map: 1 title · 2 exec summary · 3 at a glance · 4 monthly carry (+ five
 
 The deck builder consumes a single JSON file with the structure below. Every field maps to a slide. Fill all required fields. Optional fields are marked.
 
-Color tokens accepted as named strings: `marine`, `teal`, `coral`, `green`, `crimson`, `amber`, `steel`. Or pass raw hex without `#`.
+Color tokens accepted as named strings: `marine`, `teal`, `coral`, `green`, `crimson`, `amber`, `steel`. Since v1.2 the builder ignores color on decorative cards (stat cards, carry scenarios, schools, diligence groups, scripts, action phases): chrome is ink, and coral is reserved for the opening offer. Color still renders where it means something: exec summary good/caution/bad, climate risk levels, encumbrance status, red flags, offer triggers. Write labels in sentence case; the builder sentence-cases all-caps text anyway.
 
 Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`, `FaShieldAlt`, `FaBolt`, `FaFire`, `FaCheckCircle`, `FaExclamationTriangle`, `FaTimesCircle`, etc. Find any FA icon name at react-icons.github.io/react-icons.
 
@@ -27,7 +27,7 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
   },
 
   "exec_summary": {
-    "headline": "The Good. The Bad. The Ugly.",
+    "headline": "Strengths, Problems, and Deal Risks",
     "good": [ "string", "..." ],     // 5-7 items
     "bad":  [ "string", "..." ],
     "ugly": [ "string", "..." ]
@@ -36,10 +36,9 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
   "at_a_glance": {
     "title": "The Property in Numbers",
     "stats": [
-      { "big": "$389,000", "label": "CURRENT LIST PRICE", "sub": "Down from $519,900",
-        "color": "coral" },
-      { "big": "2,875",    "label": "LIVING SQUARE FEET", "sub": "$135 / sqft",
-        "color": "teal" },
+      { "big": "$389,000", "label": "Current list price", "sub": "Down from $519,900",
+        "src": "MLS · T1" },     // src: short source tag in mono, the family signature (source · tier)
+      { "big": "2,875",    "label": "Living square feet", "sub": "$135 / sqft", "src": "County record · T1" },
       // up to 6 cards, 3 cols x 2 rows. Fewer renders fine
     ],
     "source_note": "Sources: MLS, Zillow public records."   // optional
@@ -296,7 +295,7 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
   },
 
   "offer": {
-    "title": "The Number, The Walk-Away, The Upside",
+    "title": "Opening Offer and Walk-Away Triggers",
     "opening": "$355K – $365K",
     "rationale_lines": [
       // 1-3 lines, render in italics next to opening number
@@ -311,7 +310,7 @@ Icon tokens are React-Icons / Font Awesome names: `FaWind`, `FaWater`, `FaTree`,
   },
 
   "sources": {
-    "title": "Show Your Work",
+    "title": "Where Every Number Came From",
     "list": [ "Freddie Mac PMMS...", "Baldwin County GIS...", "..." ],
     "caveats": [ "Monthly carry uses PMMS; your rate will differ...", "..." ]
   }

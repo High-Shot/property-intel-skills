@@ -7,7 +7,7 @@ The build pipeline consumes a single JSON file and produces TWO outputs:
 
 One interview, one JSON, two files. The `spec_sheet` section feeds both the PDF and the slide 9 preview.
 
-Design system is locked and shared with property-intel-report and property-appraisal. Color tokens as named strings: `marine`, `teal`, `coral`, `green`, `crimson`, `amber`, `steel`. Icon tokens are react-icons/fa names already validated in the sibling build scripts (`FaWind`, `FaWater`, `FaShieldAlt`, `FaHome`, `FaUmbrella`, `FaBolt`, `FaCheckCircle`, `FaExclamationTriangle`, `FaDollarSign`, `FaFileAlt`). Unvalidated names fail at runtime.
+Design system is locked and shared with property-intel-report and property-appraisal. Since v1.2 chrome is ink: the builder ignores decorative card colors and reserves coral for the chosen deductible and the premium range. Stat cards take an optional `src` (short mono source tag, e.g. "FEMA MSC · T1"). Color tokens as named strings: `marine`, `teal`, `coral`, `green`, `crimson`, `amber`, `steel`. Icon tokens are react-icons/fa names already validated in the sibling build scripts (`FaWind`, `FaWater`, `FaShieldAlt`, `FaHome`, `FaUmbrella`, `FaBolt`, `FaCheckCircle`, `FaExclamationTriangle`, `FaDollarSign`, `FaFileAlt`). Unvalidated names fail at runtime.
 
 ## Slide map
 
@@ -269,7 +269,7 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
   },
 
   "agent_script": {
-    "title": "Work the Script",
+    "title": "Questions for Every Agent",
     "subtitle": "Questions that separate a good policy from a cheap-looking one.",
     "questions": [
       // 6-8 items, left column (dark slide).
@@ -294,7 +294,7 @@ Dark sandwich (1, 10, 11) mirrors the intel report's (1, 15, 16).
   },
 
   "sources": {
-    "title": "Show Your Work",
+    "title": "Where Every Number Came From",
     "list": [
       "ALDOI ComparePremiums — real HO-3 premiums by company and territory",
       "Alabama Coastal Insurance Shopper's Guide — Smart Home America / ALDOI",

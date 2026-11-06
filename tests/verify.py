@@ -173,7 +173,8 @@ if os.path.exists(COMPARE):
 # ========== 2. regression: the deductible label ==========
 if ins_default is not None:
     t = slide_text(ins_default, 4)
-    record("regression: defaulted deductible renders DEFAULT, never YOUR PICK", "DEFAULT" in t and "YOUR PICK" not in t, str(t[:8]))
+    tl = [x.lower() for x in t]
+    record("regression: defaulted deductible renders Default, never Your pick", "default" in tl and "your pick" not in tl, str(t[:8]))
     picked = load(ISAMPLE)
     for o in picked["wind_deductible"]["options"]:
         o["chosen"] = (o["pct"] == "2%")
@@ -182,7 +183,8 @@ if ins_default is not None:
     if code == 0:
         from pptx import Presentation
         t2 = slide_text(Presentation(out("picked.pptx")), 4)
-        record("regression: buyer-selected deductible renders YOUR PICK", "YOUR PICK" in t2 and "DEFAULT" not in t2, str(t2[:8]))
+        t2l = [x.lower() for x in t2]
+        record("regression: buyer-selected deductible renders Your pick", "your pick" in t2l and "default" not in t2l, str(t2[:8]))
 
 # inland profile: no wind_deductible, flat deductibles block, slide 5 still renders
 inl = load(ISAMPLE)
@@ -195,7 +197,7 @@ inl["deductibles"] = {"title": "Your Deductibles, In Dollars", "subtitle": "One 
 if build_clean("insurance deck: inland profile", node(NB, dump(inl, "inland.json"), out("inland.pptx"))):
     p_in = check_pptx("insurance inland", out("inland.pptx"), 11)
     if p_in is not None:
-        record("inland slide 5 reads DEDUCTIBLES IN DOLLARS", any("DEDUCTIBLES IN DOLLARS" in t for t in slide_text(p_in, 4)))
+        record("inland slide 5 reads Deductibles in dollars", any("deductibles in dollars" in t.lower() for t in slide_text(p_in, 4)))
 
 # flat hurricane deductible carried through the dashboard
 f = load(DF); i2 = load(DI)

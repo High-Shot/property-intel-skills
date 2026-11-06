@@ -15,7 +15,7 @@
     "prepared_label": "PREPARED OCTOBER 2026"
   },
   "exec_summary": {
-    "headline": "The Good. The Bad. The Ugly.",
+    "headline": "Strengths, Problems, and Deal Risks",
     "good": [
       "3,135 sq ft (public record), 5 bed / 3 full bath, 0.71 acre, no HOA. Most space per dollar in its price band.",
       "Assigned schools all rate 10/10 on GreatSchools: Fairhope East Elementary (0.6 mi), Fairhope Middle, Fairhope High.",
@@ -46,37 +46,43 @@
         "big": "$539,000",
         "label": "LIST PRICE",
         "sub": "Listed Oct 6, 2026 · no reductions",
-        "color": "coral"
+        "color": "coral",
+        "src": "MLS · T1"
       },
       {
         "big": "3,135",
         "label": "LIVING SQ FT (PUBLIC RECORD)",
         "sub": "$172 / sqft at list · listing claims 3,200",
-        "color": "teal"
+        "color": "teal",
+        "src": "County record · T1"
       },
       {
         "big": "0.71",
         "label": "ACRES",
         "sub": "150 × 200 ft · zoned R-2",
-        "color": "green"
+        "color": "green",
+        "src": "County GIS · T1"
       },
       {
         "big": "5 / 3",
         "label": "BEDROOMS / FULL BATHS",
         "sub": "2 stories, two staircases, 2-car garage",
-        "color": "teal"
+        "color": "teal",
+        "src": "MLS · T2"
       },
       {
         "big": "1992",
         "label": "YEAR BUILT",
         "sub": "Roof 5 yrs, HVAC 2 yrs, replumbed (confirmed)",
-        "color": "green"
+        "color": "green",
+        "src": "County record · T1"
       },
       {
         "big": "$2,009",
         "label": "ANNUAL TAX (2025)",
         "sub": "Post-sale est. $2,140 with your homestead",
-        "color": "coral"
+        "color": "coral",
+        "src": "Revenue commission · T1"
       }
     ],
     "source_note": "Sources: MLS via Redfin; public record via Redfin; Baldwin County tax history. Revenue Commission portal does not respond to fetch; verify there."
@@ -816,7 +822,7 @@
     ]
   },
   "offer": {
-    "title": "The Number, The Walk-Away, The Upside",
+    "title": "Opening Offer and Walk-Away Triggers",
     "opening": "$435K – $450K",
     "rationale_lines": [
       "Appraisal high $484K x 0.90 = $435K; capped at the",
@@ -844,7 +850,7 @@
     "bottom_line": "Worth about $452K, not $539K. Systems are done; finishes are not. Pay for the space and schools, not the seller's 2017 equity."
   },
   "sources": {
-    "title": "Show Your Work",
+    "title": "Where Every Number Came From",
     "list": [
       "Freddie Mac PMMS, week of Oct 15, 2026 (30-yr 7.40%)",
       "MLS via Redfin: listing, price and tax history, public record",

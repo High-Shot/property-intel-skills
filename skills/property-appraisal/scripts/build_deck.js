@@ -94,15 +94,16 @@ function renderIconSvg(IconComponent, color = "#000000", size = 256) {
 async function icon(iconName, hex) {
   const Component = FA[iconName];
   if (!Component) throw new Error("Unknown icon: " + iconName);
-  const svg = renderIconSvg(Component, "#" + hex);
+  const svg = renderIconSvg(Component, "#" + C.steel); // one icon color
   const png = await sharp(Buffer.from(svg)).png().toBuffer();
   return "image/png;base64," + png.toString("base64");
 }
 const sh = () => ({ type: "outer", blur: 8, offset: 2, angle: 90, color: "000000", opacity: 0.10 });
 
 function header(s, pres, eyebrow, title, subtitle, accentColor = C.coral) {
-  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.4, w: 0.08, h: 0.95, fill: { color: accentColor }, line: { color: accentColor } });
-  s.addText(eyebrow, { x: 0.85, y: 0.4, w: 10, h: 0.3, fontFace: FONT_B, fontSize: 12, color: accentColor, bold: true, charSpacing: 5, margin: 0 });
+  accentColor = C.marine; // chrome is ink; color is saved for the moment
+  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.4, w: 0.04, h: 0.95, fill: { color: accentColor }, line: { color: accentColor } });
+  s.addText(eyebrow, { x: 0.85, y: 0.4, w: 10, h: 0.3, fontFace: FONT_B, fontSize: 12, color: C.steel, bold: false, charSpacing: 5, margin: 0 });
   s.addText(title, { x: 0.85, y: 0.7, w: 12.2, h: 0.7, fontFace: FONT_H, fontSize: 28, color: C.marine, bold: true, margin: 0 });
   if (subtitle) s.addText(subtitle, { x: 0.85, y: 1.45, w: 11.8, h: 0.55, fontFace: FONT_B, fontSize: 13, color: C.graphite, italic: true, margin: 0 });
 }
@@ -138,7 +139,7 @@ function psfStrip(s, pres, y) {
   lo -= pad; hi += pad;
   const x0 = 2.75, x1 = 12.25, axisY = y + 0.78;
   const X = v => x0 + (v - lo) / (hi - lo) * (x1 - x0);
-  s.addText("ADJUSTED $/SQ FT", { x: 0.85, y: y + 0.22, w: 1.8, h: 0.3, fontFace: FONT_B, fontSize: 10, color: C.teal, bold: true, charSpacing: 2, margin: 0 });
+  s.addText("ADJUSTED $/SQ FT", { x: 0.85, y: y + 0.22, w: 1.8, h: 0.3, fontFace: FONT_B, fontSize: 10, color: C.steel, bold: false, charSpacing: 2, margin: 0 });
   s.addText("comp value ÷ subject GLA", { x: 0.85, y: y + 0.5, w: 1.85, h: 0.3, fontFace: FONT_B, fontSize: 9, color: C.steel, italic: true, margin: 0 });
   // range band
   const bx = X(vc.range_low / sq), bw = X(vc.range_high / sq) - bx;
@@ -152,9 +153,9 @@ function psfStrip(s, pres, y) {
   const pLabelX = near && lx > px ? px - 1.6 : near ? px + 0.05 : px - 0.8;
   s.addText(`Point $${Math.round(vc.point_value / sq)}`, { x: pLabelX, y: y, w: 1.55, h: 0.26, fontFace: FONT_B, fontSize: 10, color: C.marine, bold: true, align: near ? (lx > px ? "right" : "left") : "center", margin: 0 });
   if (lx !== null) {
-    s.addShape(pres.shapes.LINE, { x: lx, y: y + 0.28, w: 0, h: 0.7, line: { color: C.coral, width: 1.75, dashType: "dash" } });
+    s.addShape(pres.shapes.LINE, { x: lx, y: y + 0.28, w: 0, h: 0.7, line: { color: C.steel, width: 1.25, dashType: "dash" } });
     const lLabelX = near && lx > px ? lx + 0.05 : near ? lx - 1.6 : lx - 0.8;
-    s.addText(`List $${Math.round(list / sq)}`, { x: lLabelX, y: y, w: 1.55, h: 0.26, fontFace: FONT_B, fontSize: 10, color: C.coral, bold: true, align: near ? (lx > px ? "left" : "right") : "center", margin: 0 });
+    s.addText(`List $${Math.round(list / sq)}`, { x: lLabelX, y: y, w: 1.55, h: 0.26, fontFace: FONT_B, fontSize: 10, color: C.steel, bold: true, align: near ? (lx > px ? "left" : "right") : "center", margin: 0 });
   }
   // comp dots, stacked when close
   const order = vals.map((v, i) => i).sort((a, b) => vals[a] - vals[b]);
@@ -172,11 +173,55 @@ function psfStrip(s, pres, y) {
 }
 const confColor = c => (c === "High" ? C.green : c === "Medium" ? C.amber : C.crimson);
 const impactColor = i => (i === "positive" ? C.green : i === "negative" ? C.crimson : i === "assumed" ? C.amber : C.steel);
-const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : t === "reported-unverified" ? C.coral : C.steel);
+const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : t === "reported-unverified" ? C.crimson : C.steel);
 
 (async () => {
   const pres = new pptxgen();
   pres.layout = "LAYOUT_WIDE";
+  // ===== STYLE LAYER =====
+  // Quiet chrome across every slide: sentence case instead of tracked caps, no drop shadows,
+  // regular-weight serif, no italic emphasis. Color is reserved for the slide's one moment and
+  // for meaning (good / caution / bad); chrome is marine ink and grey hairlines.
+  const ACRO = new Set(["FEMA","HVAC","PMI","MIP","AOP","NFIP","AVM","AVMS","HOA","ZIP","FHA","CLUE","ISO","PPC","EPA","MLS","RC","ACV","RCV","DOI","ALDOI","AL","US","USPAP","FORTIFIED","AIUA","MSC","GIS","DOT","SFHA","BFE","LTV","PMMS","FRED","ADOR","IBHS","HO","HO3","II","III","IV","GLA","CMA","AC","EST","NWI","USDA","USGS","NOAA","SLOSH","FST","R-2","PI","YOY","K","SF","SQFT"]);
+  function sentenceCase(t) {
+    if (typeof t !== "string" || /[a-z]/.test(t) || !/[A-Z][A-Z]/.test(t)) return t;
+    let first = true;
+    return t.replace(/[A-Za-z][A-Za-z0-9'’.\-]*/g, w => {
+      const bare = w.replace(/[.\-]+$/, "");
+      let out;
+      if (bare === "COV") out = "Cov";
+      else if (ACRO.has(bare.toUpperCase().replace(/[.'’]/g, "")) || /\d/.test(w) || (w.length === 1 && w !== "A")) out = w;
+      else out = w.toLowerCase();
+      if (/^(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)$/i.test(bare)) out = bare.charAt(0).toUpperCase() + bare.slice(1).toLowerCase() + w.slice(bare.length);
+      if (first) { out = out.charAt(0).toUpperCase() + out.slice(1); first = false; }
+      return out;
+    });
+  }
+  const quiet = o => {
+    const q = { ...(o || {}) };
+    delete q.charSpacing; delete q.shadow;
+    if (q.fontFace === FONT_H) q.bold = false;
+    if (q.italic) q.italic = false;
+    return q;
+  };
+  const _addSlide = pres.addSlide.bind(pres);
+  pres.addSlide = (...args) => {
+    const s = _addSlide(...args);
+    const at = s.addText.bind(s), as = s.addShape.bind(s), atb = s.addTable.bind(s);
+    s.addText = (text, opts) => {
+      const t = Array.isArray(text) ? text.map(r => ({ ...r, text: sentenceCase(r.text), options: quiet(r.options) })) : sentenceCase(text);
+      return at(t, quiet(opts));
+    };
+    s.addShape = (shape, opts) => as(shape, quiet(opts));
+    s.addTable = (rows, opts) => atb(rows.map(r => r.map(c => (c && typeof c === "object" && "text" in c) ? { ...c, text: sentenceCase(c.text), options: quiet(c.options) } : sentenceCase(c))), opts);
+    return s;
+  };
+  // Small mono source tag: the family's signature. Every key figure says where it came from.
+  const FONT_M = "Consolas";
+  function srcTag(s, text, x, y, w, dark = false) {
+    if (!text) return;
+    s.addText(text, { x, y, w, h: 0.2, fontFace: FONT_M, fontSize: 8, color: dark ? "8FA9C0" : "64748B", margin: 0, align: "left", valign: "middle" });
+  }
   pres.author = "Property Appraisal";
   pres.title = `${D.property.address} — Buyer's Valuation Brief`;
 
@@ -191,8 +236,8 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
   {
     const s = pres.addSlide();
     s.background = { color: C.marine };
-    s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 0, w: W, h: 0.14, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText("BUYER'S VALUATION BRIEF", { x: 0.9, y: 2.0, w: 11.5, h: 0.4, fontFace: FONT_B, fontSize: 15, color: C.coral, bold: true, charSpacing: 6, margin: 0 });
+    
+    s.addText("BUYER'S VALUATION BRIEF", { x: 0.9, y: 2.0, w: 11.5, h: 0.4, fontFace: FONT_B, fontSize: 15, color: "8FA9C0", bold: false, charSpacing: 6, margin: 0 });
     s.addText(D.property.address, { x: 0.9, y: 2.5, w: 11.5, h: 1.1, fontFace: FONT_H, fontSize: 44, color: C.white, bold: true, margin: 0 });
     s.addText(D.property.city_state_zip, { x: 0.9, y: 3.65, w: 11.5, h: 0.5, fontFace: FONT_B, fontSize: 20, color: "AFC3D4", margin: 0 });
     const facts = [
@@ -201,7 +246,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
       D.property.lot_acres + " ac", "Built " + D.property.year_built
     ].join("   ·   ");
     s.addText(facts, { x: 0.9, y: 4.35, w: 11.5, h: 0.4, fontFace: FONT_B, fontSize: 14, color: "7A93AB", margin: 0 });
-    s.addShape(pres.shapes.LINE, { x: 0.9, y: 5.15, w: 4.0, h: 0, line: { color: C.teal, width: 1.5 } });
+    s.addShape(pres.shapes.LINE, { x: 0.9, y: 5.15, w: 4.0, h: 0, line: { color: "1B4366", width: 0.75 } });
     s.addText("Sales comparison appraisal with owner-interview condition adjustments", { x: 0.9, y: 5.35, w: 9, h: 0.35, fontFace: FONT_B, fontSize: 13, color: "AFC3D4", italic: true, margin: 0 });
     s.addText(D.property.report_date, { x: 0.9, y: 6.55, w: 6, h: 0.35, fontFace: FONT_B, fontSize: 12, color: "7A93AB", margin: 0 });
     footerDisclaimer(s, true);
@@ -216,6 +261,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
     // Point value hero
     s.addText(fmt$(V.point_value), { x: 0.85, y: 1.7, w: 6.2, h: 1.2, fontFace: FONT_H, fontSize: 60, color: C.marine, bold: true, margin: 0 });
     s.addText("Indicated market value", { x: 0.9, y: 2.9, w: 6, h: 0.35, fontFace: FONT_B, fontSize: 14, color: C.graphite, margin: 0 });
+    srcTag(s, V.src || `Sales comparison · ${(D.comps || []).length} comps · ${(D.comps || []).every(c => c.source_tier === 1) ? "all T1" : "T1/T2"}`, 0.9, 3.25, 6);
 
     // Confidence badge
     const cc = confColor(V.confidence);
@@ -231,21 +277,21 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
     const max = Math.max(hi, list || hi) * 1.015;
     const pos = v => bandX + ((v - min) / (max - min)) * bandW;
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: bandX, y: bandY, w: bandW, h: 0.5, fill: { color: C.mist }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.05 });
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: pos(lo), y: bandY, w: pos(hi) - pos(lo), h: 0.5, fill: { color: C.teal, transparency: 25 }, line: { color: C.teal, width: 1 }, rectRadius: 0.05 });
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: pos(lo), y: bandY, w: pos(hi) - pos(lo), h: 0.5, fill: { color: C.coral, transparency: 70 }, line: { color: C.coral, width: 1 }, rectRadius: 0.05 }); // the moment: the value range
     // point value marker
     s.addShape(pres.shapes.RECTANGLE, { x: pos(pv) - 0.03, y: bandY - 0.18, w: 0.06, h: 0.86, fill: { color: C.marine }, line: { color: C.marine } });
     s.addText("VALUE " + fmt$(pv), { x: pos(pv) - 1.1, y: bandY - 0.55, w: 2.2, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.marine, bold: true, align: "center", margin: 0 });
     // list price marker
     if (list) {
-      s.addShape(pres.shapes.RECTANGLE, { x: pos(list) - 0.03, y: bandY - 0.18, w: 0.06, h: 0.86, fill: { color: C.coral }, line: { color: C.coral } });
-      s.addText("LIST " + fmt$(list), { x: pos(list) - 1.1, y: bandY + 0.76, w: 2.2, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.coral, bold: true, align: "center", margin: 0 });
+      s.addShape(pres.shapes.RECTANGLE, { x: pos(list) - 0.015, y: bandY - 0.18, w: 0.03, h: 0.86, fill: { color: C.steel }, line: { color: C.steel } });
+      s.addText("List " + fmt$(list), { x: pos(list) - 1.1, y: bandY + 0.76, w: 2.2, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.steel, bold: true, align: "center", margin: 0 });
     }
     s.addText(fmt$(lo), { x: pos(lo) - 0.9, y: bandY + 0.62, w: 1.8, h: 0.28, fontFace: FONT_B, fontSize: 10, color: C.steel, align: "center", margin: 0 });
     s.addText(fmt$(hi), { x: pos(hi) - 0.9, y: bandY + 0.62, w: 1.8, h: 0.28, fontFace: FONT_B, fontSize: 10, color: C.steel, align: "center", margin: 0 });
 
     // Verdict bar
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 5.6, w: 11.6, h: 1.15, fill: { color: C.marine }, line: { color: C.marine }, rectRadius: 0.08, shadow: sh() });
-    s.addText(V.vs_list_verdict.toUpperCase(), { x: 1.15, y: 5.78, w: 11, h: 0.4, fontFace: FONT_H, fontSize: 19, color: C.coral, bold: true, margin: 0 });
+    s.addText(V.vs_list_verdict, { x: 1.15, y: 5.78, w: 11, h: 0.4, fontFace: FONT_H, fontSize: 19, color: C.white, bold: true, margin: 0 });
     s.addText(V.vs_list_detail, { x: 1.15, y: 6.2, w: 11, h: 0.4, fontFace: FONT_B, fontSize: 13, color: "D7E2EA", margin: 0 });
     footerDisclaimer(s);
   }
@@ -259,7 +305,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
 
     const colY = 2.15, rowH = 0.56;
     // Left: public facts
-    s.addText("PUBLIC RECORD", { x: 0.85, y: colY, w: 5.7, h: 0.32, fontFace: FONT_B, fontSize: 12, color: C.teal, bold: true, charSpacing: 3, margin: 0 });
+    s.addText("PUBLIC RECORD", { x: 0.85, y: colY, w: 5.7, h: 0.32, fontFace: FONT_B, fontSize: 12, color: C.steel, bold: false, charSpacing: 3, margin: 0 });
     (P.public_facts || []).slice(0, 8).forEach((f, i) => {
       const y = colY + 0.42 + i * rowH;
       s.addShape(pres.shapes.LINE, { x: 0.85, y: y + rowH - 0.08, w: 5.7, h: 0, line: { color: C.hairline, width: 0.5 } });
@@ -267,7 +313,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
       s.addText(String(f.value), { x: 3.3, y, w: 3.25, h: rowH - 0.1, fontFace: FONT_B, fontSize: 11.5, color: C.ink, bold: true, valign: "middle", margin: 0 });
     });
     // Right: interview inputs
-    s.addText("FROM THE BUYER INTERVIEW", { x: 6.95, y: colY, w: 5.7, h: 0.32, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 3, margin: 0 });
+    s.addText("FROM THE BUYER INTERVIEW", { x: 6.95, y: colY, w: 5.7, h: 0.32, fontFace: FONT_B, fontSize: 12, color: C.steel, bold: false, charSpacing: 3, margin: 0 });
     (P.interview_inputs || []).slice(0, 8).forEach((f, i) => {
       const y = colY + 0.42 + i * rowH;
       const ic = impactColor(f.impact);
@@ -387,7 +433,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
 
     // Value walk (left)
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 2.0, w: 5.6, h: 2.35, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.06, shadow: sh() });
-    s.addText("VALUE WALK", { x: 1.1, y: 2.15, w: 5, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.teal, bold: true, charSpacing: 3, margin: 0 });
+    s.addText("VALUE WALK", { x: 1.1, y: 2.15, w: 5, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.steel, bold: false, charSpacing: 3, margin: 0 });
     const walk = [
       ["Weighted comp value", fmt$(R.base_indicated_value), C.ink],
       ["Condition adjustments", fmtAdj(D.condition_total), (D.condition_total || 0) >= 0 ? C.green : C.crimson],
@@ -402,7 +448,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
 
     // AVM cross-check (right)
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 6.85, y: 2.0, w: 5.6, h: 2.35, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.06, shadow: sh() });
-    s.addText("AVM CROSS-CHECK (context only, never comps)", { x: 7.1, y: 2.15, w: 5.2, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.teal, bold: true, charSpacing: 2, margin: 0 });
+    s.addText("AVM CROSS-CHECK (context only, never comps)", { x: 7.1, y: 2.15, w: 5.2, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.steel, bold: false, charSpacing: 2, margin: 0 });
     (R.avm_checks || []).slice(0, 3).forEach((a, i) => {
       const y = 2.55 + i * 0.5;
       s.addText(a.source, { x: 7.1, y, w: 3.2, h: 0.42, fontFace: FONT_B, fontSize: 12, color: C.graphite, valign: "middle", margin: 0 });
@@ -438,7 +484,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
 
     (V.anchor_points || []).slice(0, 3).forEach((a, i) => {
       const x = 0.85 + i * 4.0;
-      const colors = [C.green, C.teal, C.crimson];
+      const colors = [C.marine, C.coral, C.steel]; // fair value is the moment
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.35, w: 3.7, h: 2.05, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.08, shadow: sh() });
       s.addShape(pres.shapes.RECTANGLE, { x, y: 2.35, w: 3.7, h: 0.12, fill: { color: colors[i] }, line: { color: colors[i] } });
       s.addText(a.label.toUpperCase(), { x: x + 0.25, y: 2.6, w: 3.2, h: 0.32, fontFace: FONT_B, fontSize: 12, color: colors[i], bold: true, charSpacing: 2, margin: 0 });
@@ -449,7 +495,7 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
     psfStrip(s, pres, 4.55);
 
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 5.78, w: 11.6, h: 1.2, fill: { color: C.marine }, line: { color: C.marine }, rectRadius: 0.08, shadow: sh() });
-    s.addText("BOTTOM LINE", { x: 1.15, y: 5.9, w: 10.9, h: 0.32, fontFace: FONT_B, fontSize: 11, color: C.coral, bold: true, charSpacing: 4, margin: 0 });
+    s.addText("BOTTOM LINE", { x: 1.15, y: 5.9, w: 10.9, h: 0.32, fontFace: FONT_B, fontSize: 11, color: "8FA9C0", bold: false, charSpacing: 4, margin: 0 });
     s.addText(V.bottom_line, { x: 1.15, y: 6.2, w: 10.9, h: 0.7, fontFace: FONT_B, fontSize: 13.5, color: C.white, valign: "top", margin: 0 });
     footerDisclaimer(s);
   }
@@ -458,13 +504,13 @@ const tagColor = t => (t === "verified" ? C.green : t === "assumed" ? C.amber : 
   {
     const s = pres.addSlide();
     s.background = { color: C.marine };
-    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.5, w: 0.08, h: 0.9, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText("SOURCES, CONFIDENCE & CAVEATS", { x: 0.85, y: 0.5, w: 10, h: 0.35, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 5, margin: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.5, w: 0.04, h: 0.9, fill: { color: "1B4366" }, line: { color: "1B4366" } });
+    s.addText("SOURCES, CONFIDENCE & CAVEATS", { x: 0.85, y: 0.5, w: 10, h: 0.35, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: false, charSpacing: 5, margin: 0 });
     s.addText("Where Every Number Came From", { x: 0.85, y: 0.85, w: 12, h: 0.6, fontFace: FONT_H, fontSize: 26, color: C.white, bold: true, margin: 0 });
 
     (D.sources || []).slice(0, 8).forEach((src, i) => {
       const y = 1.85 + i * 0.5;
-      s.addText(src.category, { x: 0.85, y, w: 2.9, h: 0.42, fontFace: FONT_B, fontSize: 11.5, color: C.coral, bold: true, valign: "middle", margin: 0 });
+      s.addText(src.category, { x: 0.85, y, w: 2.9, h: 0.42, fontFace: FONT_B, fontSize: 11.5, color: "8FA9C0", bold: false, valign: "middle", margin: 0 });
       s.addText(src.detail, { x: 3.85, y, w: 8.7, h: 0.42, fontFace: FONT_B, fontSize: 11, color: "D7E2EA", valign: "middle", margin: 0 });
       s.addShape(pres.shapes.LINE, { x: 0.85, y: y + 0.44, w: 11.7, h: 0, line: { color: C.panel, width: 0.75 } });
     });

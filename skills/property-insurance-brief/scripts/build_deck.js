@@ -135,15 +135,16 @@ function renderIconSvg(IconComponent, color = "#000000", size = 256) {
 async function icon(iconName, hex) {
   const Component = FA[iconName];
   if (!Component) throw new Error("Unknown icon: " + iconName);
-  const svg = renderIconSvg(Component, "#" + hex);
+  const svg = renderIconSvg(Component, "#" + C.steel); // one icon color
   const png = await sharp(Buffer.from(svg)).png().toBuffer();
   return "image/png;base64," + png.toString("base64");
 }
 const sh = () => ({ type: "outer", blur: 8, offset: 2, angle: 90, color: "000000", opacity: 0.10 });
 
 function header(s, pres, eyebrow, title, subtitle, accentColor = C.coral) {
-  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.4, w: 0.08, h: 0.95, fill: { color: accentColor }, line: { color: accentColor } });
-  s.addText(eyebrow, { x: 0.85, y: 0.4, w: 10, h: 0.3, fontFace: FONT_B, fontSize: 12, color: accentColor, bold: true, charSpacing: 5, margin: 0 });
+  accentColor = C.marine; // chrome is ink; color is saved for the moment
+  s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.4, w: 0.04, h: 0.95, fill: { color: accentColor }, line: { color: accentColor } });
+  s.addText(eyebrow, { x: 0.85, y: 0.4, w: 10, h: 0.3, fontFace: FONT_B, fontSize: 12, color: C.steel, bold: false, charSpacing: 5, margin: 0 });
   s.addText(title, { x: 0.85, y: 0.7, w: 12.2, h: 0.7, fontFace: FONT_H, fontSize: 28, color: C.marine, bold: true, margin: 0 });
   if (subtitle) s.addText(subtitle, { x: 0.85, y: 1.45, w: 11.8, h: 0.55, fontFace: FONT_B, fontSize: 13, color: C.graphite, italic: true, margin: 0 });
 }
@@ -161,6 +162,50 @@ function sourceNote(s, text) {
 (async () => {
   const pres = new pptxgen();
   pres.layout = "LAYOUT_WIDE";
+  // ===== STYLE LAYER =====
+  // Quiet chrome across every slide: sentence case instead of tracked caps, no drop shadows,
+  // regular-weight serif, no italic emphasis. Color is reserved for the slide's one moment and
+  // for meaning (good / caution / bad); chrome is marine ink and grey hairlines.
+  const ACRO = new Set(["FEMA","HVAC","PMI","MIP","AOP","NFIP","AVM","AVMS","HOA","ZIP","FHA","CLUE","ISO","PPC","EPA","MLS","RC","ACV","RCV","DOI","ALDOI","AL","US","USPAP","FORTIFIED","AIUA","MSC","GIS","DOT","SFHA","BFE","LTV","PMMS","FRED","ADOR","IBHS","HO","HO3","II","III","IV","GLA","CMA","AC","EST","NWI","USDA","USGS","NOAA","SLOSH","FST","R-2","PI","YOY","K","SF","SQFT"]);
+  function sentenceCase(t) {
+    if (typeof t !== "string" || /[a-z]/.test(t) || !/[A-Z][A-Z]/.test(t)) return t;
+    let first = true;
+    return t.replace(/[A-Za-z][A-Za-z0-9'’.\-]*/g, w => {
+      const bare = w.replace(/[.\-]+$/, "");
+      let out;
+      if (bare === "COV") out = "Cov";
+      else if (ACRO.has(bare.toUpperCase().replace(/[.'’]/g, "")) || /\d/.test(w) || (w.length === 1 && w !== "A")) out = w;
+      else out = w.toLowerCase();
+      if (/^(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)$/i.test(bare)) out = bare.charAt(0).toUpperCase() + bare.slice(1).toLowerCase() + w.slice(bare.length);
+      if (first) { out = out.charAt(0).toUpperCase() + out.slice(1); first = false; }
+      return out;
+    });
+  }
+  const quiet = o => {
+    const q = { ...(o || {}) };
+    delete q.charSpacing; delete q.shadow;
+    if (q.fontFace === FONT_H) q.bold = false;
+    if (q.italic) q.italic = false;
+    return q;
+  };
+  const _addSlide = pres.addSlide.bind(pres);
+  pres.addSlide = (...args) => {
+    const s = _addSlide(...args);
+    const at = s.addText.bind(s), as = s.addShape.bind(s), atb = s.addTable.bind(s);
+    s.addText = (text, opts) => {
+      const t = Array.isArray(text) ? text.map(r => ({ ...r, text: sentenceCase(r.text), options: quiet(r.options) })) : sentenceCase(text);
+      return at(t, quiet(opts));
+    };
+    s.addShape = (shape, opts) => as(shape, quiet(opts));
+    s.addTable = (rows, opts) => atb(rows.map(r => r.map(c => (c && typeof c === "object" && "text" in c) ? { ...c, text: sentenceCase(c.text), options: quiet(c.options) } : sentenceCase(c))), opts);
+    return s;
+  };
+  // Small mono source tag: the family's signature. Every key figure says where it came from.
+  const FONT_M = "Consolas";
+  function srcTag(s, text, x, y, w, dark = false) {
+    if (!text) return;
+    s.addText(text, { x, y, w, h: 0.2, fontFace: FONT_M, fontSize: 8, color: dark ? "8FA9C0" : "64748B", margin: 0, align: "left", valign: "middle" });
+  }
   pres.author = "Property Insurance Brief";
   pres.title = `${D.property.address} — Homeowners Insurance Brief`;
 
@@ -176,8 +221,8 @@ function sourceNote(s, text) {
     const s = pres.addSlide();
     const T = D.title || {};
     s.background = { color: C.marine };
-    s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 0, w: W, h: 0.14, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText(T.eyebrow || "HOMEOWNERS INSURANCE BRIEF", { x: 0.9, y: 1.9, w: 11.5, h: 0.4, fontFace: FONT_B, fontSize: 15, color: C.coral, bold: true, charSpacing: 6, margin: 0 });
+    
+    s.addText(T.eyebrow || "HOMEOWNERS INSURANCE BRIEF", { x: 0.9, y: 1.9, w: 11.5, h: 0.4, fontFace: FONT_B, fontSize: 15, color: "8FA9C0", bold: false, charSpacing: 6, margin: 0 });
     s.addText(D.property.address, { x: 0.9, y: 2.4, w: 11.5, h: 1.1, fontFace: FONT_H, fontSize: 44, color: C.white, bold: true, margin: 0 });
     s.addText(`${D.property.city}, ${D.property.state} ${D.property.zip}`, { x: 0.9, y: 3.55, w: 11.5, h: 0.5, fontFace: FONT_B, fontSize: 20, color: "AFC3D4", margin: 0 });
     const facts = [
@@ -187,10 +232,10 @@ function sourceNote(s, text) {
       D.property.distance_to_coast
     ].filter(Boolean).join("   ·   ");
     s.addText(facts, { x: 0.9, y: 4.25, w: 11.5, h: 0.4, fontFace: FONT_B, fontSize: 14, color: "7A93AB", margin: 0 });
-    s.addShape(pres.shapes.LINE, { x: 0.9, y: 5.0, w: 4.0, h: 0, line: { color: C.teal, width: 1.5 } });
+    s.addShape(pres.shapes.LINE, { x: 0.9, y: 5.0, w: 4.0, h: 0, line: { color: "1B4366", width: 0.75 } });
     s.addText(T.tagline || "", { x: 0.9, y: 5.2, w: 10.5, h: 0.4, fontFace: FONT_B, fontSize: 13, color: "AFC3D4", italic: true, margin: 0 });
     if (T.status_tag) {
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.9, y: 5.8, w: 4.2, h: 0.42, fill: { color: C.coral }, line: { color: C.coral }, rectRadius: 0.21 });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.9, y: 5.8, w: 4.2, h: 0.42, fill: { color: C.panel }, line: { color: "1B4366", width: 0.75 }, rectRadius: 0.08 });
       s.addText(T.status_tag, { x: 0.9, y: 5.8, w: 4.2, h: 0.42, fontFace: FONT_B, fontSize: 10.5, color: C.white, bold: true, charSpacing: 2, align: "center", valign: "middle", margin: 0 });
     }
     s.addText(T.prepared_label || "", { x: 0.9, y: 6.55, w: 6, h: 0.35, fontFace: FONT_B, fontSize: 12, color: "7A93AB", margin: 0 });
@@ -208,7 +253,7 @@ function sourceNote(s, text) {
       const c = cards[i];
       const x = x0 + (i % 2) * (cw + gx);
       const y = y0 + Math.floor(i / 2) * (ch + gy);
-      const col = token(c.color);
+      const col = C.marine;
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: ch, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.08, shadow: sh() });
       s.addShape(pres.shapes.RECTANGLE, { x, y, w: 0.09, h: ch, fill: { color: col }, line: { color: col } });
       s.addImage({ data: await getIcon(c.icon, token(c.color)), x: x + 0.3, y: y + 0.28, w: 0.42, h: 0.42 });
@@ -229,12 +274,13 @@ function sourceNote(s, text) {
     stats.forEach((st, i) => {
       const x = x0 + (i % 3) * (cw + gx);
       const y = y0 + Math.floor(i / 3) * (ch + gy);
-      const col = token(st.color);
+      const col = C.marine;
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: ch, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.08, shadow: sh() });
-      s.addShape(pres.shapes.RECTANGLE, { x, y, w: cw, h: 0.11, fill: { color: col }, line: { color: col } });
+      s.addShape(pres.shapes.RECTANGLE, { x, y, w: cw, h: 0.04, fill: { color: col }, line: { color: col } });
       s.addText(st.big, { x: x + 0.25, y: y + 0.3, w: cw - 0.5, h: 0.75, fontFace: FONT_H, fontSize: 30, color: C.marine, bold: true, margin: 0 });
       s.addText(st.label, { x: x + 0.25, y: y + 1.1, w: cw - 0.5, h: 0.32, fontFace: FONT_B, fontSize: 11.5, color: col, bold: true, charSpacing: 2, margin: 0 });
-      s.addText(st.sub || "", { x: x + 0.25, y: y + 1.44, w: cw - 0.5, h: 0.5, fontFace: FONT_B, fontSize: 10.5, color: C.steel, margin: 0 });
+      s.addText(st.sub || "", { x: x + 0.25, y: y + 1.42, w: cw - 0.5, h: 0.34, fontFace: FONT_B, fontSize: 10.5, color: C.steel, margin: 0 });
+      srcTag(s, st.src, x + 0.25, y + ch - 0.28, cw - 0.5);
     });
     sourceNote(s, CS.source_note);
     footerDisclaimer(s);
@@ -254,7 +300,7 @@ function sourceNote(s, text) {
       const base = { fontFace: FONT_B, fontSize: 10.5, fill: { color: fill }, valign: "middle", align: "left" };
       rows.push([
         { text: r.line, options: { ...base, bold: true, color: C.marine } },
-        { text: r.chosen, options: { ...base, bold: true, color: C.teal } },
+        { text: r.chosen, options: { ...base, bold: true, color: C.marine } },
         { text: r.what, options: { ...base, color: C.graphite, fontSize: 10 } }
       ]);
     });
@@ -281,7 +327,7 @@ function sourceNote(s, text) {
     const cw = 3.78, ch = 2.45, gx = 0.13, x0 = 0.85, y0 = 2.15;
     opts.forEach((o, i) => {
       const x = x0 + i * (cw + gx);
-      const col = token(o.color);
+      const col = o.chosen ? C.coral : C.marine; // the moment: storm-day cash on the chosen option
       const borderW = o.chosen ? 2.25 : 0.75;
       const borderC = o.chosen ? col : C.hairline;
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: y0, w: cw, h: ch, fill: { color: C.white }, line: { color: borderC, width: borderW }, rectRadius: 0.08, shadow: sh() });
@@ -304,11 +350,11 @@ function sourceNote(s, text) {
     });
     // Framing band
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 4.85, w: 11.6, h: 1.0, fill: { color: C.marine }, line: { color: C.marine }, rectRadius: 0.08, shadow: sh() });
-    s.addText("THE REAL QUESTION", { x: 1.15, y: 4.97, w: 10.9, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: C.coral, bold: true, charSpacing: 3, margin: 0 });
+    s.addText("THE REAL QUESTION", { x: 1.15, y: 4.97, w: 10.9, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: "8FA9C0", bold: false, charSpacing: 3, margin: 0 });
     s.addText(WD.framing || "", { x: 1.15, y: 5.25, w: 10.9, h: 0.55, fontFace: FONT_B, fontSize: 12.5, color: C.white, valign: "top", margin: 0 });
     // Detail note
     if (WD.detail_note) {
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 6.0, w: 11.6, h: 0.62, fill: { color: "F0F5F8" }, line: { color: C.teal, width: 0.75 }, rectRadius: 0.06 });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 6.0, w: 11.6, h: 0.62, fill: { color: "F0F5F8" }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.06 });
       s.addText(WD.detail_note, { x: 1.1, y: 6.03, w: 11.1, h: 0.56, fontFace: FONT_B, fontSize: 10.5, color: C.graphite, valign: "middle", margin: 0 });
     }
     sourceNote(s, WD.source_note);
@@ -326,7 +372,7 @@ function sourceNote(s, text) {
     const cw = (11.6 - gx * (n - 1)) / n, ch = 1.85, x0 = 0.85, y0 = 2.15;
     facts.forEach((f, i) => {
       const x = x0 + i * (cw + gx);
-      const col = token(f.color);
+      const col = C.marine;
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: y0, w: cw, h: ch, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.08, shadow: sh() });
       s.addShape(pres.shapes.RECTANGLE, { x, y: y0, w: cw, h: 0.11, fill: { color: col }, line: { color: col } });
       s.addText(f.big, { x: x + 0.22, y: y0 + 0.26, w: cw - 0.44, h: 0.62, fontFace: FONT_H, fontSize: 23, color: C.marine, bold: true, margin: 0 });
@@ -337,7 +383,7 @@ function sourceNote(s, text) {
     s.addText(F.body || "", { x: 0.85, y: 4.35, w: 11.6, h: 0.95, fontFace: FONT_B, fontSize: 12.5, color: C.graphite, valign: "top", margin: 0 });
     // Recommendation band
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 5.45, w: 11.6, h: 1.05, fill: { color: C.marine }, line: { color: C.marine }, rectRadius: 0.08, shadow: sh() });
-    s.addText("RECOMMENDATION", { x: 1.15, y: 5.58, w: 10.9, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: C.coral, bold: true, charSpacing: 3, margin: 0 });
+    s.addText("RECOMMENDATION", { x: 1.15, y: 5.58, w: 10.9, h: 0.28, fontFace: FONT_B, fontSize: 10.5, color: "8FA9C0", bold: false, charSpacing: 3, margin: 0 });
     s.addText(F.recommendation || "", { x: 1.15, y: 5.87, w: 10.9, h: 0.55, fontFace: FONT_B, fontSize: 12.5, color: C.white, valign: "top", margin: 0 });
     sourceNote(s, F.source_note);
     footerDisclaimer(s);
@@ -352,7 +398,7 @@ function sourceNote(s, text) {
     const startY = 2.15, rowH = Math.min(0.78, 4.5 / Math.max(items.length, 1));
     items.forEach((it, i) => {
       const y = startY + i * rowH;
-      const col = token(it.color);
+      const col = C.marine;
       // Rank chip
       s.addShape(pres.shapes.OVAL, { x: 0.85, y: y + (rowH - 0.5) / 2, w: 0.5, h: 0.5, fill: { color: col }, line: { color: col } });
       s.addText(it.rank, { x: 0.85, y: y + (rowH - 0.5) / 2, w: 0.5, h: 0.5, fontFace: FONT_H, fontSize: 16, color: C.white, bold: true, align: "center", valign: "middle", margin: 0 });
@@ -372,15 +418,15 @@ function sourceNote(s, text) {
     header(s, pres, "ESTIMATED PREMIUM RANGE", PR.title, PR.subtitle, C.amber);
     // Range hero
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.85, y: 2.1, w: 11.6, h: 1.55, fill: { color: C.marine }, line: { color: C.marine }, rectRadius: 0.08, shadow: sh() });
-    s.addText(`${PR.range_low}  –  ${PR.range_high}`, { x: 1.15, y: 2.28, w: 7.6, h: 0.85, fontFace: FONT_H, fontSize: 44, color: C.white, bold: true, margin: 0 });
+    s.addText(`${PR.range_low}  –  ${PR.range_high}`, { x: 1.15, y: 2.28, w: 7.6, h: 0.85, fontFace: FONT_H, fontSize: 44, color: C.coral, bold: true, margin: 0 });
     s.addText(PR.range_label || "", { x: 1.15, y: 3.15, w: 7.6, h: 0.35, fontFace: FONT_B, fontSize: 11.5, color: C.amber, bold: true, charSpacing: 2, margin: 0 });
     if (PR.ladder) {
       const RUNG = { 1: "QUOTE ON THIS HOUSE", 2: "QUOTE IN THIS TERRITORY", 3: "STATE DOI COMPARISON", 4: "STATE AVERAGE STUDY" };
-      s.addText(`RUNG ${PR.ladder.rung} OF 4 · ${RUNG[PR.ladder.rung] || ""}`, { x: 8.9, y: 2.3, w: 3.35, h: 0.3, fontFace: FONT_B, fontSize: 9.5, color: C.coral, bold: true, charSpacing: 2, align: "right", margin: 0 });
+      s.addText(`RUNG ${PR.ladder.rung} OF 4 · ${RUNG[PR.ladder.rung] || ""}`, { x: 8.9, y: 2.3, w: 3.35, h: 0.3, fontFace: FONT_B, fontSize: 9.5, color: "8FA9C0", bold: false, charSpacing: 2, align: "right", margin: 0 });
       s.addText(PR.ladder.math || "", { x: 8.9, y: 2.62, w: 3.35, h: 0.9, fontFace: FONT_B, fontSize: 10.5, color: "D7E2EA", align: "right", valign: "top", margin: 0 });
     }
     // Basis lines
-    s.addText("WHERE THE RANGE COMES FROM", { x: 0.85, y: 3.95, w: 6, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.teal, bold: true, charSpacing: 3, margin: 0 });
+    s.addText("WHERE THE RANGE COMES FROM", { x: 0.85, y: 3.95, w: 6, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.steel, bold: false, charSpacing: 3, margin: 0 });
     const basis = (PR.basis_lines || []).slice(0, 5);
     const capY = 6.05; // fixed: keeps the caveat band clear of the source note and footer
     const basisRowH = Math.min(0.44, (capY - 0.15 - 4.32) / Math.max(basis.length, 1));
@@ -405,7 +451,7 @@ function sourceNote(s, text) {
     // Left: property + coverage summary (compact)
     const leftX = 0.85, leftW = 5.5;
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: leftX, y: 2.15, w: leftW, h: 4.45, fill: { color: C.white }, line: { color: C.hairline, width: 0.75 }, rectRadius: 0.06, shadow: sh() });
-    s.addText("THE SPEC EVERY AGENT QUOTES", { x: leftX + 0.22, y: 2.3, w: leftW - 0.44, h: 0.3, fontFace: FONT_B, fontSize: 10.5, color: C.teal, bold: true, charSpacing: 2, margin: 0 });
+    s.addText("THE SPEC EVERY AGENT QUOTES", { x: leftX + 0.22, y: 2.3, w: leftW - 0.44, h: 0.3, fontFace: FONT_B, fontSize: 10.5, color: C.steel, bold: false, charSpacing: 2, margin: 0 });
     const specRows = [...(SS.property_block || []).slice(0, 4), ...(SS.coverage_block || []).slice(0, 6)];
     specRows.forEach((r, i) => {
       const y = 2.68 + i * 0.385;
@@ -448,18 +494,18 @@ function sourceNote(s, text) {
     const s = pres.addSlide();
     const A = D.agent_script;
     s.background = { color: C.marine };
-    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.5, w: 0.08, h: 0.9, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText("AGENT SCRIPT & QUOTE RED FLAGS", { x: 0.85, y: 0.5, w: 10, h: 0.35, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 5, margin: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.5, w: 0.04, h: 0.9, fill: { color: "1B4366" }, line: { color: "1B4366" } });
+    s.addText("AGENT SCRIPT & QUOTE RED FLAGS", { x: 0.85, y: 0.5, w: 10, h: 0.35, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: false, charSpacing: 5, margin: 0 });
     s.addText(A.title, { x: 0.85, y: 0.85, w: 12, h: 0.6, fontFace: FONT_H, fontSize: 26, color: C.white, bold: true, margin: 0 });
     s.addText(A.subtitle || "", { x: 0.85, y: 1.45, w: 11.5, h: 0.35, fontFace: FONT_B, fontSize: 12.5, color: "AFC3D4", italic: true, margin: 0 });
 
     // Left: questions
-    s.addText("ASK EVERY AGENT", { x: 0.85, y: 2.05, w: 6, h: 0.3, fontFace: FONT_B, fontSize: 11, color: C.teal, bold: true, charSpacing: 3, margin: 0 });
+    s.addText("ASK EVERY AGENT", { x: 0.85, y: 2.05, w: 6, h: 0.3, fontFace: FONT_B, fontSize: 11, color: "8FA9C0", bold: false, charSpacing: 3, margin: 0 });
     const qs = (A.questions || []).slice(0, 8);
     const qH = Math.min(0.56, 4.3 / qs.length);
     qs.forEach((q, i) => {
       const y = 2.42 + i * qH;
-      s.addText(String(i + 1), { x: 0.85, y, w: 0.35, h: qH - 0.06, fontFace: FONT_H, fontSize: 13, color: C.coral, bold: true, valign: "top", margin: 0 });
+      s.addText(String(i + 1), { x: 0.85, y, w: 0.35, h: qH - 0.06, fontFace: FONT_H, fontSize: 13, color: "8FA9C0", bold: true, valign: "top", margin: 0 });
       s.addText(q, { x: 1.25, y, w: 5.75, h: qH - 0.04, fontFace: FONT_B, fontSize: 10, color: "D7E2EA", valign: "top", margin: 0 });
     });
 
@@ -477,7 +523,7 @@ function sourceNote(s, text) {
     // Footer punchline
     if (A.footer_note) {
       s.addShape(pres.shapes.LINE, { x: 0.85, y: 6.6, w: 11.6, h: 0, line: { color: C.panel, width: 0.75 } });
-      s.addText(A.footer_note, { x: 0.85, y: 6.68, w: 11.6, h: 0.35, fontFace: FONT_H, fontSize: 13, color: C.coral, italic: true, align: "center", margin: 0 });
+      s.addText(A.footer_note, { x: 0.85, y: 6.68, w: 11.6, h: 0.35, fontFace: FONT_H, fontSize: 13, color: "AFC3D4", italic: true, align: "center", margin: 0 });
     }
     footerDisclaimer(s, true);
   }
@@ -487,13 +533,13 @@ function sourceNote(s, text) {
     const s = pres.addSlide();
     const SRC = D.sources;
     s.background = { color: C.marine };
-    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.5, w: 0.08, h: 0.9, fill: { color: C.coral }, line: { color: C.coral } });
-    s.addText("SOURCES & CAVEATS", { x: 0.85, y: 0.5, w: 10, h: 0.35, fontFace: FONT_B, fontSize: 12, color: C.coral, bold: true, charSpacing: 5, margin: 0 });
-    s.addText(SRC.title || "Show Your Work", { x: 0.85, y: 0.85, w: 12, h: 0.6, fontFace: FONT_H, fontSize: 26, color: C.white, bold: true, margin: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y: 0.5, w: 0.04, h: 0.9, fill: { color: "1B4366" }, line: { color: "1B4366" } });
+    s.addText("SOURCES & CAVEATS", { x: 0.85, y: 0.5, w: 10, h: 0.35, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", bold: false, charSpacing: 5, margin: 0 });
+    s.addText(SRC.title || "Where Every Number Came From", { x: 0.85, y: 0.85, w: 12, h: 0.6, fontFace: FONT_H, fontSize: 26, color: C.white, bold: true, margin: 0 });
 
     (SRC.list || []).slice(0, 8).forEach((src, i) => {
       const y = 1.8 + i * 0.48;
-      s.addText("•", { x: 0.85, y, w: 0.3, h: 0.4, fontFace: FONT_B, fontSize: 12, color: C.coral, valign: "middle", margin: 0 });
+      s.addText("•", { x: 0.85, y, w: 0.3, h: 0.4, fontFace: FONT_B, fontSize: 12, color: "8FA9C0", valign: "middle", margin: 0 });
       s.addText(src, { x: 1.2, y, w: 11.3, h: 0.4, fontFace: FONT_B, fontSize: 11.5, color: "D7E2EA", valign: "middle", margin: 0 });
       s.addShape(pres.shapes.LINE, { x: 0.85, y: y + 0.42, w: 11.7, h: 0, line: { color: C.panel, width: 0.75 } });
     });

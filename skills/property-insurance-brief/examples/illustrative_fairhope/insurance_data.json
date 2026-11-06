@@ -60,37 +60,43 @@
         "big": "$385,000",
         "label": "DWELLING (COV A)",
         "sub": "Replacement cost basis, est.",
-        "color": "marine"
+        "color": "marine",
+        "src": "Local rebuild est. · T2"
       },
       {
         "big": "2%",
         "label": "WIND DEDUCTIBLE",
         "sub": "= $7,700 out of pocket",
-        "color": "crimson"
+        "color": "crimson",
+        "src": "Standing rule"
       },
       {
         "big": "$2,500",
         "label": "AOP DEDUCTIBLE",
         "sub": "All other perils",
-        "color": "coral"
+        "color": "coral",
+        "src": "Default"
       },
       {
         "big": "50%",
         "label": "PERSONAL PROPERTY",
         "sub": "Of Cov A, replacement cost",
-        "color": "teal"
+        "color": "teal",
+        "src": "Default"
       },
       {
         "big": "$300K",
         "label": "LIABILITY",
         "sub": "Umbrella deferred",
-        "color": "green"
+        "color": "green",
+        "src": "Default"
       },
       {
         "big": "NO",
         "label": "FLOOD (SEPARATE)",
         "sub": "Zone X, not lender-required",
-        "color": "amber"
+        "color": "amber",
+        "src": "FEMA MSC · T1"
       }
     ],
     "source_note": "Dwelling basis is an estimate until a carrier replacement-cost estimator runs."
@@ -537,7 +543,7 @@
     }
   },
   "agent_script": {
-    "title": "Work the Script",
+    "title": "Questions for Every Agent",
     "subtitle": "Questions that separate a good policy from a cheap-looking one.",
     "questions": [
       "Is the wind deductible triggered by 'named storm,' 'hurricane,' or 'wind/hail'? Show me the definition page.",
@@ -561,7 +567,7 @@
     "footer_note": "A quote you can't compare is a quote you can't trust."
   },
   "sources": {
-    "title": "Show Your Work",
+    "title": "Where Every Number Came From",
     "list": [
       "ALDOI ComparePremiums: real HO-3 premiums by company and territory",
       "Alabama Coastal Insurance Shopper's Guide: Smart Home America / ALDOI",

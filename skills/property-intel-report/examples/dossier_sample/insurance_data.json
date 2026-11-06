@@ -60,37 +60,43 @@
         "big": "$500,000",
         "label": "DWELLING (COV A)",
         "sub": "Rebuild cost, 3,135 sf x $160/sf, est.",
-        "color": "marine"
+        "color": "marine",
+        "src": "Local rebuild est. · T2"
       },
       {
         "big": "2%",
         "label": "WIND DEDUCTIBLE",
         "sub": "= $10,000 out of pocket",
-        "color": "crimson"
+        "color": "crimson",
+        "src": "Standing rule"
       },
       {
         "big": "$2,500",
         "label": "AOP DEDUCTIBLE",
         "sub": "All other perils",
-        "color": "coral"
+        "color": "coral",
+        "src": "Default"
       },
       {
         "big": "50%",
         "label": "PERSONAL PROPERTY",
         "sub": "Of Cov A, replacement cost",
-        "color": "teal"
+        "color": "teal",
+        "src": "Default"
       },
       {
         "big": "$300K",
         "label": "LIABILITY",
         "sub": "Default; raise with net worth",
-        "color": "green"
+        "color": "green",
+        "src": "Default"
       },
       {
         "big": "NO",
         "label": "FLOOD (SEPARATE)",
         "sub": "Outside flood zone; not lender-required",
-        "color": "amber"
+        "color": "amber",
+        "src": "Buyer-stated"
       }
     ],
     "source_note": "Dwelling basis is an estimate until a carrier replacement-cost estimator runs. It is rebuild cost, not the $452K market value."
@@ -373,7 +379,7 @@
     "footer": "Estimates in this packet are labeled and sourced. Quotes entered above are the real numbers. Prepared with the buyer's coverage brief, October 2026."
   },
   "agent_script": {
-    "title": "Work the Script",
+    "title": "Questions for Every Agent",
     "subtitle": "Questions that separate a good policy from a cheap-looking one.",
     "questions": [
       "Is the wind deductible triggered by 'named storm,' 'hurricane,' or 'wind/hail'? Show me the definition page.",
@@ -397,7 +403,7 @@
     "footer_note": "A quote you can't compare is a quote you can't trust."
   },
   "sources": {
-    "title": "Show Your Work",
+    "title": "Where Every Number Came From",
     "list": [
       "ValuePenguin, Alabama homeowners insurance rates (updated Sep 25, 2026)",
       "1-800-Insurance, Fairhope home insurance guide (Nov 30, 2025)",
