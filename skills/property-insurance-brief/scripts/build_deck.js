@@ -304,7 +304,7 @@ function sourceNote(s, text) {
         { text: r.what, options: { ...base, color: C.graphite, fontSize: 10 } }
       ]);
     });
-    const rowH = Math.min(0.52, 4.55 / items.length);
+    const rowH = Math.min(0.52, 4.15 / items.length); // header 0.4 at y 2.15; rows end above the source note at 6.78
     s.addTable(rows, {
       x: 0.6, y: 2.15, w: 12.13,
       colW: [2.6, 3.5, 6.03],

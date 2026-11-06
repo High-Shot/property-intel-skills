@@ -199,6 +199,17 @@ if build_clean("insurance deck: inland profile", node(NB, dump(inl, "inland.json
     if p_in is not None:
         record("inland slide 5 reads Deductibles in dollars", any("deductibles in dollars" in t.lower() for t in slide_text(p_in, 4)))
 
+# regression: a 9-row coverage table must end above the slide 4 source note (Thompson Hall dry run, 2026-11)
+i9 = load(ISAMPLE)
+while len(i9["coverage_lines"]["rows"]) < 9:
+    i9["coverage_lines"]["rows"].append(dict(i9["coverage_lines"]["rows"][-1]))
+if build_clean("insurance deck: 9 coverage rows", node(NB, dump(i9, "i9.json"), out("i9.pptx"))):
+    from pptx import Presentation
+    tbl = [sh for sh in Presentation(out("i9.pptx")).slides[3].shapes if sh.has_table][0]
+    rows_h = sum(r.height for r in tbl.table.rows) / 914400
+    bottom = tbl.top / 914400 + rows_h
+    record("regression: 9-row coverage table ends above the source note", bottom <= 6.78, f"table bottom {bottom:.2f}in")
+
 # flat hurricane deductible carried through the dashboard
 f = load(DF); i2 = load(DI)
 cov = f["insurance"]["cov_a_est"]
