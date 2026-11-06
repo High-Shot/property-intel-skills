@@ -118,6 +118,10 @@ The aggregators are convenient but they scrape. They get tax records, parcel IDs
 
 Many county assessor, probate and permit portals refuse `WebFetch` (session tokens, search forms, image-only records). Before marking a county fact unavailable: search for the portal's direct parcel URL pattern, then use an available browser tool to run the search the way a person would, respecting any browser rules the user has set. If no browser is available, say which portal blocked the fetch and give the buyer the exact search to run. Never fill the gap from an aggregator and label it tier 1.
 
+### Baldwin County, AL (worked example)
+
+The revenue commission's property search (AssuranceWeb, reached from the county's Property Tax Calculator page) works in a browser: search by address, then Details. It shows appraised and assessed value, exemption code, tax district, building sketch areas (living vs adjusted sq ft), exterior and roof materials, year built and remodeled, improvements by year (pools, garages), tax paid by year back to the 1990s, and tax sales. Web search for this portal returns SEO spam; go through the county site.
+
 ## Source volatility
 
 URLs and portal behavior in this file are point-in-time observations, not durable facts. Before relying on any of them:

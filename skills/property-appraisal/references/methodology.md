@@ -10,6 +10,8 @@ Relax in this order when thin: time to 12 months → distance to 2 mi (rural 8) 
 
 Use 3-5 comps in the grid (deck fits 5 best; pick the strongest 5 if more). Fewer than 3 usable: confidence = Low, widen range per §6, state the shortage plainly.
 
+**Tenure.** Leasehold and fee-simple sales are different markets. If the subject is a leasehold (ground lease, land trust, or a colony lease such as the Fairhope Single Tax Corporation), carry leasehold comps, or adjust fee-simple comps with local paired-sales evidence and say so. Never mix them silently. Read `record.tenure` from the cache.
+
 ## 2. Adjustment schedule (percent-of-value based)
 
 **Step 0: net out seller concessions.** Before any adjustment, subtract the seller's concessions (closing costs paid, rate buydowns, repair credits at closing) from every comp's sold price. A $475,000 sale with $36,824 in concessions is a $438,176 sale; adjusting the headline price overstates that comp by 7.8%. Concessions live in MLS remarks, the agent's sold sheet, or the closing statement; record the amount in `concessions` and where you found it in `concessions_source`. Record `0` only when you checked and found none. An unchecked comp has no `concessions` field, and the builder warns. Every percentage below applies to the **net** price. If the subject's own deal includes concessions, the verdict compares value to the net offer, not the headline.

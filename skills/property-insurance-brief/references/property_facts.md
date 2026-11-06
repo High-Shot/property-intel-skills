@@ -67,6 +67,7 @@ The three property skills (`property-intel-report`, `property-appraisal`, `prope
   },
 
   "record": {
+    "tenure": "fee simple | leasehold", "lease": {"lessor": "", "instrument": "", "annual_rent": null},
     "appraised_value": 0, "assessed_value": 0, "appraisal_year": 0,
     "tax_current_annual": 0, "millage_total": 0,
     "exemptions": [""], "special_assessments": [{"name": "", "annual": 0}],
